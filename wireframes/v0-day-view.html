@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar · Friday, May 29 2026 · v0 Day view</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-soft: #F4F1EA;
+  --border: #ECE9E2;
+  --border-strong: #D6D2C7;
+  --border-faint: #F2EFE8;
+
+  --text: #1A1A1A;
+  --text-2: #4A4A4A;
+  --text-3: #76736C; /* AA-safe per Design fix */
+  --text-faint: #C4C0B5;
+
+  --accent: #2E4756;
+  --accent-soft: #E5EAEE;
+
+  --cal-viet: #2E4756;
+  --cal-plan: #A87854;
+  --cal-erich: #6B7C8F;
+
+  --cal-viet-soft: #ECEFF2;
+  --cal-plan-soft: #F4ECE5;
+  --cal-erich-soft: #EEF1F4;
+
+  --today-ring: #B68843;
+  --now-line: #B68843;
+
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
+
+  --hour-h: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+.app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ── App bar ───────────────────────── */
+.appbar {
+  display: grid;
+  grid-template-columns: 240px 1fr 320px;
+  align-items: center;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  gap: 24px;
+}
+.brand { font-size: 13px; font-weight: 600; letter-spacing: -0.005em; color: var(--text); }
+.brand .mark {
+  display: inline-block; width: 6px; height: 6px;
+  background: var(--accent); border-radius: 50%;
+  margin-right: 10px; vertical-align: middle; transform: translateY(-1px);
+}
+
+.navigation { display: flex; align-items: center; gap: 16px; justify-content: center; }
+.nav-arrows { display: flex; align-items: center; gap: 2px; }
+.iconbtn {
+  width: 36px; height: 36px;
+  border: 1px solid transparent; background: transparent;
+  border-radius: 4px; color: var(--text-2);
+  font-family: var(--sans); font-size: 14px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.iconbtn:hover { background: var(--surface-soft); border-color: var(--border); }
+
+.todaybtn {
+  font-family: var(--sans); font-size: 12px; font-weight: 500;
+  padding: 8px 14px;
+  border: 1px solid var(--border-strong); background: var(--surface);
+  color: var(--text); border-radius: 4px; cursor: pointer;
+  letter-spacing: 0.005em; transition: border-color 120ms ease;
+}
+.todaybtn:hover { border-color: var(--text-2); }
+
+.title-when {
+  font-size: 18px; font-weight: 600; letter-spacing: -0.015em;
+  color: var(--text); margin-left: 8px;
+}
+.title-when .subdued { color: var(--text-3); font-weight: 400; margin-left: 4px; }
+
+.appbar-right { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+
+.newevent {
+  font-family: var(--sans); font-size: 12px; font-weight: 600;
+  padding: 8px 14px; background: var(--accent); color: var(--surface);
+  border: 1px solid var(--accent); border-radius: 4px; cursor: pointer;
+  letter-spacing: 0.005em; transition: background 120ms ease;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.newevent:hover { background: #25394A; }
+.newevent .plus { font-family: var(--mono); font-size: 14px; opacity: 0.85; }
+
+.viewswitch {
+  display: inline-flex; border: 1px solid var(--border-strong);
+  border-radius: 4px; overflow: hidden;
+}
+.viewswitch button {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.08em; padding: 8px 14px;
+  background: var(--surface); border: none;
+  border-right: 1px solid var(--border); color: var(--text-2);
+  cursor: pointer; transition: background 120ms ease, color 120ms ease;
+}
+.viewswitch button:last-child { border-right: none; }
+.viewswitch button:hover { background: var(--surface-soft); }
+.viewswitch button.active { background: var(--accent); color: var(--surface); }
+
+.profile {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--cal-viet); color: var(--surface);
+  font-size: 12px; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center;
+  letter-spacing: 0.02em;
+}
+
+/* ── Layout ───────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 320px;
+  flex: 1; min-height: 0;
+}
+
+/* ── Sidebar (same shape as Month view) ── */
+.sidebar {
+  border-right: 1px solid var(--border);
+  background: var(--bg);
+  padding: 24px 20px 20px;
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: 28px;
+}
+.section-label {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 12px;
+}
+
+.account { display: flex; align-items: center; gap: 12px; padding-bottom: 22px; border-bottom: 1px solid var(--border-faint); }
+.account .avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--cal-viet); color: var(--surface);
+  font-size: 13px; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.account-name { font-size: 14px; font-weight: 600; letter-spacing: -0.005em; }
+.account-role { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+
+.calendars ul { list-style: none; }
+.calendars li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 6px; margin: 0 -6px;
+  font-size: 13px; color: var(--text); cursor: pointer;
+  border-radius: 4px;
+  transition: background 120ms ease;
+}
+.calendars li:hover { background: var(--surface-soft); }
+.cal input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none;
+  width: 14px; height: 14px; border: 1.5px solid var(--border-strong);
+  border-radius: 3px; background: var(--surface);
+  margin: 0; cursor: pointer; position: relative; flex-shrink: 0;
+}
+.cal input[type="checkbox"]:checked {
+  background: var(--accent); border-color: var(--accent);
+}
+.cal input[type="checkbox"]:checked::after {
+  content: ""; position: absolute; inset: 0;
+  margin: auto; width: 7px; height: 4px;
+  border-left: 1.5px solid var(--surface); border-bottom: 1.5px solid var(--surface);
+  transform: rotate(-45deg) translate(0px, -1px);
+}
+.cal-viet input:checked { background: var(--cal-viet); border-color: var(--cal-viet); }
+.cal-plan input:checked { background: var(--cal-plan); border-color: var(--cal-plan); }
+.cal-erich input:checked { background: var(--cal-erich); border-color: var(--cal-erich); }
+
+.cal-meta { flex: 1; display: flex; align-items: baseline; justify-content: space-between; min-width: 0; }
+.cal-name { font-size: 13px; }
+.cal-count { font-family: var(--mono); font-size: 10px; color: var(--text-3); }
+
+.minimonth { border-top: 1px solid var(--border-faint); padding-top: 22px; }
+.minimonth .mm-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.mm-dh {
+  font-family: var(--mono); font-size: 9px; font-weight: 500;
+  color: var(--text-faint); text-align: center;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 6px 0 4px;
+}
+.mm-d {
+  font-family: var(--mono); font-size: 11px; color: var(--text-2);
+  text-align: center; padding: 4px 0; border-radius: 50%;
+  cursor: pointer; aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 120ms ease;
+}
+.mm-d:not(.faded):hover { background: var(--surface-soft); }
+.mm-d.faded { color: var(--text-faint); cursor: default; }
+.mm-d.today {
+  background: var(--surface);
+  outline: 1.5px solid var(--today-ring);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.cmdhint {
+  margin-top: auto;
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  border: 1px dashed var(--border); border-radius: 6px;
+  font-size: 11px; color: var(--text-3); font-family: var(--mono);
+}
+.cmdhint kbd {
+  font-family: var(--mono); font-size: 10px;
+  padding: 1px 6px; background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 3px; color: var(--text-2);
+}
+
+/* ── Canvas (Day view) ───────────────────── */
+.canvas {
+  display: flex; flex-direction: column;
+  min-width: 0; background: var(--bg);
+  overflow: hidden;
+}
+
+.day-meta {
+  display: flex; align-items: baseline; gap: 16px;
+  padding: 18px 32px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.day-meta .weekday {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.day-meta .date {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.day-meta .stats {
+  margin-left: auto;
+  display: flex; gap: 22px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.day-meta .stats b { color: var(--text); font-weight: 600; margin-right: 4px; }
+
+.allday-strip {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.allday-label {
+  font-family: var(--mono); font-size: 10px;
+  font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-3);
+  padding: 14px 0 14px 32px;
+  border-right: 1px solid var(--border-faint);
+}
+.allday-events {
+  padding: 10px 32px 10px 16px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.allday-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  background: var(--cal-plan-soft);
+  border-left: 2px solid var(--cal-plan);
+  color: var(--text);
+}
+.allday-pill .meta { font-family: var(--mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.04em; }
+
+.timeline-wrap {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+}
+.timeline {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  position: relative;
+}
+
+.hour-rail {
+  border-right: 1px solid var(--border-faint);
+  background: var(--bg);
+}
+.hour-tick {
+  height: var(--hour-h);
+  padding: 6px 10px 0 0;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+}
+
+.lane {
+  position: relative;
+  background:
+    linear-gradient(to bottom, var(--border-faint) 1px, transparent 1px) 0 0 / 100% var(--hour-h);
+}
+.lane .halfhour {
+  position: absolute; left: 0; right: 0;
+  border-top: 1px dashed var(--border-faint);
+  opacity: 0.6;
+}
+
+.tev {
+  position: absolute;
+  left: 12px; right: 18px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 1px 0 var(--border-faint);
+  display: flex; flex-direction: column; gap: 4px;
+  cursor: pointer;
+  transition: background 120ms ease, border-left-color 120ms ease;
+}
+.tev:hover { background: var(--surface-soft); }
+.tev.viet { border-left-color: var(--cal-viet); }
+.tev.plan { border-left-color: var(--cal-plan); }
+.tev.erich { border-left-color: var(--cal-erich); }
+
+.tev .when {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  color: var(--text-3);
+}
+.tev .name {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--text);
+}
+.tev .where {
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+/* "Intent" — soft holds, per design.md tension call */
+.tev.intent {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--surface) 0 4px,
+    var(--surface-soft) 4px 8px
+  );
+  border-left-style: dashed;
+}
+.tev.intent .name { color: var(--text-2); }
+
+.now-line {
+  position: absolute;
+  left: 64px; right: 0;
+  border-top: 1px solid var(--now-line);
+  pointer-events: none;
+  z-index: 5;
+}
+.now-line::before {
+  content: ""; position: absolute;
+  left: -4px; top: -4px;
+  width: 8px; height: 8px;
+  background: var(--now-line);
+  border-radius: 50%;
+}
+.now-label {
+  position: absolute; left: 6px; top: -8px;
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: 0.08em; color: var(--now-line);
+  background: var(--bg); padding: 1px 4px;
+}
+
+/* ── Notes panel ───────────────────── */
+.notes {
+  border-left: 1px solid var(--border);
+  background: var(--bg);
+  padding: 24px 24px 20px;
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: 24px;
+}
+.notes-head h2 {
+  font-size: 16px; font-weight: 600;
+  letter-spacing: -0.01em; color: var(--text);
+  margin-bottom: 4px;
+}
+.notes-scope {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.note-group h3 {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 12px;
+}
+.note {
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+.note:hover { border-color: var(--border-strong); }
+.note .when {
+  font-family: var(--mono); font-size: 10px; color: var(--text-3);
+  letter-spacing: 0.04em; margin-bottom: 4px;
+}
+.note .title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; letter-spacing: -0.005em; }
+.note .body { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+.note .tag {
+  display: inline-block;
+  font-family: var(--mono); font-size: 9px; color: var(--accent);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 8px; padding: 2px 7px;
+  background: var(--accent-soft); border-radius: 3px;
+}
+.add-note {
+  margin-top: auto;
+  padding: 12px 14px; background: transparent;
+  border: 1px dashed var(--border-strong); border-radius: 5px;
+  color: var(--text-3); font-family: var(--sans); font-size: 13px;
+  cursor: pointer; text-align: left;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+.add-note:hover { border-color: var(--text-2); color: var(--text-2); }
+.add-note .plus { font-family: var(--mono); font-size: 14px; margin-right: 8px; color: var(--text-3); }
+
+/* ── Responsive ────────────────────── */
+@media (max-width: 1100px) {
+  .layout, .appbar { grid-template-columns: 220px 1fr 280px; }
+}
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .appbar { grid-template-columns: 1fr; gap: 12px; padding: 14px 18px; }
+  .sidebar, .notes { display: none; }
+  .iconbtn { width: 44px; height: 44px; }
+}
+
+.mockup-note {
+  position: fixed; bottom: 14px; right: 18px;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 6px 12px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 3px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="appbar">
+    <div class="brand"><span class="mark"></span>calendar</div>
+
+    <div class="navigation">
+      <div class="nav-arrows">
+        <button class="iconbtn" aria-label="Previous day">‹</button>
+        <button class="todaybtn">Today</button>
+        <button class="iconbtn" aria-label="Next day">›</button>
+      </div>
+      <span class="title-when">Friday<span class="subdued">&nbsp;· May 29, 2026</span></span>
+    </div>
+
+    <div class="appbar-right">
+      <button class="newevent"><span class="plus">+</span>New event</button>
+      <div class="viewswitch" role="tablist" aria-label="View">
+        <button class="active" aria-current="true">D</button>
+        <button>W</button>
+        <button>M</button>
+        <button>Y</button>
+      </div>
+      <div class="profile" aria-label="Viet">V</div>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <section class="account">
+        <div class="avatar">V</div>
+        <div>
+          <div class="account-name">Viet</div>
+          <div class="account-role">CEO · founder</div>
+        </div>
+      </section>
+
+      <section class="calendars">
+        <h3 class="section-label">Calendars</h3>
+        <ul>
+          <li class="cal cal-viet">
+            <input type="checkbox" checked aria-label="Personal calendar">
+            <div class="cal-meta"><span class="cal-name">Personal</span><span class="cal-count">3</span></div>
+          </li>
+          <li class="cal cal-plan">
+            <input type="checkbox" checked aria-label="Plan calendar">
+            <div class="cal-meta"><span class="cal-name">Plan</span><span class="cal-count">2</span></div>
+          </li>
+          <li class="cal cal-erich">
+            <input type="checkbox" checked aria-label="Shared with Erich">
+            <div class="cal-meta"><span class="cal-name">Shared · Erich</span><span class="cal-count">1</span></div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="minimonth">
+        <h3 class="section-label">May 2026</h3>
+        <div class="mm-grid">
+          <div class="mm-dh">S</div><div class="mm-dh">M</div><div class="mm-dh">T</div><div class="mm-dh">W</div><div class="mm-dh">T</div><div class="mm-dh">F</div><div class="mm-dh">S</div>
+          <div class="mm-d faded">26</div><div class="mm-d faded">27</div><div class="mm-d faded">28</div><div class="mm-d faded">29</div><div class="mm-d faded">30</div><div class="mm-d">1</div><div class="mm-d">2</div>
+          <div class="mm-d">3</div><div class="mm-d">4</div><div class="mm-d">5</div><div class="mm-d">6</div><div class="mm-d">7</div><div class="mm-d">8</div><div class="mm-d">9</div>
+          <div class="mm-d">10</div><div class="mm-d">11</div><div class="mm-d">12</div><div class="mm-d">13</div><div class="mm-d">14</div><div class="mm-d">15</div><div class="mm-d">16</div>
+          <div class="mm-d">17</div><div class="mm-d">18</div><div class="mm-d">19</div><div class="mm-d">20</div><div class="mm-d">21</div><div class="mm-d">22</div><div class="mm-d">23</div>
+          <div class="mm-d">24</div><div class="mm-d">25</div><div class="mm-d">26</div><div class="mm-d">27</div><div class="mm-d">28</div><div class="mm-d today">29</div><div class="mm-d">30</div>
+          <div class="mm-d">31</div><div class="mm-d faded">1</div><div class="mm-d faded">2</div><div class="mm-d faded">3</div><div class="mm-d faded">4</div><div class="mm-d faded">5</div><div class="mm-d faded">6</div>
+        </div>
+      </section>
+
+      <div class="cmdhint"><kbd>⌘</kbd><kbd>K</kbd><span>commands</span></div>
+    </aside>
+
+    <main class="canvas">
+      <div class="day-meta">
+        <div>
+          <div class="weekday">Friday</div>
+          <div class="date">May 29</div>
+        </div>
+        <div class="stats">
+          <span><b>3</b>events</span>
+          <span><b>1</b>all-day</span>
+          <span><b>4h 30m</b>scheduled</span>
+          <span><b>2</b>focus blocks</span>
+        </div>
+      </div>
+
+      <div class="allday-strip">
+        <div class="allday-label">All-day</div>
+        <div class="allday-events">
+          <span class="allday-pill"><span class="meta">PLAN</span>v0.1 kickoff · build sprint</span>
+        </div>
+      </div>
+
+      <div class="timeline-wrap">
+        <div class="timeline">
+
+          <div class="hour-rail">
+            <div class="hour-tick">7 AM</div>
+            <div class="hour-tick">8</div>
+            <div class="hour-tick">9</div>
+            <div class="hour-tick">10</div>
+            <div class="hour-tick">11</div>
+            <div class="hour-tick">12 PM</div>
+            <div class="hour-tick">1</div>
+            <div class="hour-tick">2</div>
+            <div class="hour-tick">3</div>
+            <div class="hour-tick">4</div>
+            <div class="hour-tick">5</div>
+            <div class="hour-tick">6</div>
+            <div class="hour-tick">7</div>
+            <div class="hour-tick">8</div>
+          </div>
+
+          <div class="lane" style="height: calc(14 * var(--hour-h));">
+
+            <!-- 07:00 Run · 5k (45 min) -->
+            <div class="tev viet" style="top: 0; height: calc(0.75 * var(--hour-h));">
+              <div class="when">07:00 – 07:45</div>
+              <div class="name">Run · 5k</div>
+              <div class="where">Park loop</div>
+            </div>
+
+            <!-- 09:30 Deep work (intent block, 90 min) -->
+            <div class="tev viet intent" style="top: calc(2.5 * var(--hour-h)); height: calc(1.5 * var(--hour-h));">
+              <div class="when">09:30 – 11:00 · intent</div>
+              <div class="name">Deep work · strategy.md edits</div>
+              <div class="where">Soft hold</div>
+            </div>
+
+            <!-- 11:30 Design review · Erich (60 min) -->
+            <div class="tev erich" style="top: calc(4.5 * var(--hour-h)); height: calc(1 * var(--hour-h));">
+              <div class="when">11:30 – 12:30</div>
+              <div class="name">Design review · Erich</div>
+              <div class="where">Zoom · zoom.us/j/···</div>
+            </div>
+
+            <!-- 14:00 Plan Q3 (45 min) -->
+            <div class="tev plan" style="top: calc(7 * var(--hour-h)); height: calc(0.75 * var(--hour-h));">
+              <div class="when">14:00 – 14:45</div>
+              <div class="name">Plan Q3</div>
+            </div>
+
+            <!-- 18:00 Dinner · home (90 min) -->
+            <div class="tev viet" style="top: calc(11 * var(--hour-h)); height: calc(1.5 * var(--hour-h));">
+              <div class="when">18:00 – 19:30</div>
+              <div class="name">Dinner · home</div>
+            </div>
+
+            <!-- Now line at 16:24 (4:24 PM = 9.4 hours after 7 AM) -->
+            <div class="now-line" style="top: calc(9.4 * var(--hour-h)); left: 0;">
+              <span class="now-label">NOW · 16:24</span>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <aside class="notes">
+      <header class="notes-head">
+        <h2>Notes</h2>
+        <div class="notes-scope">Friday · May 29, 2026</div>
+      </header>
+
+      <section class="note-group">
+        <h3>Decision log</h3>
+
+        <article class="note">
+          <div class="tag">decision · D010</div>
+          <div class="when">2026-05-29 · 14:12</div>
+          <div class="title">Move project to /05 PRACTICE/Calendar app</div>
+          <div class="body">Canonical root locked. All notes, wireframes, agents references update accordingly.</div>
+        </article>
+
+        <article class="note">
+          <div class="tag">decision · D009</div>
+          <div class="when">2026-05-29 · 11:40</div>
+          <div class="title">Lock Vision + Mission at top of strategy.md</div>
+          <div class="body">World-class craft, calm pace. Beat Apple on calm, Google on warmth.</div>
+        </article>
+      </section>
+
+      <section class="note-group">
+        <h3>Daily log</h3>
+
+        <article class="note">
+          <div class="tag">today</div>
+          <div class="when">2026-05-29 · Friday</div>
+          <div class="title">v0.1 kickoff</div>
+          <div class="body">Locked stack, scope, agents. Drafted strategy. First-pass Month view shipped — Design blocked on primary action + multi-day spans. Iterating to D/W/Y.</div>
+        </article>
+
+        <article class="note">
+          <div class="when">2026-05-29 · 09:15</div>
+          <div class="title">Morning intent</div>
+          <div class="body">Don't drift into L4. Calmer mockups, fewer features. Notes panel must hold the line across views.</div>
+        </article>
+      </section>
+
+      <button class="add-note"><span class="plus">+</span>New note for today</button>
+    </aside>
+
+  </div>
+</div>
+
+<div class="mockup-note">v0 · Day · mock data · 2026-05-29</div>
+
+</body>
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar · 2026 · v0 Year view</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-soft: #F4F1EA;
+  --border: #ECE9E2;
+  --border-strong: #D6D2C7;
+  --border-faint: #F2EFE8;
+
+  --text: #1A1A1A;
+  --text-2: #4A4A4A;
+  --text-3: #76736C;
+  --text-faint: #C4C0B5;
+
+  --accent: #2E4756;
+  --accent-soft: #E5EAEE;
+
+  --cal-viet: #2E4756;
+  --cal-plan: #A87854;
+  --cal-erich: #6B7C8F;
+
+  --cal-viet-soft: #ECEFF2;
+  --cal-plan-soft: #F4ECE5;
+  --cal-erich-soft: #EEF1F4;
+
+  --today-ring: #B68843;
+
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--sans);
+  background: var(--bg); color: var(--text);
+  font-size: 14px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: inherit; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ── App bar ────────────────────── */
+.appbar {
+  display: grid; grid-template-columns: 240px 1fr 320px;
+  align-items: center; padding: 18px 28px;
+  border-bottom: 1px solid var(--border); background: var(--bg); gap: 24px;
+}
+.brand { font-size: 13px; font-weight: 600; letter-spacing: -0.005em; color: var(--text); }
+.brand .mark { display: inline-block; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; margin-right: 10px; vertical-align: middle; transform: translateY(-1px); }
+.navigation { display: flex; align-items: center; gap: 16px; justify-content: center; }
+.nav-arrows { display: flex; align-items: center; gap: 2px; }
+.iconbtn {
+  width: 36px; height: 36px; border: 1px solid transparent;
+  background: transparent; border-radius: 4px; color: var(--text-2);
+  font-size: 14px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.iconbtn:hover { background: var(--surface-soft); border-color: var(--border); }
+.todaybtn {
+  font-size: 12px; font-weight: 500; padding: 8px 14px;
+  border: 1px solid var(--border-strong); background: var(--surface);
+  color: var(--text); border-radius: 4px; cursor: pointer;
+  transition: border-color 120ms ease;
+}
+.todaybtn:hover { border-color: var(--text-2); }
+.title-when { font-size: 18px; font-weight: 600; letter-spacing: -0.015em; color: var(--text); margin-left: 8px; }
+.title-when .subdued { color: var(--text-3); font-weight: 400; margin-left: 4px; }
+.appbar-right { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+.newevent {
+  font-size: 12px; font-weight: 600; padding: 8px 14px;
+  background: var(--accent); color: var(--surface);
+  border: 1px solid var(--accent); border-radius: 4px;
+  cursor: pointer; transition: background 120ms ease;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.newevent:hover { background: #25394A; }
+.newevent .plus { font-family: var(--mono); font-size: 14px; opacity: 0.85; }
+.viewswitch { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 4px; overflow: hidden; }
+.viewswitch button {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.08em; padding: 8px 14px;
+  background: var(--surface); border: none;
+  border-right: 1px solid var(--border); color: var(--text-2);
+  cursor: pointer; transition: background 120ms ease, color 120ms ease;
+}
+.viewswitch button:last-child { border-right: none; }
+.viewswitch button:hover { background: var(--surface-soft); }
+.viewswitch button.active { background: var(--accent); color: var(--surface); }
+.profile {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--cal-viet); color: var(--surface);
+  font-size: 12px; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+/* ── Layout ───────────────────── */
+.layout { display: grid; grid-template-columns: 240px 1fr 320px; flex: 1; min-height: 0; }
+
+/* ── Sidebar (year-flavored — no mini-month, swap to year ribbon) ── */
+.sidebar {
+  border-right: 1px solid var(--border); background: var(--bg);
+  padding: 24px 20px 20px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 28px;
+}
+.section-label {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 12px;
+}
+.account { display: flex; align-items: center; gap: 12px; padding-bottom: 22px; border-bottom: 1px solid var(--border-faint); }
+.account .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--cal-viet); color: var(--surface); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+.account-name { font-size: 14px; font-weight: 600; letter-spacing: -0.005em; }
+.account-role { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+
+.calendars ul { list-style: none; }
+.calendars li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 6px; margin: 0 -6px;
+  font-size: 13px; color: var(--text); cursor: pointer;
+  border-radius: 4px; transition: background 120ms ease;
+}
+.calendars li:hover { background: var(--surface-soft); }
+.cal input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border: 1.5px solid var(--border-strong); border-radius: 3px;
+  background: var(--surface); margin: 0; cursor: pointer;
+  position: relative; flex-shrink: 0;
+}
+.cal input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
+.cal input[type="checkbox"]:checked::after {
+  content: ""; position: absolute; inset: 0; margin: auto;
+  width: 7px; height: 4px;
+  border-left: 1.5px solid var(--surface); border-bottom: 1.5px solid var(--surface);
+  transform: rotate(-45deg) translate(0px, -1px);
+}
+.cal-viet input:checked { background: var(--cal-viet); border-color: var(--cal-viet); }
+.cal-plan input:checked { background: var(--cal-plan); border-color: var(--cal-plan); }
+.cal-erich input:checked { background: var(--cal-erich); border-color: var(--cal-erich); }
+.cal-meta { flex: 1; display: flex; align-items: baseline; justify-content: space-between; min-width: 0; }
+.cal-name { font-size: 13px; }
+.cal-count { font-family: var(--mono); font-size: 10px; color: var(--text-3); }
+
+/* Year ribbon — keyboard quick-jump */
+.year-ribbon {
+  border-top: 1px solid var(--border-faint);
+  padding-top: 22px;
+}
+.year-ribbon .yr-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+}
+.yr-cell {
+  font-family: var(--mono); font-size: 11px;
+  padding: 8px 0; border-radius: 4px;
+  text-align: center;
+  color: var(--text-2); cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.yr-cell:hover { background: var(--surface-soft); border-color: var(--border); }
+.yr-cell.current { background: var(--accent); color: var(--surface); }
+
+.year-stats {
+  border-top: 1px solid var(--border-faint);
+  padding-top: 22px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.year-stats .row {
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.year-stats .row .k {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-3);
+}
+.year-stats .row .v {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  color: var(--text); letter-spacing: -0.005em;
+}
+
+.cmdhint {
+  margin-top: auto; display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border: 1px dashed var(--border);
+  border-radius: 6px; font-size: 11px; color: var(--text-3); font-family: var(--mono);
+}
+.cmdhint kbd {
+  font-family: var(--mono); font-size: 10px;
+  padding: 1px 6px; background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 3px; color: var(--text-2);
+}
+
+/* ── Canvas (Year grid) ───────────── */
+.canvas {
+  display: flex; flex-direction: column;
+  min-width: 0; background: var(--bg);
+  overflow: hidden;
+}
+
+.year-meta {
+  display: flex; align-items: baseline; gap: 16px;
+  padding: 18px 32px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.year-meta .label {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3);
+}
+.year-meta .yr { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
+.year-meta .stats {
+  margin-left: auto; display: flex; gap: 22px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3);
+}
+.year-meta .stats b { color: var(--text); font-weight: 600; margin-right: 4px; }
+
+.year-grid-wrap { flex: 1; overflow-y: auto; padding: 22px 32px 32px; }
+
+.year-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px 28px;
+}
+@media (max-width: 1280px) {
+  .year-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 1000px) {
+  .year-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.month {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 14px 12px;
+  display: flex; flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color 120ms ease, transform 120ms ease;
+}
+.month:hover { border-color: var(--border-strong); }
+.month.current { border-color: var(--today-ring); }
+
+.month-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+}
+.month-name {
+  font-size: 14px; font-weight: 600;
+  letter-spacing: -0.005em; color: var(--text);
+}
+.month-num {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.08em; color: var(--text-3);
+}
+
+.m-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+}
+.m-dh {
+  font-family: var(--mono); font-size: 8.5px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-faint); text-align: center; padding: 2px 0 4px;
+}
+.m-d {
+  font-family: var(--mono); font-size: 10.5px;
+  color: var(--text-2); text-align: center;
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition: background 120ms ease;
+}
+.m-d:not(.faded):hover { background: var(--surface-soft); }
+.m-d.faded { color: var(--text-faint); cursor: default; }
+
+/* Density — subtle, never loud. Three soft tiers. */
+.m-d.d1 { background: var(--surface-soft); }
+.m-d.d2 { background: var(--cal-viet-soft); }
+.m-d.d3 { background: var(--accent-soft); color: var(--text); font-weight: 500; }
+
+.m-d.today {
+  background: var(--surface);
+  outline: 1.5px solid var(--today-ring);
+  color: var(--text); font-weight: 600;
+}
+
+/* Optional event dot row (week-long projects etc.) — kept off in this v0 to honor "calm" */
+
+.month-foot {
+  display: flex; gap: 14px;
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-3);
+  padding-top: 6px;
+  border-top: 1px dashed var(--border-faint);
+}
+.month-foot b { color: var(--text-2); font-weight: 600; margin-right: 3px; }
+
+/* ── Notes (shared) ──────────────── */
+.notes {
+  border-left: 1px solid var(--border); background: var(--bg);
+  padding: 24px 24px 20px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 24px;
+}
+.notes-head h2 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); margin-bottom: 4px; }
+.notes-scope { font-family: var(--mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; }
+.note-group h3 {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 12px;
+}
+.note {
+  padding: 14px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 5px;
+  margin-bottom: 8px; cursor: pointer;
+  transition: border-color 120ms ease;
+}
+.note:hover { border-color: var(--border-strong); }
+.note .when { font-family: var(--mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.04em; margin-bottom: 4px; }
+.note .title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; letter-spacing: -0.005em; }
+.note .body { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+.note .tag {
+  display: inline-block; font-family: var(--mono); font-size: 9px;
+  color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 8px; padding: 2px 7px;
+  background: var(--accent-soft); border-radius: 3px;
+}
+.add-note {
+  margin-top: auto; padding: 12px 14px; background: transparent;
+  border: 1px dashed var(--border-strong); border-radius: 5px;
+  color: var(--text-3); font-family: var(--sans); font-size: 13px;
+  cursor: pointer; text-align: left;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+.add-note:hover { border-color: var(--text-2); color: var(--text-2); }
+.add-note .plus { font-family: var(--mono); font-size: 14px; margin-right: 8px; color: var(--text-3); }
+
+@media (max-width: 1100px) {
+  .layout, .appbar { grid-template-columns: 220px 1fr 280px; }
+}
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .appbar { grid-template-columns: 1fr; gap: 12px; padding: 14px 18px; }
+  .sidebar, .notes { display: none; }
+  .iconbtn { width: 44px; height: 44px; }
+}
+
+.mockup-note {
+  position: fixed; bottom: 14px; right: 18px;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 6px 12px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 3px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="appbar">
+    <div class="brand"><span class="mark"></span>calendar</div>
+
+    <div class="navigation">
+      <div class="nav-arrows">
+        <button class="iconbtn" aria-label="Previous year">‹</button>
+        <button class="todaybtn">Today</button>
+        <button class="iconbtn" aria-label="Next year">›</button>
+      </div>
+      <span class="title-when">2026</span>
+    </div>
+
+    <div class="appbar-right">
+      <button class="newevent"><span class="plus">+</span>New event</button>
+      <div class="viewswitch" role="tablist" aria-label="View">
+        <button>D</button>
+        <button>W</button>
+        <button>M</button>
+        <button class="active" aria-current="true">Y</button>
+      </div>
+      <div class="profile" aria-label="Viet">V</div>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <section class="account">
+        <div class="avatar">V</div>
+        <div>
+          <div class="account-name">Viet</div>
+          <div class="account-role">CEO · founder</div>
+        </div>
+      </section>
+
+      <section class="calendars">
+        <h3 class="section-label">Calendars</h3>
+        <ul>
+          <li class="cal cal-viet">
+            <input type="checkbox" checked aria-label="Personal calendar">
+            <div class="cal-meta"><span class="cal-name">Personal</span><span class="cal-count">218</span></div>
+          </li>
+          <li class="cal cal-plan">
+            <input type="checkbox" checked aria-label="Plan calendar">
+            <div class="cal-meta"><span class="cal-name">Plan</span><span class="cal-count">412</span></div>
+          </li>
+          <li class="cal cal-erich">
+            <input type="checkbox" checked aria-label="Shared with Erich">
+            <div class="cal-meta"><span class="cal-name">Shared · Erich</span><span class="cal-count">87</span></div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="year-ribbon">
+        <h3 class="section-label">Jump to year</h3>
+        <div class="yr-grid">
+          <div class="yr-cell">2022</div>
+          <div class="yr-cell">2023</div>
+          <div class="yr-cell">2024</div>
+          <div class="yr-cell">2025</div>
+          <div class="yr-cell current">2026</div>
+          <div class="yr-cell">2027</div>
+          <div class="yr-cell">2028</div>
+          <div class="yr-cell">2029</div>
+        </div>
+      </section>
+
+      <section class="year-stats">
+        <h3 class="section-label">2026 at a glance</h3>
+        <div class="row"><span class="k">Events</span><span class="v">717</span></div>
+        <div class="row"><span class="k">Notes</span><span class="v">142</span></div>
+        <div class="row"><span class="k">Decisions</span><span class="v">14</span></div>
+        <div class="row"><span class="k">Travel days</span><span class="v">22</span></div>
+      </section>
+
+      <div class="cmdhint"><kbd>⌘</kbd><kbd>K</kbd><span>commands</span></div>
+    </aside>
+
+    <main class="canvas">
+      <div class="year-meta">
+        <div>
+          <div class="label">Year</div>
+          <div class="yr">2026</div>
+        </div>
+        <div class="stats">
+          <span><b>Today</b>Fri · May 29</span>
+          <span><b>149</b>days elapsed</span>
+          <span><b>216</b>days remaining</span>
+          <span><b>41%</b>of year</span>
+        </div>
+      </div>
+
+      <div class="year-grid-wrap">
+        <div class="year-grid">
+
+          <!-- ── January 2026 ── -->
+          <div class="month">
+            <div class="month-head">
+              <span class="month-name">January</span>
+              <span class="month-num">01 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d faded">28</div><div class="m-d faded">29</div><div class="m-d faded">30</div><div class="m-d faded">31</div><div class="m-d d2">1</div><div class="m-d d1">2</div><div class="m-d">3</div>
+              <div class="m-d">4</div><div class="m-d d2">5</div><div class="m-d d1">6</div><div class="m-d d1">7</div><div class="m-d d2">8</div><div class="m-d d1">9</div><div class="m-d">10</div>
+              <div class="m-d">11</div><div class="m-d d3">12</div><div class="m-d d2">13</div><div class="m-d d1">14</div><div class="m-d d2">15</div><div class="m-d d3">16</div><div class="m-d">17</div>
+              <div class="m-d">18</div><div class="m-d d2">19</div><div class="m-d d2">20</div><div class="m-d d1">21</div><div class="m-d d2">22</div><div class="m-d d1">23</div><div class="m-d">24</div>
+              <div class="m-d">25</div><div class="m-d d2">26</div><div class="m-d d1">27</div><div class="m-d d2">28</div><div class="m-d d3">29</div><div class="m-d d2">30</div><div class="m-d">31</div>
+            </div>
+            <div class="month-foot"><span><b>54</b>events</span><span><b>11</b>notes</span></div>
+          </div>
+
+          <!-- ── February 2026 ── -->
+          <div class="month">
+            <div class="month-head">
+              <span class="month-name">February</span>
+              <span class="month-num">02 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d">1</div><div class="m-d d2">2</div><div class="m-d d2">3</div><div class="m-d d1">4</div><div class="m-d d3">5</div><div class="m-d d2">6</div><div class="m-d">7</div>
+              <div class="m-d">8</div><div class="m-d d2">9</div><div class="m-d d3">10</div><div class="m-d d2">11</div><div class="m-d d2">12</div><div class="m-d d1">13</div><div class="m-d">14</div>
+              <div class="m-d">15</div><div class="m-d d2">16</div><div class="m-d d1">17</div><div class="m-d d2">18</div><div class="m-d d2">19</div><div class="m-d d3">20</div><div class="m-d">21</div>
+              <div class="m-d">22</div><div class="m-d d2">23</div><div class="m-d d3">24</div><div class="m-d d2">25</div><div class="m-d d1">26</div><div class="m-d d2">27</div><div class="m-d">28</div>
+              <div class="m-d faded">1</div><div class="m-d faded">2</div><div class="m-d faded">3</div><div class="m-d faded">4</div><div class="m-d faded">5</div><div class="m-d faded">6</div><div class="m-d faded">7</div>
+            </div>
+            <div class="month-foot"><span><b>61</b>events</span><span><b>13</b>notes</span></div>
+          </div>
+
+          <!-- ── March 2026 ── -->
+          <div class="month">
+            <div class="month-head">
+              <span class="month-name">March</span>
+              <span class="month-num">03 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d">1</div><div class="m-d d2">2</div><div class="m-d d2">3</div><div class="m-d d3">4</div><div class="m-d d2">5</div><div class="m-d d2">6</div><div class="m-d">7</div>
+              <div class="m-d">8</div><div class="m-d d3">9</div><div class="m-d d2">10</div><div class="m-d d2">11</div><div class="m-d d1">12</div><div class="m-d d2">13</div><div class="m-d">14</div>
+              <div class="m-d">15</div><div class="m-d d2">16</div><div class="m-d d3">17</div><div class="m-d d2">18</div><div class="m-d d3">19</div><div class="m-d d2">20</div><div class="m-d">21</div>
+              <div class="m-d">22</div><div class="m-d d1">23</div><div class="m-d d2">24</div><div class="m-d d3">25</div><div class="m-d d2">26</div><div class="m-d d2">27</div><div class="m-d">28</div>
+              <div class="m-d">29</div><div class="m-d d2">30</div><div class="m-d d2">31</div><div class="m-d faded">1</div><div class="m-d faded">2</div><div class="m-d faded">3</div><div class="m-d faded">4</div>
+            </div>
+            <div class="month-foot"><span><b>68</b>events</span><span><b>15</b>notes</span></div>
+          </div>
+
+          <!-- ── April 2026 ── -->
+          <div class="month">
+            <div class="month-head">
+              <span class="month-name">April</span>
+              <span class="month-num">04 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d faded">29</div><div class="m-d faded">30</div><div class="m-d faded">31</div><div class="m-d d2">1</div><div class="m-d d2">2</div><div class="m-d d1">3</div><div class="m-d">4</div>
+              <div class="m-d">5</div><div class="m-d d3">6</div><div class="m-d d2">7</div><div class="m-d d2">8</div><div class="m-d d3">9</div><div class="m-d d2">10</div><div class="m-d">11</div>
+              <div class="m-d">12</div><div class="m-d d2">13</div><div class="m-d d2">14</div><div class="m-d d3">15</div><div class="m-d d2">16</div><div class="m-d d1">17</div><div class="m-d">18</div>
+              <div class="m-d">19</div><div class="m-d d2">20</div><div class="m-d d3">21</div><div class="m-d d2">22</div><div class="m-d d2">23</div><div class="m-d d3">24</div><div class="m-d">25</div>
+              <div class="m-d">26</div><div class="m-d d1">27</div><div class="m-d d2">28</div><div class="m-d d2">29</div><div class="m-d d2">30</div><div class="m-d faded">1</div><div class="m-d faded">2</div>
+            </div>
+            <div class="month-foot"><span><b>59</b>events</span><span><b>12</b>notes</span></div>
+          </div>
+
+          <!-- ── May 2026 (CURRENT MONTH) ── -->
+          <div class="month current">
+            <div class="month-head">
+              <span class="month-name">May</span>
+              <span class="month-num">05 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d faded">26</div><div class="m-d faded">27</div><div class="m-d faded">28</div><div class="m-d faded">29</div><div class="m-d faded">30</div><div class="m-d d2">1</div><div class="m-d">2</div>
+              <div class="m-d">3</div><div class="m-d d2">4</div><div class="m-d d2">5</div><div class="m-d d2">6</div><div class="m-d d1">7</div><div class="m-d d2">8</div><div class="m-d">9</div>
+              <div class="m-d">10</div><div class="m-d d3">11</div><div class="m-d d2">12</div><div class="m-d d2">13</div><div class="m-d d2">14</div><div class="m-d d3">15</div><div class="m-d">16</div>
+              <div class="m-d">17</div><div class="m-d d2">18</div><div class="m-d d3">19</div><div class="m-d d3">20</div><div class="m-d d3">21</div><div class="m-d d3">22</div><div class="m-d">23</div>
+              <div class="m-d">24</div><div class="m-d d2">25</div><div class="m-d d2">26</div><div class="m-d d3">27</div><div class="m-d d1">28</div><div class="m-d today">29</div><div class="m-d d2">30</div>
+              <div class="m-d">31</div><div class="m-d faded">1</div><div class="m-d faded">2</div><div class="m-d faded">3</div><div class="m-d faded">4</div><div class="m-d faded">5</div><div class="m-d faded">6</div>
+            </div>
+            <div class="month-foot"><span><b>71</b>events</span><span><b>18</b>notes</span><span><b>v0.1</b>kickoff</span></div>
+          </div>
+
+          <!-- ── June 2026 ── -->
+          <div class="month">
+            <div class="month-head">
+              <span class="month-name">June</span>
+              <span class="month-num">06 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d faded">31</div><div class="m-d d2">1</div><div class="m-d d2">2</div><div class="m-d d3">3</div><div class="m-d d2">4</div><div class="m-d d2">5</div><div class="m-d">6</div>
+              <div class="m-d">7</div><div class="m-d d2">8</div><div class="m-d d2">9</div><div class="m-d d2">10</div><div class="m-d d3">11</div><div class="m-d d2">12</div><div class="m-d">13</div>
+              <div class="m-d">14</div><div class="m-d d1">15</div><div class="m-d d2">16</div><div class="m-d d2">17</div><div class="m-d d2">18</div><div class="m-d d1">19</div><div class="m-d">20</div>
+              <div class="m-d">21</div><div class="m-d d3">22</div><div class="m-d d2">23</div><div class="m-d d2">24</div><div class="m-d d2">25</div><div class="m-d d2">26</div><div class="m-d">27</div>
+              <div class="m-d">28</div><div class="m-d d2">29</div><div class="m-d d2">30</div><div class="m-d faded">1</div><div class="m-d faded">2</div><div class="m-d faded">3</div><div class="m-d faded">4</div>
+            </div>
+            <div class="month-foot"><span><b>52</b>events</span><span><b>9</b>notes</span></div>
+          </div>
+
+          <!-- ── July 2026 ── -->
+          <div class="month">
+            <div class="month-head">
+              <span class="month-name">July</span>
+              <span class="month-num">07 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d faded">28</div><div class="m-d faded">29</div><div class="m-d faded">30</div><div class="m-d d1">1</div><div class="m-d d1">2</div><div class="m-d">3</div><div class="m-d">4</div>
+              <div class="m-d">5</div><div class="m-d d1">6</div><div class="m-d d2">7</div><div class="m-d d1">8</div><div class="m-d d1">9</div><div class="m-d">10</div><div class="m-d">11</div>
+              <div class="m-d">12</div><div class="m-d d2">13</div><div class="m-d d2">14</div><div class="m-d d1">15</div><div class="m-d d2">16</div><div class="m-d d1">17</div><div class="m-d">18</div>
+              <div class="m-d">19</div><div class="m-d d1">20</div><div class="m-d d2">21</div><div class="m-d d2">22</div><div class="m-d d1">23</div><div class="m-d d2">24</div><div class="m-d">25</div>
+              <div class="m-d">26</div><div class="m-d d1">27</div><div class="m-d d1">28</div><div class="m-d d2">29</div><div class="m-d d1">30</div><div class="m-d">31</div><div class="m-d faded">1</div>
+            </div>
+            <div class="month-foot"><span><b>38</b>events</span><span><b>7</b>notes</span></div>
+          </div>
+
+          <!-- ── August 2026 ── -->
+          <div class="month">
+            <div class="month-head">
+              <span class="month-name">August</span>
+              <span class="month-num">08 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d faded">26</div><div class="m-d faded">27</div><div class="m-d faded">28</div><div class="m-d faded">29</div><div class="m-d faded">30</div><div class="m-d faded">31</div><div class="m-d">1</div>
+              <div class="m-d">2</div><div class="m-d d2">3</div><div class="m-d d2">4</div><div class="m-d d3">5</div><div class="m-d d2">6</div><div class="m-d d2">7</div><div class="m-d">8</div>
+              <div class="m-d">9</div><div class="m-d d3">10</div><div class="m-d d2">11</div><div class="m-d d2">12</div><div class="m-d d3">13</div><div class="m-d d2">14</div><div class="m-d">15</div>
+              <div class="m-d">16</div><div class="m-d d2">17</div><div class="m-d d3">18</div><div class="m-d d2">19</div><div class="m-d d2">20</div><div class="m-d d3">21</div><div class="m-d">22</div>
+              <div class="m-d">23</div><div class="m-d d2">24</div><div class="m-d d2">25</div><div class="m-d d3">26</div><div class="m-d d2">27</div><div class="m-d d2">28</div><div class="m-d">29</div>
+              <div class="m-d">30</div><div class="m-d d2">31</div><div class="m-d faded">1</div><div class="m-d faded">2</div><div class="m-d faded">3</div><div class="m-d faded">4</div><div class="m-d faded">5</div>
+            </div>
+            <div class="month-foot"><span><b>63</b>events</span><span><b>11</b>notes</span></div>
+          </div>
+
+          <!-- ── September 2026 ── -->
+          <div class="month">
+            <div class="month-head">
+              <span class="month-name">September</span>
+              <span class="month-num">09 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d faded">30</div><div class="m-d faded">31</div><div class="m-d d3">1</div><div class="m-d d2">2</div><div class="m-d d2">3</div><div class="m-d d2">4</div><div class="m-d">5</div>
+              <div class="m-d">6</div><div class="m-d d3">7</div><div class="m-d d2">8</div><div class="m-d d2">9</div><div class="m-d d3">10</div><div class="m-d d2">11</div><div class="m-d">12</div>
+              <div class="m-d">13</div><div class="m-d d2">14</div><div class="m-d d2">15</div><div class="m-d d3">16</div><div class="m-d d2">17</div><div class="m-d d2">18</div><div class="m-d">19</div>
+              <div class="m-d">20</div><div class="m-d d2">21</div><div class="m-d d3">22</div><div class="m-d d2">23</div><div class="m-d d2">24</div><div class="m-d d2">25</div><div class="m-d">26</div>
+              <div class="m-d">27</div><div class="m-d d3">28</div><div class="m-d d2">29</div><div class="m-d d2">30</div><div class="m-d faded">1</div><div class="m-d faded">2</div><div class="m-d faded">3</div>
+            </div>
+            <div class="month-foot"><span><b>72</b>events</span><span><b>14</b>notes</span></div>
+          </div>
+
+          <!-- ── October 2026 ── -->
+          <div class="month">
+            <div class="month-head">
+              <span class="month-name">October</span>
+              <span class="month-num">10 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d faded">27</div><div class="m-d faded">28</div><div class="m-d faded">29</div><div class="m-d faded">30</div><div class="m-d d3">1</div><div class="m-d d2">2</div><div class="m-d">3</div>
+              <div class="m-d">4</div><div class="m-d d2">5</div><div class="m-d d3">6</div><div class="m-d d2">7</div><div class="m-d d2">8</div><div class="m-d d2">9</div><div class="m-d">10</div>
+              <div class="m-d">11</div><div class="m-d d2">12</div><div class="m-d d2">13</div><div class="m-d d3">14</div><div class="m-d d2">15</div><div class="m-d d3">16</div><div class="m-d">17</div>
+              <div class="m-d">18</div><div class="m-d d2">19</div><div class="m-d d2">20</div><div class="m-d d2">21</div><div class="m-d d3">22</div><div class="m-d d2">23</div><div class="m-d">24</div>
+              <div class="m-d">25</div><div class="m-d d2">26</div><div class="m-d d3">27</div><div class="m-d d2">28</div><div class="m-d d2">29</div><div class="m-d d2">30</div><div class="m-d">31</div>
+            </div>
+            <div class="month-foot"><span><b>66</b>events</span><span><b>13</b>notes</span></div>
+          </div>
+
+          <!-- ── November 2026 ── -->
+          <div class="month">
+            <div class="month-head">
+              <span class="month-name">November</span>
+              <span class="month-num">11 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d">1</div><div class="m-d d2">2</div><div class="m-d d2">3</div><div class="m-d d3">4</div><div class="m-d d2">5</div><div class="m-d d2">6</div><div class="m-d">7</div>
+              <div class="m-d">8</div><div class="m-d d3">9</div><div class="m-d d2">10</div><div class="m-d d2">11</div><div class="m-d d2">12</div><div class="m-d d3">13</div><div class="m-d">14</div>
+              <div class="m-d">15</div><div class="m-d d2">16</div><div class="m-d d3">17</div><div class="m-d d2">18</div><div class="m-d d2">19</div><div class="m-d d2">20</div><div class="m-d">21</div>
+              <div class="m-d">22</div><div class="m-d d2">23</div><div class="m-d d2">24</div><div class="m-d d3">25</div><div class="m-d d2">26</div><div class="m-d d1">27</div><div class="m-d">28</div>
+              <div class="m-d">29</div><div class="m-d d2">30</div><div class="m-d faded">1</div><div class="m-d faded">2</div><div class="m-d faded">3</div><div class="m-d faded">4</div><div class="m-d faded">5</div>
+            </div>
+            <div class="month-foot"><span><b>58</b>events</span><span><b>10</b>notes</span></div>
+          </div>
+
+          <!-- ── December 2026 ── -->
+          <div class="month">
+            <div class="month-head">
+              <span class="month-name">December</span>
+              <span class="month-num">12 · 2026</span>
+            </div>
+            <div class="m-grid">
+              <div class="m-dh">S</div><div class="m-dh">M</div><div class="m-dh">T</div><div class="m-dh">W</div><div class="m-dh">T</div><div class="m-dh">F</div><div class="m-dh">S</div>
+              <div class="m-d faded">29</div><div class="m-d faded">30</div><div class="m-d d2">1</div><div class="m-d d3">2</div><div class="m-d d2">3</div><div class="m-d d2">4</div><div class="m-d">5</div>
+              <div class="m-d">6</div><div class="m-d d3">7</div><div class="m-d d2">8</div><div class="m-d d2">9</div><div class="m-d d3">10</div><div class="m-d d2">11</div><div class="m-d">12</div>
+              <div class="m-d">13</div><div class="m-d d2">14</div><div class="m-d d2">15</div><div class="m-d d3">16</div><div class="m-d d2">17</div><div class="m-d d1">18</div><div class="m-d">19</div>
+              <div class="m-d">20</div><div class="m-d d1">21</div><div class="m-d d1">22</div><div class="m-d d1">23</div><div class="m-d d2">24</div><div class="m-d">25</div><div class="m-d">26</div>
+              <div class="m-d">27</div><div class="m-d">28</div><div class="m-d">29</div><div class="m-d d1">30</div><div class="m-d">31</div><div class="m-d faded">1</div><div class="m-d faded">2</div>
+            </div>
+            <div class="month-foot"><span><b>55</b>events</span><span><b>9</b>notes</span></div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <aside class="notes">
+      <header class="notes-head">
+        <h2>Notes</h2>
+        <div class="notes-scope">2026 · this year</div>
+      </header>
+
+      <section class="note-group">
+        <h3>Decision log · year</h3>
+
+        <article class="note">
+          <div class="tag">decision · D010</div>
+          <div class="when">2026-05-29</div>
+          <div class="title">Canonical project root: /05 PRACTICE/Calendar app</div>
+          <div class="body">All notes, wireframes, agents references update accordingly. Single source of truth.</div>
+        </article>
+
+        <article class="note">
+          <div class="tag">decision · D008</div>
+          <div class="when">2026-05-29</div>
+          <div class="title">Hire Research agent</div>
+          <div class="body">Scout + synthesize, no judging. Tripwire: kill if 0 invocations in 3 working sessions.</div>
+        </article>
+
+        <article class="note">
+          <div class="tag">decision · D002</div>
+          <div class="when">2026-05-29</div>
+          <div class="title">Stack lock: Next.js + Supabase on Vercel</div>
+          <div class="body">App Router. Tailwind. shadcn/ui or unstyled primitives — TBD in design phase.</div>
+        </article>
+      </section>
+
+      <section class="note-group">
+        <h3>Daily log · year</h3>
+
+        <article class="note">
+          <div class="tag">2026 — Q2</div>
+          <div class="when">2026-05-29 · Friday</div>
+          <div class="title">v0.1 kickoff</div>
+          <div class="body">Pre-pixels phase closed. PRD, strategy, four-agent bench locked. First wireframes for D/W/M/Y shipped.</div>
+        </article>
+
+        <article class="note">
+          <div class="tag">2026 — Q1</div>
+          <div class="when">2026-02-10 · Tuesday</div>
+          <div class="title">Pour concrete year</div>
+          <div class="body">Not a year for scattered exploration. Discipline, routines, physical health to withstand the year's high energy.</div>
+        </article>
+      </section>
+
+      <button class="add-note"><span class="plus">+</span>New note for 2026</button>
+    </aside>
+
+  </div>
+</div>
+
+<div class="mockup-note">v0 · Year · mock data · 2026-05-29</div>
+
+</body>
+</html>

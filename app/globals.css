@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+/*
+  Calendar app — editorial-calm design tokens.
+  Ported from wireframes/v0-month-view.html (light) + new dark palette (D013).
+  Tailwind v4 CSS-first: tokens live as CSS variables, exposed to utilities via @theme.
+*/
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --bg: #fafaf8;
+  --surface: #ffffff;
+  --surface-soft: #f4f1ea;
+  --border: #ece9e2;
+  --border-strong: #d6d2c7;
+  --border-faint: #f2efe8;
+
+  /* Text */
+  --text: #1a1a1a;
+  --text-2: #4a4a4a;
+  --text-3: #76736c; /* darkened from #8a8780 to clear WCAG AA on --bg (Design review) */
+  --text-faint: #c4c0b5;
+
+  /* Accent — deep teal */
+  --accent: #2e4756;
+  --accent-soft: #e5eaee;
+  --accent-on: #ffffff;
+
+  /* Calendar colors — muted, never saturated */
+  --cal-personal: #2e4756; /* deep teal */
+  --cal-plan: #a87854;     /* warm clay */
+  --cal-erich: #6b7c8f;    /* muted slate */
+
+  --cal-personal-soft: #eceff2;
+  --cal-plan-soft: #f4ece5;
+  --cal-erich-soft: #eef1f4;
+
+  /* Today marker ring */
+  --today-ring: #b68843;
+
+  /* Focus ring */
+  --focus: #2e4756;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Warm-neutral darks, not pure black */
+  --bg: #16150f;
+  --surface: #1e1d16;
+  --surface-soft: #26241b;
+  --border: #322f24;
+  --border-strong: #45412f;
+  --border-faint: #25231a;
+
+  --text: #f3f1e9;
+  --text-2: #c8c4b6;
+  --text-3: #8f8b7c;
+  --text-faint: #5d5a4d;
+
+  /* Accent lifted for contrast on dark */
+  --accent: #7fa8be;
+  --accent-soft: #25323a;
+  --accent-on: #16150f;
+
+  /* Calendar colors lifted so chips read on dark surfaces */
+  --cal-personal: #7fa8be;
+  --cal-plan: #cd9c74;
+  --cal-erich: #9fb2c4;
+
+  --cal-personal-soft: #222d34;
+  --cal-plan-soft: #322820;
+  --cal-erich-soft: #262d34;
+
+  --today-ring: #d2a35c;
+  --focus: #7fa8be;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+  --color-border-base: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-faint: var(--border-faint);
+
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-text-faint: var(--text-faint);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-on: var(--accent-on);
+
+  --color-cal-personal: var(--cal-personal);
+  --color-cal-plan: var(--cal-plan);
+  --color-cal-erich: var(--cal-erich);
+  --color-cal-personal-soft: var(--cal-personal-soft);
+  --color-cal-plan-soft: var(--cal-plan-soft);
+  --color-cal-erich-soft: var(--cal-erich-soft);
+
+  --color-today-ring: var(--today-ring);
+
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+/* Visible, calm focus ring — keyboard navigation is first-class (PRD §6). */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Honor reduced-motion: motion is intentional, never imposed. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

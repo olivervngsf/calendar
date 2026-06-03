@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar · May 2026 · v0 first-pass</title>
+<style>
+:root {
+  color-scheme: light;
+  /* Editorial-calm palette */
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-soft: #F4F1EA;
+  --border: #ECE9E2;
+  --border-strong: #D6D2C7;
+  --border-faint: #F2EFE8;
+
+  --text: #1A1A1A;
+  --text-2: #4A4A4A;
+  --text-3: #8A8780;
+  --text-faint: #C4C0B5;
+
+  --accent: #2E4756;       /* deep teal — Viet calendar + UI accent */
+  --accent-soft: #E5EAEE;
+
+  /* Calendar colors — muted, never saturated */
+  --cal-viet: #2E4756;     /* deep teal */
+  --cal-plan: #A87854;     /* warm clay */
+  --cal-erich: #6B7C8F;    /* muted slate */
+
+  --cal-viet-soft: #ECEFF2;
+  --cal-plan-soft: #F4ECE5;
+  --cal-erich-soft: #EEF1F4;
+
+  /* Today */
+  --today-ring: #B68843;
+
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ── App bar ────────────────────────────── */
+.appbar {
+  display: grid;
+  grid-template-columns: 240px 1fr 240px;
+  align-items: center;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  gap: 24px;
+}
+
+.brand {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--text);
+}
+.brand .mark {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-right: 10px;
+  vertical-align: middle;
+  transform: translateY(-1px);
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+}
+.nav-arrows {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.iconbtn {
+  width: 28px; height: 28px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 4px;
+  color: var(--text-2);
+  font-family: var(--sans);
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.iconbtn:hover { background: var(--surface-soft); border-color: var(--border); }
+
+.todaybtn {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.005em;
+  transition: border-color 120ms ease;
+}
+.todaybtn:hover { border-color: var(--text-2); }
+
+.title-when {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  margin-left: 8px;
+}
+.title-when .subdued {
+  color: var(--text-3);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.appbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.viewswitch {
+  display: inline-flex;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.viewswitch button {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  padding: 6px 12px;
+  background: var(--surface);
+  border: none;
+  border-right: 1px solid var(--border);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.viewswitch button:last-child { border-right: none; }
+.viewswitch button:hover { background: var(--surface-soft); }
+.viewswitch button.active {
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.profile {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--cal-viet);
+  color: var(--surface);
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.02em;
+}
+
+/* ── Layout ─────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 320px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Sidebar ────────────────────────────── */
+.sidebar {
+  border-right: 1px solid var(--border);
+  background: var(--bg);
+  padding: 24px 20px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 12px;
+}
+
+.calendars ul { list-style: none; }
+.calendars li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--text);
+  cursor: default;
+}
+.cb {
+  width: 14px; height: 14px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 3px;
+  background: var(--surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cb::after {
+  content: "";
+  width: 7px; height: 4px;
+  border-left: 1.5px solid var(--surface);
+  border-bottom: 1.5px solid var(--surface);
+  transform: rotate(-45deg) translate(0px, -1px);
+  opacity: 0;
+}
+.cal.checked .cb { background: var(--accent); border-color: var(--accent); }
+.cal.checked .cb::after { opacity: 1; }
+.cal-viet .cb { background: var(--cal-viet); border-color: var(--cal-viet); }
+.cal-plan .cb { background: var(--cal-plan); border-color: var(--cal-plan); }
+.cal-erich .cb { background: var(--cal-erich); border-color: var(--cal-erich); }
+.cal-viet .cb::after,
+.cal-plan .cb::after,
+.cal-erich .cb::after { opacity: 1; }
+
+.cal-meta {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  min-width: 0;
+}
+.cal-name { font-size: 13px; }
+.cal-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+/* ── Mini month ─────────────────────────── */
+.minimonth {
+  border-top: 1px solid var(--border-faint);
+  padding-top: 22px;
+}
+.minimonth .mm-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.mm-dh {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-faint);
+  text-align: center;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 0 4px;
+}
+.mm-d {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+  text-align: center;
+  padding: 4px 0;
+  border-radius: 50%;
+  cursor: default;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mm-d.faded { color: var(--text-faint); }
+.mm-d.today {
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.cmdhint {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--text-3);
+  font-family: var(--mono);
+}
+.cmdhint kbd {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 1px 6px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  color: var(--text-2);
+}
+
+/* ── Account ────────────────────────────── */
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border-faint);
+}
+.account .avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--cal-viet);
+  color: var(--surface);
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.02em;
+}
+.account-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.account-name { font-size: 14px; font-weight: 600; letter-spacing: -0.005em; }
+.account-role {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* ── Canvas (main month grid) ───────────── */
+.canvas {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--bg);
+}
+
+.grid-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 28px 12px;
+  background: var(--bg);
+}
+.dh {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 1fr;
+  flex: 1;
+  padding: 0 28px 28px;
+  gap: 0;
+}
+
+.cell {
+  border-right: 1px solid var(--border-faint);
+  border-bottom: 1px solid var(--border-faint);
+  padding: 10px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 0;
+  position: relative;
+  background: var(--surface);
+}
+.cell:nth-child(7n) { border-right: none; }
+.grid > .cell:nth-last-child(-n+7) { border-bottom: none; }
+
+.cell.faded {
+  background: var(--bg);
+}
+.cell.faded .daynum { color: var(--text-faint); }
+
+.cell.today {
+  background: var(--surface);
+}
+
+.daynum {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  letter-spacing: 0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  margin-bottom: 2px;
+}
+.cell.today .daynum {
+  background: var(--accent);
+  color: var(--surface);
+  font-weight: 600;
+}
+
+.cell .events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ev {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 6px 3px 7px;
+  border-left: 2px solid var(--accent);
+  background: transparent;
+  border-radius: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--text);
+  cursor: default;
+  transition: background 120ms ease;
+}
+.ev:hover { background: var(--surface-soft); }
+.ev .time {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
+}
+.ev .name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ev.viet { border-left-color: var(--cal-viet); }
+.ev.plan { border-left-color: var(--cal-plan); }
+.ev.erich { border-left-color: var(--cal-erich); }
+
+.ev.allday {
+  background: var(--surface-soft);
+  border-radius: 3px;
+  padding: 4px 8px;
+  font-weight: 500;
+}
+.ev.plan.allday { background: var(--cal-plan-soft); }
+.ev.viet.allday { background: var(--cal-viet-soft); }
+.ev.erich.allday { background: var(--cal-erich-soft); }
+
+.cell .more {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  margin-left: 8px;
+  margin-top: 2px;
+  letter-spacing: 0.04em;
+}
+
+/* ── Notes panel ────────────────────────── */
+.notes {
+  border-left: 1px solid var(--border);
+  background: var(--bg);
+  padding: 24px 24px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.notes-head h2 {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.notes-scope {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.note-group h3 {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 12px;
+}
+
+.note {
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  margin-bottom: 8px;
+  cursor: default;
+  transition: border-color 120ms ease;
+}
+.note:hover { border-color: var(--border-strong); }
+.note .when {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.note .title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  letter-spacing: -0.005em;
+}
+.note .body {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+.note .tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  padding: 2px 7px;
+  background: var(--accent-soft);
+  border-radius: 3px;
+}
+
+.add-note {
+  margin-top: auto;
+  padding: 12px 14px;
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  border-radius: 5px;
+  color: var(--text-3);
+  font-family: var(--sans);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+.add-note:hover { border-color: var(--text-2); color: var(--text-2); }
+.add-note .plus {
+  font-family: var(--mono);
+  font-size: 14px;
+  margin-right: 8px;
+  color: var(--text-3);
+}
+
+/* ── Responsive ─────────────────────────── */
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 220px 1fr 280px; }
+  .appbar { grid-template-columns: 220px 1fr 220px; }
+}
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .appbar { grid-template-columns: 1fr; gap: 12px; padding: 14px 18px; }
+  .sidebar, .notes { display: none; }
+}
+
+/* Footer note (only visible on mockup) */
+.mockup-note {
+  position: fixed;
+  bottom: 14px; right: 18px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── App bar ───────────────────────── -->
+  <header class="appbar">
+    <div class="brand"><span class="mark"></span>calendar · v0.1</div>
+
+    <div class="navigation">
+      <div class="nav-arrows">
+        <button class="iconbtn" aria-label="Previous month">‹</button>
+        <button class="todaybtn">Today</button>
+        <button class="iconbtn" aria-label="Next month">›</button>
+      </div>
+      <span class="title-when">May<span class="subdued">&nbsp;2026</span></span>
+    </div>
+
+    <div class="appbar-right">
+      <div class="viewswitch" role="tablist" aria-label="View">
+        <button>D</button>
+        <button>W</button>
+        <button class="active" aria-current="true">M</button>
+        <button>Y</button>
+      </div>
+      <div class="profile" aria-label="Viet">V</div>
+    </div>
+  </header>
+
+  <!-- ── Three-pane layout ────────────────── -->
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <section class="account">
+        <div class="avatar">V</div>
+        <div class="account-meta">
+          <div class="account-name">Viet</div>
+          <div class="account-role">CEO · founder</div>
+        </div>
+      </section>
+
+      <section class="calendars">
+        <h3 class="section-label">Calendars</h3>
+        <ul>
+          <li class="cal cal-viet">
+            <span class="cb"></span>
+            <div class="cal-meta"><span class="cal-name">Personal</span><span class="cal-count">7</span></div>
+          </li>
+          <li class="cal cal-plan">
+            <span class="cb"></span>
+            <div class="cal-meta"><span class="cal-name">Plan</span><span class="cal-count">12</span></div>
+          </li>
+          <li class="cal cal-erich">
+            <span class="cb"></span>
+            <div class="cal-meta"><span class="cal-name">Shared · Erich</span><span class="cal-count">5</span></div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="minimonth">
+        <h3 class="section-label">May 2026</h3>
+        <div class="mm-grid">
+          <div class="mm-dh">S</div><div class="mm-dh">M</div><div class="mm-dh">T</div><div class="mm-dh">W</div><div class="mm-dh">T</div><div class="mm-dh">F</div><div class="mm-dh">S</div>
+          <div class="mm-d faded">26</div><div class="mm-d faded">27</div><div class="mm-d faded">28</div><div class="mm-d faded">29</div><div class="mm-d faded">30</div><div class="mm-d">1</div><div class="mm-d">2</div>
+          <div class="mm-d">3</div><div class="mm-d">4</div><div class="mm-d">5</div><div class="mm-d">6</div><div class="mm-d">7</div><div class="mm-d">8</div><div class="mm-d">9</div>
+          <div class="mm-d">10</div><div class="mm-d">11</div><div class="mm-d">12</div><div class="mm-d">13</div><div class="mm-d">14</div><div class="mm-d">15</div><div class="mm-d">16</div>
+          <div class="mm-d">17</div><div class="mm-d">18</div><div class="mm-d">19</div><div class="mm-d">20</div><div class="mm-d">21</div><div class="mm-d">22</div><div class="mm-d">23</div>
+          <div class="mm-d">24</div><div class="mm-d">25</div><div class="mm-d">26</div><div class="mm-d">27</div><div class="mm-d">28</div><div class="mm-d today">29</div><div class="mm-d">30</div>
+          <div class="mm-d">31</div><div class="mm-d faded">1</div><div class="mm-d faded">2</div><div class="mm-d faded">3</div><div class="mm-d faded">4</div><div class="mm-d faded">5</div><div class="mm-d faded">6</div>
+        </div>
+      </section>
+
+      <section class="minimonth">
+        <h3 class="section-label">June 2026</h3>
+        <div class="mm-grid">
+          <div class="mm-dh">S</div><div class="mm-dh">M</div><div class="mm-dh">T</div><div class="mm-dh">W</div><div class="mm-dh">T</div><div class="mm-dh">F</div><div class="mm-dh">S</div>
+          <div class="mm-d faded">31</div><div class="mm-d">1</div><div class="mm-d">2</div><div class="mm-d">3</div><div class="mm-d">4</div><div class="mm-d">5</div><div class="mm-d">6</div>
+          <div class="mm-d">7</div><div class="mm-d">8</div><div class="mm-d">9</div><div class="mm-d">10</div><div class="mm-d">11</div><div class="mm-d">12</div><div class="mm-d">13</div>
+          <div class="mm-d">14</div><div class="mm-d">15</div><div class="mm-d">16</div><div class="mm-d">17</div><div class="mm-d">18</div><div class="mm-d">19</div><div class="mm-d">20</div>
+          <div class="mm-d">21</div><div class="mm-d">22</div><div class="mm-d">23</div><div class="mm-d">24</div><div class="mm-d">25</div><div class="mm-d">26</div><div class="mm-d">27</div>
+          <div class="mm-d">28</div><div class="mm-d">29</div><div class="mm-d">30</div><div class="mm-d faded">1</div><div class="mm-d faded">2</div><div class="mm-d faded">3</div><div class="mm-d faded">4</div>
+        </div>
+      </section>
+
+      <div class="cmdhint">
+        <kbd>⌘</kbd><kbd>K</kbd>
+        <span>commands</span>
+      </div>
+    </aside>
+
+    <!-- Main month grid -->
+    <main class="canvas">
+      <div class="grid-header">
+        <div class="dh">Sun</div><div class="dh">Mon</div><div class="dh">Tue</div><div class="dh">Wed</div><div class="dh">Thu</div><div class="dh">Fri</div><div class="dh">Sat</div>
+      </div>
+      <div class="grid">
+
+        <!-- Row 1 -->
+        <div class="cell faded"><span class="daynum">26</span></div>
+        <div class="cell faded"><span class="daynum">27</span></div>
+        <div class="cell faded"><span class="daynum">28</span></div>
+        <div class="cell faded"><span class="daynum">29</span></div>
+        <div class="cell faded"><span class="daynum">30</span>
+          <div class="events"><div class="ev viet"><span class="time">09:30</span><span class="name">Coffee · Sarah</span></div></div>
+        </div>
+        <div class="cell"><span class="daynum">1</span></div>
+        <div class="cell"><span class="daynum">2</span></div>
+
+        <!-- Row 2 -->
+        <div class="cell"><span class="daynum">3</span></div>
+        <div class="cell"><span class="daynum">4</span>
+          <div class="events">
+            <div class="ev plan"><span class="time">10:00</span><span class="name">Sprint planning</span></div>
+            <div class="ev viet"><span class="time">11:00</span><span class="name">Therapy</span></div>
+          </div>
+        </div>
+        <div class="cell"><span class="daynum">5</span>
+          <div class="events"><div class="ev erich"><span class="time">11:00</span><span class="name">1:1 · Erich</span></div></div>
+        </div>
+        <div class="cell"><span class="daynum">6</span>
+          <div class="events"><div class="ev plan"><span class="time">14:00</span><span class="name">Design crit</span></div></div>
+        </div>
+        <div class="cell"><span class="daynum">7</span></div>
+        <div class="cell"><span class="daynum">8</span>
+          <div class="events"><div class="ev plan"><span class="time">16:00</span><span class="name">Demo</span></div></div>
+        </div>
+        <div class="cell"><span class="daynum">9</span></div>
+
+        <!-- Row 3 -->
+        <div class="cell"><span class="daynum">10</span></div>
+        <div class="cell"><span class="daynum">11</span>
+          <div class="events">
+            <div class="ev plan"><span class="time">10:00</span><span class="name">Sprint planning</span></div>
+            <div class="ev viet"><span class="time">11:00</span><span class="name">Therapy</span></div>
+          </div>
+        </div>
+        <div class="cell"><span class="daynum">12</span>
+          <div class="events"><div class="ev erich"><span class="time">11:00</span><span class="name">1:1 · Erich</span></div></div>
+        </div>
+        <div class="cell"><span class="daynum">13</span>
+          <div class="events"><div class="ev viet"><span class="time">07:00</span><span class="name">Run · 5k</span></div></div>
+        </div>
+        <div class="cell"><span class="daynum">14</span></div>
+        <div class="cell"><span class="daynum">15</span>
+          <div class="events"><div class="ev plan"><span class="time">16:00</span><span class="name">Demo</span></div></div>
+        </div>
+        <div class="cell"><span class="daynum">16</span></div>
+
+        <!-- Row 4 -->
+        <div class="cell"><span class="daynum">17</span></div>
+        <div class="cell"><span class="daynum">18</span>
+          <div class="events">
+            <div class="ev plan"><span class="time">10:00</span><span class="name">Sprint planning</span></div>
+            <div class="ev viet"><span class="time">11:00</span><span class="name">Therapy</span></div>
+          </div>
+        </div>
+        <div class="cell"><span class="daynum">19</span>
+          <div class="events">
+            <div class="ev erich"><span class="time">11:00</span><span class="name">1:1 · Erich</span></div>
+            <div class="ev plan allday"><span class="name">Calendar app · build sprint</span></div>
+          </div>
+        </div>
+        <div class="cell"><span class="daynum">20</span>
+          <div class="events"><div class="ev plan allday"><span class="name">Build sprint</span></div></div>
+        </div>
+        <div class="cell"><span class="daynum">21</span>
+          <div class="events">
+            <div class="ev plan allday"><span class="name">Build sprint</span></div>
+            <div class="ev erich"><span class="time">15:00</span><span class="name">Design review · Erich</span></div>
+          </div>
+        </div>
+        <div class="cell"><span class="daynum">22</span>
+          <div class="events">
+            <div class="ev plan allday"><span class="name">Build sprint</span></div>
+            <div class="ev plan"><span class="time">16:00</span><span class="name">Demo</span></div>
+          </div>
+        </div>
+        <div class="cell"><span class="daynum">23</span></div>
+
+        <!-- Row 5 -->
+        <div class="cell"><span class="daynum">24</span></div>
+        <div class="cell"><span class="daynum">25</span>
+          <div class="events">
+            <div class="ev plan"><span class="time">10:00</span><span class="name">Sprint planning</span></div>
+            <div class="ev viet"><span class="time">11:00</span><span class="name">Therapy</span></div>
+          </div>
+        </div>
+        <div class="cell"><span class="daynum">26</span>
+          <div class="events"><div class="ev erich"><span class="time">11:00</span><span class="name">1:1 · Erich</span></div></div>
+        </div>
+        <div class="cell"><span class="daynum">27</span>
+          <div class="events">
+            <div class="ev viet"><span class="time">07:00</span><span class="name">Run · 5k</span></div>
+            <div class="ev plan"><span class="time">14:00</span><span class="name">Plan Q3</span></div>
+          </div>
+        </div>
+        <div class="cell"><span class="daynum">28</span></div>
+        <div class="cell today">
+          <span class="daynum">29</span>
+          <div class="events">
+            <div class="ev plan allday"><span class="name">v0.1 kickoff · build sprint</span></div>
+            <div class="ev viet"><span class="time">18:00</span><span class="name">Strategist · challenge aesthetics</span></div>
+          </div>
+        </div>
+        <div class="cell"><span class="daynum">30</span>
+          <div class="events"><div class="ev viet"><span class="time">08:00</span><span class="name">Park run</span></div></div>
+        </div>
+
+        <!-- Row 6 -->
+        <div class="cell"><span class="daynum">31</span></div>
+        <div class="cell faded"><span class="daynum">1</span></div>
+        <div class="cell faded"><span class="daynum">2</span></div>
+        <div class="cell faded"><span class="daynum">3</span></div>
+        <div class="cell faded"><span class="daynum">4</span></div>
+        <div class="cell faded"><span class="daynum">5</span></div>
+        <div class="cell faded"><span class="daynum">6</span></div>
+
+      </div>
+    </main>
+
+    <!-- Notes panel -->
+    <aside class="notes">
+      <header class="notes-head">
+        <h2>Notes</h2>
+        <div class="notes-scope">May 2026 · this month</div>
+      </header>
+
+      <section class="note-group">
+        <h3>Decision log</h3>
+
+        <article class="note">
+          <div class="tag">decision · D009</div>
+          <div class="when">2026-05-29</div>
+          <div class="title">Lock Vision + Mission in strategy.md</div>
+          <div class="body">World-class craft, calm pace, every minute earned through clarity — not engagement. Beat Apple on calm, Google on warmth.</div>
+        </article>
+
+        <article class="note">
+          <div class="tag">decision · D008</div>
+          <div class="when">2026-05-29</div>
+          <div class="title">Hire Research agent</div>
+          <div class="body">Scout + synthesize, no judging. Tripwire: kill if 0 invocations in 3 sessions.</div>
+        </article>
+
+        <article class="note">
+          <div class="tag">decision · D001</div>
+          <div class="when">2026-05-29</div>
+          <div class="title">v0.1 = UI prototype with mock data</div>
+          <div class="body">No real OAuth, no real DB writes. UI craft + mock-data narrative. Real integration is v0.2.</div>
+        </article>
+      </section>
+
+      <section class="note-group">
+        <h3>Daily log</h3>
+
+        <article class="note">
+          <div class="tag">today</div>
+          <div class="when">2026-05-29 · Friday</div>
+          <div class="title">v0.1 kickoff</div>
+          <div class="body">Scaffolded workspace, locked stack + scope, hired 4-agent bench (Engineer · Strategist · Design · Research), drafted strategy + first-pass Month view.</div>
+        </article>
+
+        <article class="note">
+          <div class="when">2026-05-22 · Friday</div>
+          <div class="title">Sketches</div>
+          <div class="body">Started thinking about the 3-pane layout. Time-scoped notes feels right. Apple is beautiful but cold; Google is dense but utility-first.</div>
+        </article>
+      </section>
+
+      <button class="add-note">
+        <span class="plus">+</span>New note for May 2026
+      </button>
+    </aside>
+
+  </div>
+
+</div>
+
+<div class="mockup-note">v0 · mock data · 2026-05-29</div>
+
+</body>
+</html>
