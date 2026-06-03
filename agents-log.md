@@ -16,6 +16,20 @@ Every agent review, decision challenge, or critique gets one entry here. Newest 
 
 ---
 
+## 2026-05-30 12:10 — Design
+**Target:** Agenda (list) Week style + Settings switch (D028).
+**Verdict:** Ship
+
+**Findings:**
+- The reference was adapted, not aped — exactly the brief ("prioritize our look"). Mono day numbers, our calendar-color bars, 24h mono times, gold today *dot* (vs the reference's red), dashed `border-faint` separators. Reads unmistakably as our product in a new shape.
+- Airy and calm: generous row rhythm, "No events" stated plainly (voice), event titles tint to accent on hover. Good restraint.
+- Consistent system: a second view-style toggle that mirrors the Year pattern (D021); folding both onto one `SegmentRow` keeps Settings tidy and scalable. Interactions match the app (event→edit, day→Day).
+
+**Accessibility:** Pass — date and events are labelled buttons; the agenda is keyboard-reachable and screen-reader-linear (arguably more so than the time grid).
+**Next:** None. If a third Week style is ever proposed, push back unless it earns its place — two is plenty.
+
+---
+
 ## 2026-05-30 11:25 — Design
 **Target:** Dialog opens on title + ⌘↵ to save (D027).
 **Verdict:** Ship

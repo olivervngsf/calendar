@@ -95,13 +95,13 @@
 ---
 
 ## Phase 7 — Ship
-- [ ] Deploy to Vercel
+- [x] Deploy to Vercel — **https://calendar-chi-two-67.vercel.app** (GitHub-connected, auto-deploy)
 - [ ] Custom domain (optional)
 - [ ] OG image + meta tags
 - [ ] Demo video / screenshots for portfolio
 - [ ] Design review pass (use design-review skill)
 
-**Exit:** Public URL. Linkable. Embeddable.
+**Exit:** ✅ Public URL — linkable. Repo: github.com/olivervngsf/calendar.
 
 ---
 

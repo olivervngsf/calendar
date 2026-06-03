@@ -4,6 +4,40 @@ Daily working notes. Newest at top. What we did, what worked, what's next.
 
 ---
 
+## 2026-05-29 — Friday — Agenda week style (D028)
+
+**Did:** Added a second Week layout — an **agenda/list** style (from a Google-style reference) rebuilt in
+our look: mono day numbers, our calendar-color bars, 24h mono times, gold today dot, "No events"
+placeholders, dashed day separators. Switchable in **Settings → Week view** (Timeline / Agenda, persisted).
+Refactored Year + Week segmented controls onto a shared `SegmentRow`. Same interactions: event → edit,
+day number → Day view.
+
+**Verified:** build clean + static; fresh-server console clean. Agenda renders for the week; Sprint
+planning → "Edit event"; day 26 → `?v=d&d=2026-05-26`. Persists.
+
+**Note:** local repo now ahead of the live deploy by D025–D028 + this — push to auto-deploy when ready.
+
+**Next:** P1 (persist DBT-02, delete undo DBT-01); push to refresh the live site.
+
+---
+
+## 2026-05-29 — Friday — Shipped: GitHub + Vercel (v0.1 is live)
+
+**Did:**
+- Pushed the project (app + all product/working docs + README) to **github.com/olivervngsf/calendar**
+  (public, `main`).
+- Deployed to **Vercel production** → **https://calendar-chi-two-67.vercel.app**. Linked the dir to a
+  project named `calendar` (the auto-name from "Calendar app" was invalid — spaces/case) and **connected
+  the GitHub repo**, so every push to `main` now auto-deploys. No env vars (mock data).
+- Verified live: HTTP 200, SSR renders (calendar / May 2026 / Notes / Decision log), edge-cached.
+
+**This completes Phase 7's core exit — public, linkable URL.**
+
+**Next:** P1 polish for the live demo — persist store across reload (DBT-02), delete confirm/undo (DBT-01);
+then optional OG image + custom domain.
+
+---
+
 ## 2026-05-29 — Friday — Dialogs open on the title; ⌘↵ saves (D027)
 
 **Did:** Opening the event editor focused the close (×) button (first in DOM), not the title. Fixed

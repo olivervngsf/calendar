@@ -4,6 +4,29 @@ Every meaningful decision in this project. Newest at top.
 
 ---
 
+## 2026-05-29 — D028: Second Week style — agenda (list), switchable in Settings
+
+**Context:** Viet shared a Google-style agenda/list week layout and wanted it as an option, "always
+prioritize our look and feel."
+
+**Choice:** Add `weekStyle: "timeline" | "agenda"` (persisted) with a segmented control in Settings.
+`WeekView` branches: `timeline` → the existing time grid; `agenda` → new `WeekAgenda` — one row per day
+of the week (mono day number + month + weekday on the left, events listed with calendar-color bars,
+"All day"/`HH:MM – HH:MM` times, "No events" placeholder, dashed day separators).
+
+**Why / "our look" over the reference:**
+- Adapted, not copied: **our tokens** throughout — mono numbers (not serif), our calendar colors on the
+  bars, 24h mono times (not "8 AM"), gold **today dot** (not red), `--accent` focus marker, dashed
+  `--border-faint` separators. The *structure* is the reference; the *skin* is ours.
+- Consistent with the Year two-style pattern (D021) — same persisted-preference + segmented-control model.
+  Refactored both Year + Week controls onto a shared `SegmentRow`.
+- Same interactions as the rest of the app: click an event → edit; click a day number → Day view.
+
+**How to apply:** `components/calendar/WeekAgenda.tsx`; branch in `WeekView.tsx`; `weekStyle` in
+`SettingsProvider`; `SegmentRow` in `SettingsDialog`.
+
+---
+
 ## 2026-05-29 — D027: Dialogs focus the title field on open; ⌘/Ctrl+Enter saves
 
 **Context:** Opening the event editor put focus on the close (×) button (it's first in the DOM), so users

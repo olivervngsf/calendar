@@ -4,7 +4,9 @@ import { useMemo } from "react";
 import type { CalendarEvent, CalendarId } from "@/lib/types";
 import { getWeekDays, isoDate } from "@/lib/date";
 import { TODAY } from "@/lib/mock-data";
+import { useSettings } from "@/components/providers/SettingsProvider";
 import { TimeGridView } from "./TimeGridView";
+import { WeekAgenda } from "./WeekAgenda";
 
 interface Props {
   anchor: Date;
@@ -14,8 +16,27 @@ interface Props {
   onSelectDay?: (iso: string) => void;
 }
 
-export function WeekView({ anchor, visible, onEventClick, onSlotClick, onSelectDay }: Props) {
+export function WeekView({
+  anchor,
+  visible,
+  onEventClick,
+  onSlotClick,
+  onSelectDay,
+}: Props) {
+  const { weekStyle } = useSettings();
   const days = useMemo(() => getWeekDays(anchor, TODAY), [anchor]);
+
+  if (weekStyle === "agenda") {
+    return (
+      <WeekAgenda
+        anchor={anchor}
+        visible={visible}
+        onEventClick={onEventClick}
+        onSelectDay={onSelectDay}
+      />
+    );
+  }
+
   return (
     <TimeGridView
       days={days}

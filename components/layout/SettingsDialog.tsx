@@ -2,7 +2,11 @@
 
 import { Dialog } from "@/components/ui/Dialog";
 import { Toggle } from "@/components/ui/Toggle";
-import { useSettings, type YearStyle } from "@/components/providers/SettingsProvider";
+import {
+  useSettings,
+  type YearStyle,
+  type WeekStyle,
+} from "@/components/providers/SettingsProvider";
 
 interface Props {
   onClose: () => void;
@@ -29,14 +33,71 @@ function SettingRow({ label, description, checked, onChange }: SettingRowProps) 
   );
 }
 
+function SegmentRow<T extends string>({
+  label,
+  description,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  description: string;
+  value: T;
+  options: { value: T; label: string }[];
+  onChange: (value: T) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-6 py-3">
+      <div className="min-w-0">
+        <div className="text-[13px] font-medium text-text">{label}</div>
+        <div className="mt-0.5 text-xs leading-relaxed text-text-3">
+          {description}
+        </div>
+      </div>
+      <div className="inline-flex shrink-0 overflow-hidden rounded border border-border-strong">
+        {options.map((o, i) => {
+          const active = value === o.value;
+          return (
+            <button
+              key={o.value}
+              type="button"
+              aria-pressed={active}
+              onClick={() => onChange(o.value)}
+              className={
+                "px-3 py-1.5 text-xs font-medium transition-colors " +
+                (i > 0 ? "border-l border-border-base " : "") +
+                (active
+                  ? "bg-accent text-accent-on "
+                  : "bg-surface text-text-2 hover:bg-surface-soft ")
+              }
+            >
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const WEEK_STYLES: { value: WeekStyle; label: string }[] = [
+  { value: "timeline", label: "Timeline" },
+  { value: "agenda", label: "Agenda" },
+];
 const YEAR_STYLES: { value: YearStyle; label: string }[] = [
   { value: "grid", label: "Calendar" },
   { value: "columns", label: "Columns" },
 ];
 
 export function SettingsDialog({ onClose }: Props) {
-  const { showWeekNumbers, setShowWeekNumbers, yearStyle, setYearStyle } =
-    useSettings();
+  const {
+    showWeekNumbers,
+    setShowWeekNumbers,
+    yearStyle,
+    setYearStyle,
+    weekStyle,
+    setWeekStyle,
+  } = useSettings();
 
   return (
     <Dialog title="Settings" onClose={onClose}>
@@ -52,36 +113,21 @@ export function SettingsDialog({ onClose }: Props) {
             onChange={setShowWeekNumbers}
           />
 
-          <div className="flex items-center justify-between gap-6 py-3">
-            <div className="min-w-0">
-              <div className="text-[13px] font-medium text-text">Year view</div>
-              <div className="mt-0.5 text-xs leading-relaxed text-text-3">
-                Twelve mini-months, or a linear month-by-month planner.
-              </div>
-            </div>
-            <div className="inline-flex shrink-0 overflow-hidden rounded border border-border-strong">
-              {YEAR_STYLES.map((s, i) => {
-                const active = yearStyle === s.value;
-                return (
-                  <button
-                    key={s.value}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() => setYearStyle(s.value)}
-                    className={
-                      "px-3 py-1.5 text-xs font-medium transition-colors " +
-                      (i > 0 ? "border-l border-border-base " : "") +
-                      (active
-                        ? "bg-accent text-accent-on "
-                        : "bg-surface text-text-2 hover:bg-surface-soft ")
-                    }
-                  >
-                    {s.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <SegmentRow
+            label="Week view"
+            description="A time-grid timeline, or an agenda list of the week's days."
+            value={weekStyle}
+            options={WEEK_STYLES}
+            onChange={setWeekStyle}
+          />
+
+          <SegmentRow
+            label="Year view"
+            description="Twelve mini-months, or a linear month-by-month planner."
+            value={yearStyle}
+            options={YEAR_STYLES}
+            onChange={setYearStyle}
+          />
         </div>
       </section>
     </Dialog>

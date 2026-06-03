@@ -52,7 +52,7 @@ matching feature status. Agents update this page as part of their critical path 
 | No-flash theme bootstrap | ✅ | External `public/theme-init.js` (D014) |
 | Mock data layer | ✅ | `lib/mock-data.ts` (D012) |
 | In-memory data store | ✅ | `DataProvider` Context (D014) · resets on reload (DBT-02) |
-| Deploy to Vercel | ⬜ | Build is Vercel-ready |
+| Deploy to Vercel | ✅ | Live: calendar-chi-two-67.vercel.app · GitHub-connected (auto-deploy) |
 
 ## App shell
 | Feature | Status | Notes |
@@ -74,7 +74,8 @@ matching feature status. Agents update this page as part of their critical path 
 | Month view | ✅ | Real date-grid math |
 | Mini-month (current + next) | ✅ | Sidebar · pick a date → moves focus, keeps view (D024) |
 | Focus day vs zoom model + selected-day marker | ✅ | D024 — today = ring, focus = soft fill |
-| Week view (time slots) | ✅ | Shared time grid (D017) |
+| Week view — timeline (time slots) | ✅ | Shared time grid (D017) |
+| Week view — agenda (list) | ✅ | D028 — switch in Settings |
 | Day view | ✅ | Shared time grid (D017) |
 | View-aware nav + title (←/→ by month/week/day) | ✅ | D017 |
 | Overlapping events lane-packed | ✅ | `lib/timegrid.ts` |
@@ -115,6 +116,7 @@ matching feature status. Agents update this page as part of their critical path 
 | Persisted globally (localStorage) | ✅ | `SettingsProvider` |
 | Open via gear + `,` shortcut | ✅ | |
 | Toggle — show week numbers | ✅ | Across M (row gutter) · D/W (header) · Y grid (D026) |
+| Choice — week view style (timeline / agenda) | ✅ | D028 |
 | Choice — year view style (grid / columns) | ✅ | D021 |
 | (room for more settings) | ⬜ | Group into sections as they grow |
 

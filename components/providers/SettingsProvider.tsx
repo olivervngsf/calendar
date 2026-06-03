@@ -13,15 +13,18 @@ import {
 // and theme (useTheme) — this is the home for "optimize globally" toggles.
 
 export type YearStyle = "grid" | "columns";
+export type WeekStyle = "timeline" | "agenda";
 
 interface Settings {
   showWeekNumbers: boolean;
   yearStyle: YearStyle;
+  weekStyle: WeekStyle;
 }
 
 const DEFAULTS: Settings = {
   showWeekNumbers: false,
   yearStyle: "grid",
+  weekStyle: "timeline",
 };
 
 const STORAGE_KEY = "settings";
@@ -29,6 +32,7 @@ const STORAGE_KEY = "settings";
 interface SettingsStore extends Settings {
   setShowWeekNumbers: (value: boolean) => void;
   setYearStyle: (value: YearStyle) => void;
+  setWeekStyle: (value: WeekStyle) => void;
 }
 
 const SettingsContext = createContext<SettingsStore | null>(null);
@@ -65,9 +69,14 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     [settings, persist],
   );
 
+  const setWeekStyle = useCallback(
+    (value: WeekStyle) => persist({ ...settings, weekStyle: value }),
+    [settings, persist],
+  );
+
   const value = useMemo<SettingsStore>(
-    () => ({ ...settings, setShowWeekNumbers, setYearStyle }),
-    [settings, setShowWeekNumbers, setYearStyle],
+    () => ({ ...settings, setShowWeekNumbers, setYearStyle, setWeekStyle }),
+    [settings, setShowWeekNumbers, setYearStyle, setWeekStyle],
   );
 
   return (
