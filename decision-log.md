@@ -4,6 +4,32 @@ Every meaningful decision in this project. Newest at top.
 
 ---
 
+## 2026-05-29 — D029: Calendar Sets — saved, named calendar combinations
+
+**Context:** Viet wanted users to create a custom lens combining calendars (e.g. "Personal" = Personal +
+Shared·Erich). Discussed with Strategist + Design (agents-log 2026-05-30). Term chosen: **"Sets"** (avoids
+clashing with the D/W/M/Y "view").
+
+**Choice:** A persisted list of `CalendarSet { id, name, calendarIds[] }`. The sidebar gains a **SETS**
+section above Calendars: "All calendars" + each saved set. Clicking a set applies its calendars to the
+current visibility (`applyCalendars`); the Calendars checkboxes update to match. Manually toggling a
+calendar drops to an unnamed "Custom" state (no set highlighted). Create/edit/delete via a dialog (name +
+calendar checklist). Seeded **Personal** (Personal + Shared·Erich) and **Work** (Plan + Shared·Erich).
+
+**Why / scope guardrail (Strategist):**
+- It's a **saved filter**, not a new surface — on-thesis (less noise, fewer clicks for the ≥2-calendar user).
+- Held strictly to "name + which calendars" — **no** per-set layouts, colors, sorting, or sharing (that's
+  project-manager / team-scheduler drift, `strategy §5`). Two examples seeded; resist a third feature past
+  the line.
+
+**How to apply:**
+- Type in `lib/types.ts`; persisted `calendarSets` + CRUD in `SettingsProvider`; `applyCalendars` in
+  `useCalendarState`; sidebar SETS section + active-set detection in `Sidebar`; `CalendarSetDialog`
+  (rendered at `AppShell` root — *not* inside the transformed panel, where `position: fixed` would break).
+- Active set is **derived** by matching `visible` to each set's ids (no separate active-id state).
+
+---
+
 ## 2026-05-29 — D028: Second Week style — agenda (list), switchable in Settings
 
 **Context:** Viet shared a Google-style agenda/list week layout and wanted it as an option, "always

@@ -4,6 +4,25 @@ Daily working notes. Newest at top. What we did, what worked, what's next.
 
 ---
 
+## 2026-05-29 — Friday — Calendar Sets (D029)
+
+**Did:** Built **Calendar Sets** — saved, named calendar combinations (Viet's ask: a "Personal" lens =
+Personal + Shared·Erich). Discussed scope/flow with Strategist (saved-filter, not a surface — guardrail
+against feature creep) + Design (placement, create/apply/edit flow). Term: **Sets** (avoids clashing with
+D/W/M/Y "view").
+- Sidebar **SETS** section above Calendars: All calendars + saved sets; click to apply (sets visibility);
+  active set derived by matching; manual toggle → "Custom". `+` / pencil → create/edit dialog (name +
+  calendar checklist). Persisted; seeded **Personal** + **Work**.
+- `CalendarSet` type; `calendarSets` CRUD in SettingsProvider; `applyCalendars` in calendar state;
+  `CalendarSetDialog` rendered at AppShell root (so `position:fixed` isn't trapped by the panel transform).
+
+**Verified:** build clean + static; fresh-server console clean. Seeds show; Work → Plan+Erich (grid +
+checkboxes update, active marked); create "Just me" → appears + persists; edit → delete removes it.
+
+**Next:** push (auto-deploy); then P1 (persist DBT-02, delete undo DBT-01).
+
+---
+
 ## 2026-05-29 — Friday — Agenda week style (D028)
 
 **Did:** Added a second Week layout — an **agenda/list** style (from a Google-style reference) rebuilt in

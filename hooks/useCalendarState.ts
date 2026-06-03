@@ -91,6 +91,11 @@ export function useCalendarState() {
     });
   }, []);
 
+  /** Apply a set of calendars wholesale (used by saved Calendar Sets). */
+  const applyCalendars = useCallback((ids: CalendarId[]) => {
+    setVisible(new Set(ids));
+  }, []);
+
   return useMemo(
     () => ({
       view,
@@ -98,11 +103,22 @@ export function useCalendarState() {
       anchor,
       visible,
       toggleCalendar,
+      applyCalendars,
       goToday,
       goPrev,
       goNext,
       goToDate,
     }),
-    [view, anchor, visible, toggleCalendar, goToday, goPrev, goNext, goToDate],
+    [
+      view,
+      anchor,
+      visible,
+      toggleCalendar,
+      applyCalendars,
+      goToday,
+      goPrev,
+      goNext,
+      goToDate,
+    ],
   );
 }

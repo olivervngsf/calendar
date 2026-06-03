@@ -89,6 +89,7 @@ matching feature status. Agents update this page as part of their critical path 
 | Feature | Status | Notes |
 |---|---|---|
 | Calendar list + visibility toggles | ✅ | |
+| Calendar Sets (saved combinations) | ✅ | D029 — create/edit/delete; seeded Personal/Work |
 | Color system per calendar | ✅ | |
 | Multi-calendar overlay (Month) | ✅ | Conflict-overlap polish pending |
 | Event — create | ✅ | Button · `N` · click day · click hour slot; opens on title, ⌘↵ saves (D027) |

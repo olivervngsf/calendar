@@ -14,6 +14,13 @@ export interface Calendar {
   colorVar: string;
 }
 
+/** A saved, named combination of calendars (a lens you can flip to). */
+export interface CalendarSet {
+  id: string;
+  name: string;
+  calendarIds: CalendarId[];
+}
+
 export interface CalendarEvent {
   id: string;
   calendarId: CalendarId;

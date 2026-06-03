@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { CalendarEvent, Note } from "@/lib/types";
+import type { CalendarEvent, CalendarSet, Note } from "@/lib/types";
 import { useCalendarState } from "@/hooks/useCalendarState";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { isoDate, noteScopeFor } from "@/lib/date";
@@ -16,6 +16,7 @@ import { WeekView } from "@/components/calendar/WeekView";
 import { DayView } from "@/components/calendar/DayView";
 import { YearView } from "@/components/calendar/YearView";
 import { EventDialog } from "@/components/calendar/EventDialog";
+import { CalendarSetDialog } from "@/components/calendar/CalendarSetDialog";
 import { QuickAddDialog } from "@/components/calendar/QuickAddDialog";
 import { NoteDialog } from "@/components/notes/NoteDialog";
 
@@ -33,6 +34,7 @@ export function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [notesOpen, setNotesOpen] = useState(true);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [setDialog, setSetDialog] = useState<{ set?: CalendarSet } | null>(null);
   const [eventDialog, setEventDialog] = useState<EventDialogState | null>(null);
   const [noteDialog, setNoteDialog] = useState<NoteDialogState | null>(null);
 
@@ -134,6 +136,9 @@ export function AppShell() {
               anchor={cal.anchor}
               visible={cal.visible}
               onToggle={cal.toggleCalendar}
+              onApplyCalendars={cal.applyCalendars}
+              onNewSet={() => setSetDialog({})}
+              onEditSet={(set) => setSetDialog({ set })}
               onPickDate={handleFocusDate}
               selectedIso={isoDate(cal.anchor)}
             />
@@ -224,6 +229,14 @@ export function AppShell() {
         <QuickAddDialog
           onClose={() => setQuickAddOpen(false)}
           onCreated={(iso) => cal.goToDate(iso)}
+        />
+      )}
+
+      {setDialog && (
+        <CalendarSetDialog
+          set={setDialog.set}
+          onApply={cal.applyCalendars}
+          onClose={() => setSetDialog(null)}
         />
       )}
 

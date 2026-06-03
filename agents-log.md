@@ -16,7 +16,55 @@ Every agent review, decision challenge, or critique gets one entry here. Newest 
 
 ---
 
-## 2026-05-30 12:10 — Design
+## 2026-05-30 13:30 — Engineer
+**Target:** Calendar Sets build (D029) — `CalendarSet` type, `calendarSets` CRUD, `applyCalendars`, `Sidebar` SETS section, `CalendarSetDialog`.
+**Verdict:** Ship
+
+**Findings:**
+- Clean separation: sets are *preferences* → live in `SettingsProvider` (persisted), not the session calendar state. `applyCalendars` mutates only visibility. No new coupling.
+- **Active set is derived** (match `visible` to ids), not a stored id — one source of truth, can't desync. No `any`; back-compat via `{...DEFAULTS}` merge so the seeds appear for fresh users.
+- **Correct call: dialog rendered at AppShell root, not in the Sidebar.** The sidebar sits inside the panel's `translate-x` wrapper; a `position:fixed` modal there would be trapped by the transform. Matches every other dialog.
+- Reuses the `Dialog` primitive (autofocus title, ⌘↵ save, entry motion). Build static, fresh-console clean.
+
+**Next:** When real persistence lands (DBT-02), sets already persist — events/notes should join them.
+
+## 2026-05-30 13:25 — Design
+**Target:** Calendar Sets — sidebar UX (D029).
+**Verdict:** Ship
+
+**Findings:**
+- The flow reads as intended: SETS above the raw calendar toggles (lens above its controls), filled-dot active marker echoing the calendar checkboxes, quiet `+` and hover-pencil (no per-row clutter). "All calendars" as the always-present default — no empty-state nag.
+- Applying a set visibly updates the checkboxes *and* the grid — the cause/effect is legible. Manual toggle → "Custom" (nothing highlighted) is honest.
+- Create/edit dialog matches the rest (autofocus name, color-swatch checklist mirroring the sidebar). Editorial voice intact.
+
+**Accessibility:** Pass — sets are labelled buttons with `aria-current`; pencil reachable via `focus-visible`.
+**Next:** None.
+
+## 2026-05-30 12:45 — Strategist
+**Target:** "Custom views" — let users save a named combination of calendars (e.g. "Personal" = Personal + Shared·Erich).
+**Verdict:** Approved — with a tight definition
+
+**Reasoning:**
+- It's a **saved filter**, not a new surface. Reframe it that way and it's cheap, craft-y, and on-thesis (less noise, less click-depth — `Research §insights`). A power user carrying ≥2 calendars wants to flip between lenses ("just my life", "just work") without re-toggling. Real job.
+- **Anti-goal check — passes**, *if* scoped to "a named set of calendars." It must NOT grow into per-view layouts, per-view colors, sharing, or a "workspace" — that's project-manager/team drift (`strategy §5`). One concept: name + which calendars. Full stop.
+- Naming risk: "view" already means D/W/M/Y (zoom). Two meanings of "view" in one product is a tax. Recommend a distinct word — **"Calendar sets"** or **"Groups"** — internally and in the UI, even if Viet thinks of them as views.
+- Cheapest falsification: seed 1–2 sets, see if flipping between them feels better than the checkboxes. If it doesn't earn its space in the sidebar, cut it.
+
+**Next:** Build as named calendar sets (name + member calendars), persisted; seed examples; resist every feature past that line.
+
+## 2026-05-30 12:50 — Design
+**Target:** UX flow for custom calendar sets.
+**Verdict:** Ship with notes (build the flow below)
+
+**Findings:**
+- **Placement:** a "GROUPS" (or "VIEWS") section *above* "Calendars" in the sidebar — the lens sits above the raw toggles it controls. Default row "All calendars" (everything on). Custom sets below; active one marked (accent dot/fill, like the calendar checkboxes).
+- **Create:** a small "+" by the section header → reuse the `Dialog` primitive: name field (autofocus, per D027) + a checklist of calendars (the same color swatches as the sidebar). Save / Cancel. New set becomes active.
+- **Apply:** clicking a set sets calendar visibility to its members; the Calendars checkboxes below update to match. Manually toggling a calendar drops you to an unnamed "Custom" state (no set highlighted) — honest, not sticky.
+- **Edit/Delete:** click an active set's name (or a hover affordance) → same dialog with a Delete. Keep it quiet — no per-row buttons cluttering the list.
+- **Voice/empty state:** before any set exists, show only "All calendars" — no empty-state nag.
+- Must clear `aria-current` on the active set; sets are buttons.
+
+**Next:** Confirm the term (Groups vs Views) with Viet, then build: a persisted `calendarSets` store + sidebar section + a create/edit dialog reusing `Dialog`.
 **Target:** Agenda (list) Week style + Settings switch (D028).
 **Verdict:** Ship
 
