@@ -8,7 +8,7 @@ import { TimeEventBlock } from "./TimeEventBlock";
 interface Props {
   iso: string;
   events: CalendarEvent[];
-  onEventClick?: (event: CalendarEvent) => void;
+  onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
   onSlotClick?: (iso: string, hour: number) => void;
   /** Hide the right border on the last column. */
   last?: boolean;

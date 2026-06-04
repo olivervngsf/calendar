@@ -4,6 +4,35 @@ Every meaningful decision in this project. Newest at top.
 
 ---
 
+## 2026-05-29 — D032: Event click = detail (not edit); ⌘-click multi-select + bulk delete
+
+**Context:** Viet's insight: clicking an event should let you *read* it, not jump straight into editing.
+Plus: select multiple events and delete them. Discussed with Strategist + Design (agents-log 2026-05-30).
+
+**Choices:**
+- **Single click → a read-first detail popover** anchored to the event (title, date/time, calendar) with
+  **Edit · Delete** actions. Editing is now deliberate. (Reframes the calendar as a memory artifact you
+  *recall* from, not mutate on touch — `strategy §3`.)
+- **⌘/Ctrl-click → toggle multi-selection** (Viet's pick). Selected events get an accent ring; a floating
+  **selection bar** shows "N selected · Delete · Clear". **Bulk delete confirms with the count** (like D031).
+- **Strategist guardrail held:** the only bulk action is **delete** — no bulk-edit/move/marquee/select-all
+  (those drift toward a project manager, `§5`).
+
+**Architecture:**
+- New `SelectionProvider` (context) holds the selected-id set; event leaves read it for the ring and call
+  `toggle` on ⌘-click; AppShell renders the popover + bar and owns bulk delete (`deleteEvents`).
+- `onEventClick` signature → `(event, anchor: DOMRect)`; leaves compute the anchor rect for the popover and
+  intercept the modifier locally (normal click → detail; ⌘-click → select).
+- `EventDetail` popover positions/flips against the viewport; reuses the dialog entry motion.
+
+**Why:** detail-on-click is a correctness fix to the interaction model, not a feature; multi-select is a
+power tool kept to one verb. ⌘-click keeps the default (click = read) clean and adds power without chrome.
+
+**How to apply:** `SelectionProvider` (wraps AppShell in `page.tsx`); `EventDetail` + `SelectionBar`;
+`deleteEvents` in DataProvider; selection wiring in `EventChip`/`TimeEventBlock`/`WeekAgenda` + AppShell.
+
+---
+
 ## 2026-05-29 — D031: Confirm calendar delete when it has events (partial DBT-01)
 
 **Context:** Since deleting a calendar now cascades its events (D030), a one-click delete could silently

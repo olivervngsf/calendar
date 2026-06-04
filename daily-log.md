@@ -4,6 +4,24 @@ Daily working notes. Newest at top. What we did, what worked, what's next.
 
 ---
 
+## 2026-05-29 — Friday — Event click = detail; ⌘-click multi-select + bulk delete (D032)
+
+**Did:** Reframed the event interaction per Viet's insight + Strategist/Design:
+- **Single click → a read-first detail popover** (title, date/time, calendar) with **Edit · Delete** — click
+  to *recall*, edit is deliberate. Anchored to the event, viewport-flipped, reuses dialog motion.
+- **⌘/Ctrl-click → multi-select** (accent ring + floating "N selected · Delete · Clear" bar). **Bulk delete
+  confirms with a count.** Only bulk action is delete (Strategist guardrail).
+- New `SelectionProvider` context; `onEventClick` → `(event, anchor rect)`; leaves intercept the modifier
+  and render the ring; `EventDetail` + `SelectionBar`; `deleteEvents` in the store.
+
+**Verified:** build clean + static; fresh-server console clean. Live: click "Therapy" → "Event: Therapy"
+popover (not the edit form); Edit → edit form; ⌘-click two events → "2 selected" + rings, no popover;
+bar Delete → "Delete 2 events?" → removed + cleared.
+
+**Next:** push (auto-deploy). DBT-01 now mostly covered (calendar + bulk delete confirm); undo still open.
+
+---
+
 ## 2026-05-29 — Friday — Confirm calendar delete (D031, partial DBT-01)
 
 **Did:** Deleting a calendar that has events now prompts first — an inline confirm in the dialog with the

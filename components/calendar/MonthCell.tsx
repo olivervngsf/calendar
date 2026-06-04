@@ -9,7 +9,7 @@ interface Props {
   events: CalendarEvent[];
   /** The focused day (highlighted distinctly from today). */
   selected?: boolean;
-  onEventClick?: (event: CalendarEvent) => void;
+  onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
   onDayClick?: (iso: string) => void;
 }
 

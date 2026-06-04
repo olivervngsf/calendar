@@ -10,7 +10,7 @@ import { TimeGridView } from "./TimeGridView";
 interface Props {
   anchor: Date;
   visible: Set<CalendarId>;
-  onEventClick?: (event: CalendarEvent) => void;
+  onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
   onSlotClick?: (iso: string, hour: number) => void;
 }
 

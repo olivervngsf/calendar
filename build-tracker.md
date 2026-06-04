@@ -97,8 +97,10 @@ matching feature status. Agents update this page as part of their critical path 
 | Event — create | ✅ | Button · `N` · click day · click hour slot; opens on title, ⌘↵ saves (D027) |
 | Quick add — natural language (`⇧Q`) | ✅ | Parses title + date + yearly; jumps to date (D020, rebound D023) |
 | Note — create via `⇧N` | ✅ | Opens NoteDialog at the active scope (D020, rebound D023) |
-| Event — edit | ✅ | Click event |
-| Event — delete | ✅ | In dialog · no confirm/undo (DBT-01) |
+| Event — click shows detail (not edit) | ✅ | D032 — read-first popover, Edit/Delete inside |
+| Event — edit | ✅ | From the detail popover |
+| Event — delete | ✅ | From detail · or bulk via multi-select |
+| Event multi-select (⌘-click) + bulk delete | ✅ | D032 — selection bar, delete-with-count |
 | Drag to create (week/day) | ⬜ | Stretch |
 
 ## Notes (the wedge)

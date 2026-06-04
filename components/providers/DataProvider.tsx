@@ -39,6 +39,7 @@ interface DataStore {
   addEvent: (input: EventInput) => void;
   updateEvent: (id: string, input: EventInput) => void;
   deleteEvent: (id: string) => void;
+  deleteEvents: (ids: string[]) => void;
   addNote: (input: NoteInput) => void;
   updateNote: (id: string, input: NoteInput) => void;
   deleteNote: (id: string) => void;
@@ -112,6 +113,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setEvents((prev) => prev.filter((e) => e.id !== id));
   }, []);
 
+  const deleteEvents = useCallback((ids: string[]) => {
+    const drop = new Set(ids);
+    setEvents((prev) => prev.filter((e) => !drop.has(e.id)));
+  }, []);
+
   const addNote = useCallback((input: NoteInput) => {
     setNotes((prev) => [{ ...input, id: newId("n") }, ...prev]);
   }, []);
@@ -139,6 +145,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       addEvent,
       updateEvent,
       deleteEvent,
+      deleteEvents,
       addNote,
       updateNote,
       deleteNote,
@@ -157,6 +164,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       addEvent,
       updateEvent,
       deleteEvent,
+      deleteEvents,
       addNote,
       updateNote,
       deleteNote,

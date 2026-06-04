@@ -1,16 +1,18 @@
 "use client";
 
 import { useMemo } from "react";
+import type { MouseEvent } from "react";
 import type { CalendarEvent, CalendarId } from "@/lib/types";
 import { getWeekDays, isoDate, WEEKDAY_SHORT, monthLabel } from "@/lib/date";
 import { eventsByDay } from "@/lib/events";
 import { TODAY } from "@/lib/mock-data";
 import { useData } from "@/components/providers/DataProvider";
+import { useSelection } from "@/components/providers/SelectionProvider";
 
 interface Props {
   anchor: Date;
   visible: Set<CalendarId>;
-  onEventClick?: (event: CalendarEvent) => void;
+  onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
   onSelectDay?: (iso: string) => void;
 }
 
@@ -22,6 +24,7 @@ function timeLabel(e: CalendarEvent): string {
 /** Agenda (list) week style: one row per day, events listed with calendar-color bars. */
 export function WeekAgenda({ anchor, visible, onEventClick, onSelectDay }: Props) {
   const { events, colorOf } = useData();
+  const { isSelected, toggle } = useSelection();
   const days = useMemo(() => getWeekDays(anchor, TODAY), [anchor]);
   const byDay = useMemo(() => eventsByDay(events, visible), [events, visible]);
   const selectedIso = isoDate(anchor);
@@ -86,8 +89,19 @@ export function WeekAgenda({ anchor, visible, onEventClick, onSelectDay }: Props
                     <button
                       key={e.id}
                       type="button"
-                      onClick={() => onEventClick?.(e)}
-                      className="group flex items-stretch gap-3 text-left"
+                      aria-pressed={isSelected(e.id)}
+                      onClick={(ev: MouseEvent<HTMLButtonElement>) => {
+                        if (ev.metaKey || ev.ctrlKey) {
+                          ev.preventDefault();
+                          toggle(e.id);
+                          return;
+                        }
+                        onEventClick?.(e, ev.currentTarget.getBoundingClientRect());
+                      }}
+                      className={
+                        "group flex items-stretch gap-3 rounded text-left " +
+                        (isSelected(e.id) ? "ring-1 ring-accent ring-offset-2 ring-offset-bg" : "")
+                      }
                     >
                       <span
                         style={{

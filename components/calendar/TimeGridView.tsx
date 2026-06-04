@@ -16,7 +16,7 @@ interface Props {
   visible: Set<CalendarId>;
   /** The focused day's ISO date (highlighted distinctly from today). */
   selectedIso?: string;
-  onEventClick?: (event: CalendarEvent) => void;
+  onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
   onSlotClick?: (iso: string, hour: number) => void;
   onSelectDay?: (iso: string) => void;
 }

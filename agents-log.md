@@ -16,6 +16,45 @@ Every agent review, decision challenge, or critique gets one entry here. Newest 
 
 ---
 
+## 2026-05-30 16:30 — Design
+**Target:** Event detail-on-click + ⌘-click multi-select shipped (D032).
+**Verdict:** Ship
+
+**Findings:**
+- The default is now right: click *reads* (an anchored detail popover with Edit/Delete), so editing is a choice, not an accident. Popover is calm — color dot, title, date/time, calendar — and reuses the dialog ease-in. This is the correctness fix landed.
+- Multi-select stays out of the way: nothing until you ⌘-click, then an accent ring + a single floating bar. Bulk delete confirms with the count (consistent with D031). The bar holds exactly one verb — Strategist's line held.
+- ⌘-click is the chosen entry; it's in the `?` help so it's discoverable. Power without chrome.
+
+**Accessibility:** Pass — events carry `aria-pressed`; popover is `role=dialog` with Esc + click-out; bar is keyboard-reachable.
+**Notes:** Single-event delete (from the popover) is still one-click — fine, low stakes. The honest remaining DBT-01 piece is **undo** (a toast) for deletes; with bulk delete now live, an undo is the highest-value safety add left.
+**Next:** Undo toast for deletes.
+
+## 2026-05-30 15:40 — Strategist
+**Target:** Change event click from "edit" → "view detail"; add multi-select + bulk delete.
+**Verdict:** Approved (detail-on-click) · Approved with tight scope (multi-select)
+
+**Reasoning:**
+- **Detail-on-click is a correctness fix, not a feature.** The product's whole thesis is the calendar as a *memory artifact* (`strategy §3`) — you click to *recall*, not to mutate. Opening an edit form on click is the wrong default; it treats every glance as an intent to change. High-value, low-risk. Do it.
+- It also reinforces the wedge: a calm read-view is where context lives. Keep it a *read* view — don't let it sprout AI summaries or "smart" anything (`§5`).
+- **Multi-select: approved, but it's the scope-creep magnet.** The only job is "select some events, delete them." NOT: bulk-edit, bulk-move, marquee drag, select-all-across-views, a persistent management toolbar. Each of those is a step toward project-manager drift. One verb: delete. If it grows past that, kill it.
+- Destructive guard: bulk delete must confirm with a count (consistent with calendar delete, D031). Single-event delete from the detail view is one event — lower stakes, can stay one-click (with undo later).
+
+**Next:** Build detail-on-click first (the real fix); add a minimal multi-select whose only bulk action is delete-with-count. Resist every adjacent feature.
+
+## 2026-05-30 15:45 — Design
+**Target:** Event interaction model — detail view + multi-select flow.
+**Verdict:** Ship with notes (build the model below)
+
+**Findings:**
+1. **[P3 — one clear action]** Click → a **detail popover** anchored to the event: title, date/time, calendar (color + name), and the actions **Edit · Delete**. Calm, read-first; edit is now deliberate (and double-click can be an edit shortcut for power users).
+2. **Multi-select entry — keep it calm + discoverable.** Recommend: the detail popover has a **Select** action that drops the event into a selection and reveals a slim **selection bar** ("2 selected · Delete · Clear"). While the bar is up, clicking events *toggles* selection instead of opening detail; Clear/Done exits. **⌘/Ctrl-click** is the power shortcut to select without the popover. This gives discoverability (via the popover) and speed (via the modifier) without a persistent mode toggle cluttering the chrome.
+3. **Selected state** must be visible: a ring/checkmark on selected event chips/blocks (reuse the focus/today language — e.g., an accent ring).
+4. **Bulk delete** → confirm with count ("Delete 3 events?"), like D031. Voice: plain, not alarmist.
+5. **Motion:** the detail popover should ease in (reuse the dialog entry motion); the selection bar slides up.
+
+**Accessibility:** popover and bar must be keyboard-reachable; selected events carry `aria-pressed`/`aria-selected`.
+**Next:** Confirm the multi-select entry mechanism with Viet, then build: EventDetail popover → Edit/Delete/Select → selection bar → bulk delete-with-count.
+
 ## 2026-05-30 15:00 — Design
 **Target:** Calendar delete confirmation with event count (D031, partial DBT-01).
 **Verdict:** Ship

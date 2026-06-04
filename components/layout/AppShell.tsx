@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import type { Calendar, CalendarEvent, CalendarSet, Note } from "@/lib/types";
 import { useCalendarState } from "@/hooks/useCalendarState";
 import { useData } from "@/components/providers/DataProvider";
+import { useSelection } from "@/components/providers/SelectionProvider";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { isoDate, noteScopeFor } from "@/lib/date";
 import { TODAY } from "@/lib/mock-data";
@@ -17,6 +18,8 @@ import { WeekView } from "@/components/calendar/WeekView";
 import { DayView } from "@/components/calendar/DayView";
 import { YearView } from "@/components/calendar/YearView";
 import { EventDialog } from "@/components/calendar/EventDialog";
+import { EventDetail } from "@/components/calendar/EventDetail";
+import { SelectionBar } from "@/components/calendar/SelectionBar";
 import { CalendarDialog } from "@/components/calendar/CalendarDialog";
 import { CalendarSetDialog } from "@/components/calendar/CalendarSetDialog";
 import { QuickAddDialog } from "@/components/calendar/QuickAddDialog";
@@ -32,6 +35,7 @@ const pad2 = (n: number) => String(n).padStart(2, "0");
 export function AppShell() {
   const cal = useCalendarState();
   const data = useData();
+  const selection = useSelection();
   const [helpOpen, setHelpOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -42,6 +46,10 @@ export function AppShell() {
     calendar?: Calendar;
   } | null>(null);
   const [eventDialog, setEventDialog] = useState<EventDialogState | null>(null);
+  const [eventDetail, setEventDetail] = useState<{
+    event: CalendarEvent;
+    anchor: DOMRect;
+  } | null>(null);
   const [noteDialog, setNoteDialog] = useState<NoteDialogState | null>(null);
 
   // Default date for a brand-new event: today if it's in the visible month, else the 1st.
@@ -58,9 +66,14 @@ export function AppShell() {
     setEventDialog({ date: defaultEventDate() });
   }, [defaultEventDate]);
 
-  const handleEventClick = useCallback((event: CalendarEvent) => {
-    setEventDialog({ event });
-  }, []);
+  // Single click → read-first detail popover (edit is a deliberate action inside it).
+  // ⌘/Ctrl-click is handled in the event components (toggles multi-selection).
+  const handleEventClick = useCallback(
+    (event: CalendarEvent, anchor: DOMRect) => {
+      setEventDetail({ event, anchor });
+    },
+    [],
+  );
 
   const handleDayClick = useCallback((iso: string) => {
     setEventDialog({ date: iso });
@@ -206,6 +219,33 @@ export function AppShell() {
           </div>
         </div>
       </div>
+
+      {eventDetail && (
+        <EventDetail
+          event={eventDetail.event}
+          anchor={eventDetail.anchor}
+          onEdit={() => {
+            setEventDialog({ event: eventDetail.event });
+            setEventDetail(null);
+          }}
+          onDelete={() => {
+            data.deleteEvent(eventDetail.event.id);
+            setEventDetail(null);
+          }}
+          onClose={() => setEventDetail(null)}
+        />
+      )}
+
+      {selection.count > 0 && (
+        <SelectionBar
+          count={selection.count}
+          onDelete={() => {
+            data.deleteEvents([...selection.selected]);
+            selection.clear();
+          }}
+          onClear={selection.clear}
+        />
+      )}
 
       {eventDialog && (
         <EventDialog

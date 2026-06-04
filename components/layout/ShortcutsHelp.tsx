@@ -12,6 +12,7 @@ const SHORTCUTS: { keys: string[]; label: string }[] = [
   { keys: ["N"], label: "New event" },
   { keys: ["⇧", "N"], label: "New note" },
   { keys: ["⇧", "Q"], label: "Quick add (natural language)" },
+  { keys: ["⌘", "click"], label: "Select events (multi-select)" },
   { keys: ["/"], label: "Search" },
   { keys: [","], label: "Settings" },
   { keys: ["["], label: "Toggle sidebar" },
