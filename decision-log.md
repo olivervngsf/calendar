@@ -4,6 +4,36 @@ Every meaningful decision in this project. Newest at top.
 
 ---
 
+## 2026-05-29 — D030: Calendars are user-managed — create/edit/delete + curated color palette
+
+**Context:** Viet wanted full calendar CRUD (not just the fixed Personal/Plan/Shared·Erich). This makes
+calendars dynamic data and required reworking calendar identity + the color system.
+
+**Choices (locked with Viet):**
+- **Curated palette, not free hex.** Six editorial-calm swatches (`teal, clay, slate, sage, plum, indigo`),
+  each with a light + dark solid + soft tint as `--cal-<key>` CSS vars. A calendar stores a `color` key;
+  events render `var(--cal-<color>)` / `-soft`. Keeps the calm look and theme-aware soft fills for any calendar.
+- **Delete removes the calendar's events** (cascade) and the calendar drops from Sets (Sets filter to
+  existing ids at apply/match time — no mutation needed).
+
+**Architecture:**
+- `CalendarId` is now an opaque **string** (seed ids stay `personal`/`plan`/`erich`); `Calendar` carries
+  `color: CalendarColor`. `colorVar` field removed.
+- **Calendars + their visibility moved into `DataProvider`** (with events + notes) since deleting a
+  calendar cascades to events. New: `calendars`, `visible`, `colorOf`, `toggle/applyCalendars`, calendar CRUD.
+  `useCalendarState` now owns only view + anchor. AppShell reads visibility from the data store.
+- Color is looked up at render via `useData().colorOf(id)` in `EventChip`, `TimeEventBlock`, `WeekAgenda`,
+  and the swatches; the two avatars switched to `bg-accent`.
+
+**Why:** centralizing calendars+events+visibility in one store keeps the cascade coherent and removes the
+hardcoded 3-calendar assumptions (`ALL_CALENDARS`). The palette keeps user-created calendars on-brand.
+
+**How to apply:** palette in `app/globals.css`; types in `lib/types.ts`; store in `DataProvider`;
+`CalendarDialog` (name + swatch picker); Sidebar Calendars section gains `+` and a hover-pencil per row.
+New calendars are visible by default. EventDialog / QuickAdd default to the first calendar.
+
+---
+
 ## 2026-05-29 — D029: Calendar Sets — saved, named calendar combinations
 
 **Context:** Viet wanted users to create a custom lens combining calendars (e.g. "Personal" = Personal +

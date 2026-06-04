@@ -29,13 +29,21 @@
   --accent-on: #ffffff;
 
   /* Calendar colors — muted, never saturated */
-  --cal-personal: #2e4756; /* deep teal */
-  --cal-plan: #a87854;     /* warm clay */
-  --cal-erich: #6b7c8f;    /* muted slate */
+  /* Calendar palette — muted, never saturated. Keyed by color name so user-created
+     calendars pick a swatch (light + dark, solid + soft tint). */
+  --cal-teal: #2e4756;
+  --cal-clay: #a87854;
+  --cal-slate: #6b7c8f;
+  --cal-sage: #5f7d63;
+  --cal-plum: #855772;
+  --cal-indigo: #5b6b96;
 
-  --cal-personal-soft: #eceff2;
-  --cal-plan-soft: #f4ece5;
-  --cal-erich-soft: #eef1f4;
+  --cal-teal-soft: #eceff2;
+  --cal-clay-soft: #f4ece5;
+  --cal-slate-soft: #eef1f4;
+  --cal-sage-soft: #ebf0ec;
+  --cal-plum-soft: #f1eaee;
+  --cal-indigo-soft: #ecedf4;
 
   /* Today marker ring */
   --today-ring: #b68843;
@@ -66,13 +74,19 @@
   --accent-on: #16150f;
 
   /* Calendar colors lifted so chips read on dark surfaces */
-  --cal-personal: #7fa8be;
-  --cal-plan: #cd9c74;
-  --cal-erich: #9fb2c4;
+  --cal-teal: #7fa8be;
+  --cal-clay: #cd9c74;
+  --cal-slate: #9fb2c4;
+  --cal-sage: #93b49a;
+  --cal-plum: #c49bb6;
+  --cal-indigo: #9aaad6;
 
-  --cal-personal-soft: #222d34;
-  --cal-plan-soft: #322820;
-  --cal-erich-soft: #262d34;
+  --cal-teal-soft: #222d34;
+  --cal-clay-soft: #322820;
+  --cal-slate-soft: #262d34;
+  --cal-sage-soft: #232e26;
+  --cal-plum-soft: #2e2531;
+  --cal-indigo-soft: #262a36;
 
   --today-ring: #d2a35c;
   --focus: #7fa8be;
@@ -95,12 +109,6 @@
   --color-accent-soft: var(--accent-soft);
   --color-accent-on: var(--accent-on);
 
-  --color-cal-personal: var(--cal-personal);
-  --color-cal-plan: var(--cal-plan);
-  --color-cal-erich: var(--cal-erich);
-  --color-cal-personal-soft: var(--cal-personal-soft);
-  --color-cal-plan-soft: var(--cal-plan-soft);
-  --color-cal-erich-soft: var(--cal-erich-soft);
 
   --color-today-ring: var(--today-ring);
 

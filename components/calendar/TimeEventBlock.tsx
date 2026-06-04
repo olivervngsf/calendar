@@ -4,6 +4,7 @@ import type { CalendarEvent } from "@/lib/types";
 import type { PlacedEvent } from "@/lib/timegrid";
 import { HOUR_PX } from "@/lib/timegrid";
 import { eventTimeLabel } from "@/lib/events";
+import { useData } from "@/components/providers/DataProvider";
 
 interface Props {
   placed: PlacedEvent;
@@ -11,7 +12,9 @@ interface Props {
 }
 
 export function TimeEventBlock({ placed, onClick }: Props) {
+  const { colorOf } = useData();
   const { event, startMin, endMin, lane, lanes } = placed;
+  const color = colorOf(event.calendarId);
   const top = (startMin / 60) * HOUR_PX;
   const height = Math.max(((endMin - startMin) / 60) * HOUR_PX, 18);
   const widthPct = 100 / lanes;
@@ -30,8 +33,8 @@ export function TimeEventBlock({ placed, onClick }: Props) {
         height,
         left: `calc(${leftPct}% + 2px)`,
         width: `calc(${widthPct}% - 4px)`,
-        backgroundColor: `var(--cal-${event.calendarId}-soft)`,
-        borderLeftColor: `var(--cal-${event.calendarId})`,
+        backgroundColor: `var(--cal-${color}-soft)`,
+        borderLeftColor: `var(--cal-${color})`,
       }}
       className="absolute z-10 flex flex-col gap-px overflow-hidden rounded-r-[3px] border-l-2 px-1.5 py-1 text-left text-text transition-[filter] hover:brightness-[0.97]"
     >

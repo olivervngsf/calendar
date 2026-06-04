@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import type { CalendarEvent, CalendarId } from "@/lib/types";
-import { CALENDARS } from "@/lib/mock-data";
 import { useData } from "@/components/providers/DataProvider";
 import { Dialog, fieldControl, fieldLabel } from "@/components/ui/Dialog";
 
@@ -22,12 +21,12 @@ function addHour(time: string): string {
 }
 
 export function EventDialog({ event, defaultDate, defaultStart, onClose }: Props) {
-  const { addEvent, updateEvent, deleteEvent } = useData();
+  const { calendars, addEvent, updateEvent, deleteEvent } = useData();
   const isEdit = Boolean(event);
 
   const [title, setTitle] = useState(event?.title ?? "");
   const [calendarId, setCalendarId] = useState<CalendarId>(
-    event?.calendarId ?? "personal",
+    event?.calendarId ?? calendars[0]?.id ?? "personal",
   );
   const [date, setDate] = useState(event ? event.start.slice(0, 10) : defaultDate);
   const [allDay, setAllDay] = useState(event?.allDay ?? false);
@@ -100,7 +99,7 @@ export function EventDialog({ event, defaultDate, defaultStart, onClose }: Props
               value={calendarId}
               onChange={(e) => setCalendarId(e.target.value as CalendarId)}
             >
-              {CALENDARS.map((c) => (
+              {calendars.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>

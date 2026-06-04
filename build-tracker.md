@@ -89,8 +89,9 @@ matching feature status. Agents update this page as part of their critical path 
 | Feature | Status | Notes |
 |---|---|---|
 | Calendar list + visibility toggles | ✅ | |
+| Calendar CRUD (create/edit/delete) | ✅ | D030 — palette color; delete cascades events |
 | Calendar Sets (saved combinations) | ✅ | D029 — create/edit/delete; seeded Personal/Work |
-| Color system per calendar | ✅ | |
+| Color system per calendar | ✅ | Curated 6-color palette, light+dark (D030) |
 | Multi-calendar overlay (Month) | ✅ | Conflict-overlap polish pending |
 | Event — create | ✅ | Button · `N` · click day · click hour slot; opens on title, ⌘↵ saves (D027) |
 | Quick add — natural language (`⇧Q`) | ✅ | Parses title + date + yearly; jumps to date (D020, rebound D023) |

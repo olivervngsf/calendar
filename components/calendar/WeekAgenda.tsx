@@ -21,7 +21,7 @@ function timeLabel(e: CalendarEvent): string {
 
 /** Agenda (list) week style: one row per day, events listed with calendar-color bars. */
 export function WeekAgenda({ anchor, visible, onEventClick, onSelectDay }: Props) {
-  const { events } = useData();
+  const { events, colorOf } = useData();
   const days = useMemo(() => getWeekDays(anchor, TODAY), [anchor]);
   const byDay = useMemo(() => eventsByDay(events, visible), [events, visible]);
   const selectedIso = isoDate(anchor);
@@ -90,7 +90,9 @@ export function WeekAgenda({ anchor, visible, onEventClick, onSelectDay }: Props
                       className="group flex items-stretch gap-3 text-left"
                     >
                       <span
-                        style={{ backgroundColor: `var(--cal-${e.calendarId})` }}
+                        style={{
+                          backgroundColor: `var(--cal-${colorOf(e.calendarId)})`,
+                        }}
                         className="w-[3px] shrink-0 self-stretch rounded-full"
                       />
                       <div className="min-w-0">

@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { CalendarEvent, CalendarSet, Note } from "@/lib/types";
+import type { Calendar, CalendarEvent, CalendarSet, Note } from "@/lib/types";
 import { useCalendarState } from "@/hooks/useCalendarState";
+import { useData } from "@/components/providers/DataProvider";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { isoDate, noteScopeFor } from "@/lib/date";
 import { TODAY } from "@/lib/mock-data";
@@ -16,6 +17,7 @@ import { WeekView } from "@/components/calendar/WeekView";
 import { DayView } from "@/components/calendar/DayView";
 import { YearView } from "@/components/calendar/YearView";
 import { EventDialog } from "@/components/calendar/EventDialog";
+import { CalendarDialog } from "@/components/calendar/CalendarDialog";
 import { CalendarSetDialog } from "@/components/calendar/CalendarSetDialog";
 import { QuickAddDialog } from "@/components/calendar/QuickAddDialog";
 import { NoteDialog } from "@/components/notes/NoteDialog";
@@ -29,12 +31,16 @@ const pad2 = (n: number) => String(n).padStart(2, "0");
 
 export function AppShell() {
   const cal = useCalendarState();
+  const data = useData();
   const [helpOpen, setHelpOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [notesOpen, setNotesOpen] = useState(true);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [setDialog, setSetDialog] = useState<{ set?: CalendarSet } | null>(null);
+  const [calendarDialog, setCalendarDialog] = useState<{
+    calendar?: Calendar;
+  } | null>(null);
   const [eventDialog, setEventDialog] = useState<EventDialogState | null>(null);
   const [noteDialog, setNoteDialog] = useState<NoteDialogState | null>(null);
 
@@ -134,11 +140,13 @@ export function AppShell() {
           >
             <Sidebar
               anchor={cal.anchor}
-              visible={cal.visible}
-              onToggle={cal.toggleCalendar}
-              onApplyCalendars={cal.applyCalendars}
+              visible={data.visible}
+              onToggle={data.toggleCalendar}
+              onApplyCalendars={data.applyCalendars}
               onNewSet={() => setSetDialog({})}
               onEditSet={(set) => setSetDialog({ set })}
+              onNewCalendar={() => setCalendarDialog({})}
+              onEditCalendar={(calendar) => setCalendarDialog({ calendar })}
               onPickDate={handleFocusDate}
               selectedIso={isoDate(cal.anchor)}
             />
@@ -149,7 +157,7 @@ export function AppShell() {
           {cal.view === "m" && (
             <MonthView
               anchor={cal.anchor}
-              visible={cal.visible}
+              visible={data.visible}
               onEventClick={handleEventClick}
               onDayClick={handleDayClick}
             />
@@ -157,7 +165,7 @@ export function AppShell() {
           {cal.view === "w" && (
             <WeekView
               anchor={cal.anchor}
-              visible={cal.visible}
+              visible={data.visible}
               onEventClick={handleEventClick}
               onSlotClick={handleSlotClick}
               onSelectDay={handleSelectDay}
@@ -166,7 +174,7 @@ export function AppShell() {
           {cal.view === "d" && (
             <DayView
               anchor={cal.anchor}
-              visible={cal.visible}
+              visible={data.visible}
               onEventClick={handleEventClick}
               onSlotClick={handleSlotClick}
             />
@@ -174,7 +182,7 @@ export function AppShell() {
           {cal.view === "y" && (
             <YearView
               anchor={cal.anchor}
-              visible={cal.visible}
+              visible={data.visible}
               onSelectDay={handleSelectDay}
               onSelectMonth={handleSelectMonth}
             />
@@ -235,8 +243,15 @@ export function AppShell() {
       {setDialog && (
         <CalendarSetDialog
           set={setDialog.set}
-          onApply={cal.applyCalendars}
+          onApply={data.applyCalendars}
           onClose={() => setSetDialog(null)}
+        />
+      )}
+
+      {calendarDialog && (
+        <CalendarDialog
+          calendar={calendarDialog.calendar}
+          onClose={() => setCalendarDialog(null)}
         />
       )}
 

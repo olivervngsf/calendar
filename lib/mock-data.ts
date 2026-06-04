@@ -6,9 +6,9 @@ import type { Calendar, CalendarEvent, Note } from "./types";
 export const TODAY = new Date(2026, 4, 29); // 2026-05-29, Friday
 
 export const CALENDARS: Calendar[] = [
-  { id: "personal", name: "Personal", colorVar: "--cal-personal" },
-  { id: "plan", name: "Plan", colorVar: "--cal-plan" },
-  { id: "erich", name: "Shared · Erich", colorVar: "--cal-erich" },
+  { id: "personal", name: "Personal", color: "teal" },
+  { id: "plan", name: "Plan", color: "clay" },
+  { id: "erich", name: "Shared · Erich", color: "slate" },
 ];
 
 // A realistic month of Viet's life across three calendars (May 2026).

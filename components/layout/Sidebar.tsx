@@ -1,14 +1,11 @@
 "use client";
 
-import type { CalendarId, CalendarSet } from "@/lib/types";
-import { CALENDARS } from "@/lib/mock-data";
+import type { Calendar, CalendarId, CalendarSet } from "@/lib/types";
 import { addMonths } from "@/lib/date";
 import { countByCalendar } from "@/lib/events";
 import { useData } from "@/components/providers/DataProvider";
 import { useSettings } from "@/components/providers/SettingsProvider";
 import { MiniMonth } from "@/components/calendar/MiniMonth";
-
-const ALL_CALENDARS: CalendarId[] = ["personal", "plan", "erich"];
 
 interface Props {
   anchor: Date;
@@ -18,6 +15,8 @@ interface Props {
   onApplyCalendars: (ids: CalendarId[]) => void;
   onNewSet: () => void;
   onEditSet: (set: CalendarSet) => void;
+  onNewCalendar: () => void;
+  onEditCalendar: (calendar: Calendar) => void;
   /** Pick a date in a mini-month — moves focus, keeps the current view. */
   onPickDate: (iso: string) => void;
   /** The focused day's ISO date (highlighted distinctly from today). */
@@ -31,18 +30,25 @@ export function Sidebar({
   onApplyCalendars,
   onNewSet,
   onEditSet,
+  onNewCalendar,
+  onEditCalendar,
   onPickDate,
   selectedIso,
 }: Props) {
-  const { events } = useData();
+  const { events, calendars } = useData();
   const { calendarSets } = useSettings();
   const counts = countByCalendar(events);
   const nextMonth = addMonths(anchor, 1);
+  const allIds = calendars.map((c) => c.id);
+  const existing = (ids: CalendarId[]) =>
+    ids.filter((id) => calendars.some((c) => c.id === id));
 
   // Which set (if any) matches the current calendar visibility.
-  const allActive = visible.size === ALL_CALENDARS.length;
-  const setMatches = (ids: CalendarId[]) =>
-    ids.length === visible.size && ids.every((id) => visible.has(id));
+  const allActive = visible.size === calendars.length;
+  const setMatches = (ids: CalendarId[]) => {
+    const e = existing(ids);
+    return e.length === visible.size && e.every((id) => visible.has(id));
+  };
   const activeSetId = allActive
     ? "all"
     : (calendarSets.find((s) => setMatches(s.calendarIds))?.id ?? null);
@@ -51,7 +57,7 @@ export function Sidebar({
     <aside className="flex h-full flex-col gap-7 overflow-y-auto border-r border-border-base bg-bg px-5 pb-5 pt-6">
       {/* Account */}
       <section className="flex items-center gap-3 border-b border-border-faint pb-[22px]">
-        <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cal-personal text-[13px] font-semibold tracking-[0.02em] text-accent-on">
+        <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent text-[13px] font-semibold tracking-[0.02em] text-accent-on">
           V
         </div>
         <div className="flex min-w-0 flex-col gap-0.5">
@@ -85,7 +91,7 @@ export function Sidebar({
             <SetRow
               name="All calendars"
               active={activeSetId === "all"}
-              onApply={() => onApplyCalendars(ALL_CALENDARS)}
+              onApply={() => onApplyCalendars(allIds)}
             />
           </li>
           {calendarSets.map((s) => (
@@ -93,7 +99,7 @@ export function Sidebar({
               <SetRow
                 name={s.name}
                 active={activeSetId === s.id}
-                onApply={() => onApplyCalendars(s.calendarIds)}
+                onApply={() => onApplyCalendars(existing(s.calendarIds))}
                 onEdit={() => onEditSet(s)}
               />
             </li>
@@ -103,25 +109,40 @@ export function Sidebar({
 
       {/* Calendars */}
       <section>
-        <h3 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-3">
-          Calendars
-        </h3>
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-3">
+            Calendars
+          </h3>
+          <button
+            type="button"
+            onClick={onNewCalendar}
+            aria-label="New calendar"
+            title="New calendar"
+            className="inline-flex h-5 w-5 items-center justify-center rounded text-text-3 transition-colors hover:bg-surface-soft hover:text-text"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
+        </div>
         <ul className="flex flex-col">
-          {CALENDARS.map((cal) => {
+          {calendars.map((cal) => {
             const on = visible.has(cal.id);
             return (
-              <li key={cal.id}>
+              <li key={cal.id} className="group flex items-center">
                 <button
                   type="button"
                   onClick={() => onToggle(cal.id)}
                   aria-pressed={on}
-                  className="flex w-full items-center gap-2.5 py-1.5 text-left"
+                  className="flex flex-1 items-center gap-2.5 py-1.5 text-left"
                 >
                   <span
                     aria-hidden
                     style={{
-                      backgroundColor: on ? `var(${cal.colorVar})` : "transparent",
-                      borderColor: on ? `var(${cal.colorVar})` : undefined,
+                      backgroundColor: on
+                        ? `var(--cal-${cal.color})`
+                        : "transparent",
+                      borderColor: on ? `var(--cal-${cal.color})` : undefined,
                     }}
                     className={
                       "inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] border-[1.5px] " +
@@ -143,9 +164,21 @@ export function Sidebar({
                   <span className="flex flex-1 items-baseline justify-between">
                     <span className="text-[13px] text-text">{cal.name}</span>
                     <span className="font-mono text-[10px] text-text-3">
-                      {counts[cal.id]}
+                      {counts[cal.id] ?? 0}
                     </span>
                   </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onEditCalendar(cal)}
+                  aria-label={`Edit ${cal.name}`}
+                  title="Edit calendar"
+                  className="ml-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded text-text-3 opacity-0 transition-opacity hover:bg-surface-soft hover:text-text focus-visible:opacity-100 group-hover:opacity-100"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" />
+                  </svg>
                 </button>
               </li>
             );

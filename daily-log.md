@@ -4,6 +4,24 @@ Daily working notes. Newest at top. What we did, what worked, what's next.
 
 ---
 
+## 2026-05-29 — Friday — Calendar CRUD + palette (D030)
+
+**Did:** Made calendars **user-managed** (create/edit/delete), with a **curated 6-color palette** (locked
+with Viet over free-hex), and **delete cascades the calendar's events**. Sizable refactor:
+- `CalendarId` → string; `Calendar.color` (palette key); `--cal-<key>` light/dark solid+soft vars.
+- **Calendars + visibility moved into `DataProvider`** (coupled to events for the cascade); `useCalendarState`
+  now owns only view+anchor; AppShell reads visibility from the store. Color via `colorOf(id)` lookups.
+- `CalendarDialog` (name + swatch picker); Sidebar Calendars `+` and per-row edit pencil. Sets filter to
+  existing calendar ids, so a deleted calendar just drops out.
+
+**Verified:** `npm run build` clean (typechecks across the refactor); fresh-server console clean. Live:
+palette colors render; create "Travel"; edit → plum (swatch rgb(133,87,114)); delete "Plan" → its Sprint/
+Demo/Plan Q3 events vanish + sidebar row gone.
+
+**Next:** push (auto-deploy); then P1 (persist DBT-02 — calendars/sets persist; events/notes don't yet).
+
+---
+
 ## 2026-05-29 — Friday — Calendar Sets (D029)
 
 **Did:** Built **Calendar Sets** — saved, named calendar combinations (Viet's ask: a "Personal" lens =

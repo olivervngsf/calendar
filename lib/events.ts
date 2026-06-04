@@ -34,11 +34,11 @@ export function eventsByDay(
   return map;
 }
 
-/** Count of visible events per calendar id, for the sidebar tally. */
+/** Count of events per calendar id, for the sidebar tally. */
 export function countByCalendar(
   events: CalendarEvent[],
 ): Record<CalendarId, number> {
-  const counts: Record<CalendarId, number> = { personal: 0, plan: 0, erich: 0 };
-  for (const e of events) counts[e.calendarId]++;
+  const counts: Record<CalendarId, number> = {};
+  for (const e of events) counts[e.calendarId] = (counts[e.calendarId] ?? 0) + 1;
   return counts;
 }

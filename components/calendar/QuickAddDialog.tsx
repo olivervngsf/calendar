@@ -16,8 +16,9 @@ interface Props {
 const WEEKDAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export function QuickAddDialog({ onClose, onCreated }: Props) {
-  const { addEvent } = useData();
+  const { addEvent, calendars } = useData();
   const [text, setText] = useState("");
+  const defaultCalendarId = calendars[0]?.id ?? "personal";
 
   const parsed = useMemo(
     () => (text.trim() ? parseQuickAdd(text, TODAY) : null),
@@ -31,7 +32,7 @@ export function QuickAddDialog({ onClose, onCreated }: Props) {
     const makeAllDay = (y: number) => {
       const iso = `${y}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
       addEvent({
-        calendarId: "personal",
+        calendarId: defaultCalendarId,
         title,
         start: `${iso}T00:00`,
         end: `${iso}T23:59`,

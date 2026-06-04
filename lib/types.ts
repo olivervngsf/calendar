@@ -3,15 +3,33 @@
 // source calendar (always surfaced in UI) and a visibility field, even while v0.1 is
 // mock-only. Retrofitting these later would break every row.
 
-export type CalendarId = "personal" | "plan" | "erich";
+// Calendars are user-managed, so the id is an opaque string (seed ids stay stable).
+export type CalendarId = string;
+
+/** Curated calendar palette keys — map to `--cal-<key>` / `--cal-<key>-soft`. */
+export type CalendarColor =
+  | "teal"
+  | "clay"
+  | "slate"
+  | "sage"
+  | "plum"
+  | "indigo";
+
+export const CALENDAR_COLORS: CalendarColor[] = [
+  "teal",
+  "clay",
+  "slate",
+  "sage",
+  "plum",
+  "indigo",
+];
 
 export type CalendarView = "d" | "w" | "m" | "y";
 
 export interface Calendar {
   id: CalendarId;
   name: string;
-  /** CSS variable name carrying this calendar's color, e.g. "--cal-personal". */
-  colorVar: string;
+  color: CalendarColor;
 }
 
 /** A saved, named combination of calendars (a lens you can flip to). */

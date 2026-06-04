@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import type { CalendarId, CalendarSet } from "@/lib/types";
-import { CALENDARS } from "@/lib/mock-data";
+import { useData } from "@/components/providers/DataProvider";
 import { useSettings } from "@/components/providers/SettingsProvider";
 import { Dialog, fieldControl, fieldLabel } from "@/components/ui/Dialog";
-
-const ALL: CalendarId[] = ["personal", "plan", "erich"];
 
 interface Props {
   /** Editing an existing set, or creating a new one. */
@@ -17,12 +15,14 @@ interface Props {
 }
 
 export function CalendarSetDialog({ set, onClose, onApply }: Props) {
+  const { calendars } = useData();
   const { addCalendarSet, updateCalendarSet, deleteCalendarSet } = useSettings();
+  const ALL = calendars.map((c) => c.id);
   const isEdit = Boolean(set);
 
   const [name, setName] = useState(set?.name ?? "");
   const [ids, setIds] = useState<Set<CalendarId>>(
-    () => new Set(set?.calendarIds ?? ["personal"]),
+    () => new Set(set?.calendarIds ?? (calendars[0] ? [calendars[0].id] : [])),
   );
 
   const toggle = (id: CalendarId) =>
@@ -82,7 +82,7 @@ export function CalendarSetDialog({ set, onClose, onApply }: Props) {
         <div>
           <span className={fieldLabel}>Calendars in this set</span>
           <div className="flex flex-col">
-            {CALENDARS.map((cal) => {
+            {calendars.map((cal) => {
               const on = ids.has(cal.id);
               return (
                 <button
@@ -95,8 +95,10 @@ export function CalendarSetDialog({ set, onClose, onApply }: Props) {
                   <span
                     aria-hidden
                     style={{
-                      backgroundColor: on ? `var(${cal.colorVar})` : "transparent",
-                      borderColor: on ? `var(${cal.colorVar})` : undefined,
+                      backgroundColor: on
+                        ? `var(--cal-${cal.color})`
+                        : "transparent",
+                      borderColor: on ? `var(--cal-${cal.color})` : undefined,
                     }}
                     className={
                       "inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] border-[1.5px] " +

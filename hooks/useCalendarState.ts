@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { CalendarId, CalendarView } from "@/lib/types";
+import type { CalendarView } from "@/lib/types";
 import { TODAY } from "@/lib/mock-data";
 import { addDays, addMonths, isoDate } from "@/lib/date";
 
-const ALL_CALENDARS: CalendarId[] = ["personal", "plan", "erich"];
 const VALID_VIEWS: CalendarView[] = ["d", "w", "m", "y"];
 
 function parseInitial(): { view: CalendarView; anchor: Date } {
@@ -39,16 +38,14 @@ function stepAnchor(anchor: Date, view: CalendarView, dir: number): Date {
 }
 
 /**
- * Owns view + anchor (a specific day) + visible calendars. Navigation is
- * view-aware: ←/→ steps by month / week / day. Anchor + view mirror to the URL
- * (?v=w&d=2026-05-29) so the view is shareable and reload-safe (JTBD #2).
+ * Owns view + anchor (a specific day). Navigation is view-aware: ←/→ steps by
+ * month / week / day. Anchor + view mirror to the URL (?v=w&d=2026-05-29) so the
+ * view is shareable and reload-safe (JTBD #2). Calendar visibility lives in
+ * DataProvider (it's coupled to the calendars themselves).
  */
 export function useCalendarState() {
   const [view, setView] = useState<CalendarView>("m");
   const [anchor, setAnchor] = useState<Date>(TODAY);
-  const [visible, setVisible] = useState<Set<CalendarId>>(
-    () => new Set(ALL_CALENDARS),
-  );
 
   // Hydrate from URL once on mount (avoids SSR/client mismatch).
   useEffect(() => {
@@ -82,43 +79,8 @@ export function useCalendarState() {
     setAnchor(new Date(y, m - 1, d));
   }, []);
 
-  const toggleCalendar = useCallback((id: CalendarId) => {
-    setVisible((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
-
-  /** Apply a set of calendars wholesale (used by saved Calendar Sets). */
-  const applyCalendars = useCallback((ids: CalendarId[]) => {
-    setVisible(new Set(ids));
-  }, []);
-
   return useMemo(
-    () => ({
-      view,
-      setView,
-      anchor,
-      visible,
-      toggleCalendar,
-      applyCalendars,
-      goToday,
-      goPrev,
-      goNext,
-      goToDate,
-    }),
-    [
-      view,
-      anchor,
-      visible,
-      toggleCalendar,
-      applyCalendars,
-      goToday,
-      goPrev,
-      goNext,
-      goToDate,
-    ],
+    () => ({ view, setView, anchor, goToday, goPrev, goNext, goToDate }),
+    [view, anchor, goToday, goPrev, goNext, goToDate],
   );
 }

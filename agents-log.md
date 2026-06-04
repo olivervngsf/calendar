@@ -16,6 +16,35 @@ Every agent review, decision challenge, or critique gets one entry here. Newest 
 
 ---
 
+## 2026-05-30 14:30 — Engineer
+**Target:** Calendar CRUD refactor (D030) — dynamic calendars, palette colors, store re-home.
+**Verdict:** Ship with notes
+
+**Findings:**
+- The hard call paid off: **calendars + visibility moved into `DataProvider`** so cascade-delete is local and atomic. `CalendarId` → string; seed ids stable so existing events/sets/mock still align. Build typechecks clean across ~14 touched files; fresh-console clean.
+- **Color system is now data-driven** — a `color` palette key + `colorOf(id)` lookup, replacing the hardcoded `--cal-personal/plan/erich`. Theme-aware soft tints preserved for all six swatches. No `any`.
+- Sets correctly **filter to existing calendar ids** at apply/match (no cross-store mutation on delete) — clean decoupling.
+- New calendars default visible; EventDialog/QuickAdd default to `calendars[0]`. Avatars moved off the calendar var to `bg-accent`.
+
+**Notes / carry-forward:**
+- Delete is immediate (no confirm) and cascades events — consistent with the app, but this is now a *bigger* destructive action (DBT-01 undo/confirm matters more here).
+- Calendars persist only for the session (DataProvider in-memory); sets persist (SettingsProvider). When DBT-02 lands, move calendars+events+notes to the same persistence.
+
+**Next:** Prioritize DBT-01 (confirm/undo) given delete now removes events; then DBT-02 persistence.
+
+## 2026-05-30 14:25 — Design
+**Target:** Calendar create/edit + palette picker (D030).
+**Verdict:** Ship
+
+**Findings:**
+- Palette over free-hex was the right call — every user-made calendar stays in the editorial register, and event chips keep their hand-tuned soft fills in both themes. Six swatches is enough range without a rainbow.
+- Calendars section mirrors Sets exactly (quiet `+`, hover-pencil, color swatch checkbox) — one consistent management pattern. The color picker (ringed active swatch) reads instantly.
+- Dialog matches the family (autofocus name, ⌘↵ save, entry motion).
+
+**Accessibility:** Pass — swatches are labelled buttons with `aria-pressed`; rows labelled.
+**Note:** the Delete button's title warns it removes events — good, but a real confirm/undo (DBT-01) is now the priority since deleting a calendar is heavier than deleting one event.
+**Next:** None for this surface.
+
 ## 2026-05-30 13:30 — Engineer
 **Target:** Calendar Sets build (D029) — `CalendarSet` type, `calendarSets` CRUD, `applyCalendars`, `Sidebar` SETS section, `CalendarSetDialog`.
 **Verdict:** Ship

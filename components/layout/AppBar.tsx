@@ -97,7 +97,7 @@ export function AppBar({
         </button>
         <div
           aria-label="Viet"
-          className="inline-flex h-[30px] w-[30px] items-center justify-center rounded-full bg-cal-personal text-xs font-semibold tracking-[0.02em] text-accent-on"
+          className="inline-flex h-[30px] w-[30px] items-center justify-center rounded-full bg-accent text-xs font-semibold tracking-[0.02em] text-accent-on"
         >
           V
         </div>
