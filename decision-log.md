@@ -4,6 +4,77 @@ Every meaningful decision in this project. Newest at top.
 
 ---
 
+## 2026-06-03 — D035: Double-click an event → edit (Enter is the keyboard twin)
+
+**Context:** Viet's idea, mid-session: "Double click to edit the event." D032 made single-click a
+read-first *peek* (detail popover) so editing is deliberate. Double-click is the natural power-user
+shortcut to skip the peek — matches Apple Calendar muscle memory.
+
+**Problem to solve:** the detail popover opens on the *first* click and drops a full-screen backdrop. A
+naive `onDoubleClick` never fires — the second click lands on the backdrop, not the event, so the browser
+can't pair them into a dblclick.
+
+**Choice:**
+- **Debounce the single-click.** A click schedules the detail popover after ~200ms; a `dblclick` arriving
+  first **cancels** the timer and opens the edit form directly. The backdrop never appears mid-gesture.
+- **Keyboard twin (D033):** double-click is mouse-only, so **Enter inside the open detail popover** opens
+  the same edit form. Esc still closes. Now there's a full keyboard path: click/Enter to peek → Enter to edit.
+- ⌘-double-click is ignored (stays multi-select, never edits).
+
+**Why:** keeps D032's model intact (click = read, edit = deliberate) while adding a fast path. The 200ms
+cost on the peek is the price of disambiguation — acceptable for a read-first popover, invisible in practice.
+
+**How to apply:** `clickTimer` ref + debounced `handleEventClick` / `handleEventEdit` in `AppShell`;
+`onDoubleClick` threaded through the event leaves (`EventChip`, `TimeEventBlock`, `WeekAgenda`) as
+`onEventEdit`; `Enter → onEdit` in `EventDetail`.
+
+---
+
+## 2026-06-03 — D034: Quick-create on empty slots/cells (type a title, Enter to save)
+
+**Context:** Viet: "click directly on an empty time slot … type my title/time and save quickly," across
+Day/Week/Month. Today, creating an event means opening the full dialog — too heavy for a fast capture.
+
+**Choice:** Clicking an **empty** spot opens a small anchored **QuickCreate** popover, autofocused on a
+title field:
+- **Month** → click an empty day cell → all-day event on that date.
+- **Week / Day** → click an empty hour slot → 1-hour timed event at that day + hour.
+- **Enter saves** and closes; **Esc cancels**; **"More options"** hands off to the full EventDialog,
+  prefilled with the same date/time. The day-number button stays the keyboard-focusable equivalent.
+- Events/overflow inside a cell `stopPropagation` so they never trigger a stray create.
+
+**Why:** removes the dialog tax on the most common action (capture) while the full form stays one click
+away for detail. Keyboard-first (D033): the whole flow is type → Enter, no mouse needed after the click,
+and `N` / `+ New event` remain the pure-keyboard entry points.
+
+**Scope:** Year view stays navigation-only (click a day/month → drill in), not create. Drag-to-create
+multi-day all-day events (Viet's 4th ask) is deferred — needs multi-day span rendering (DBT-03).
+
+**How to apply:** `QuickCreate` popover; `onSlotClick(iso, hour, anchor)` / `onDayClick(iso, anchor)` carry
+the clicked rect; wired through DayColumn/TimeGrid/Week/Day/Month/MonthCell to `AppShell.quickCreate`.
+
+---
+
+## 2026-06-03 — D033: Keyboard-first is a standing design principle
+
+**Context:** Viet, standing instruction: "Every design decision. Always consider how keyboard works in the
+user workflow … I want users to stay on keyboard as much as possible. They don't need to switch between
+mouse and keyboard all the time."
+
+**Choice:** Promote keyboard-first to **design principle #6** in `CLAUDE.md` (load-bearing). Every
+interaction must have a keyboard path — create, edit, navigate, dismiss — without reaching for the mouse.
+Mouse-only flows (e.g. drag) are the exception and keep a keyboard equivalent. The **Design agent checks
+the keyboard path on every review.**
+
+**Why:** the wedge is a calm, fast tool for a power user (Viet). Hand-off between input devices is friction;
+removing it is a differentiator vs. Google/Apple Calendar. This codifies what was already implicit (D/W/M/Y,
+N, Esc, ⌘-click) so it can't quietly erode.
+
+**How to apply:** principle #6 in `CLAUDE.md`; immediate consequences this session — Esc clears multi-select
+(SelectionBar), Enter edits from the detail popover (D035), QuickCreate is type→Enter (D034).
+
+---
+
 ## 2026-05-29 — D032: Event click = detail (not edit); ⌘-click multi-select + bulk delete
 
 **Context:** Viet's insight: clicking an event should let you *read* it, not jump straight into editing.

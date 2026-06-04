@@ -4,6 +4,31 @@ Daily working notes. Newest at top. What we did, what worked, what's next.
 
 ---
 
+## 2026-06-03 — Wednesday — Keyboard-first cluster: quick-create, dbl-click edit, Esc-clear (D033–D035)
+
+**Did:** Shipped Viet's keyboard-first batch.
+- **D033 — Keyboard-first is now design principle #6** (`CLAUDE.md`). Every interaction needs a keyboard
+  path; Design agent checks it each review. Standing law, not a one-off.
+- **D034 — Quick-create on empty slots.** Click an empty month cell (→ all-day) or week/day hour slot
+  (→ 1-hour timed) → small autofocused `QuickCreate` popover. Type a title, **Enter saves**, **Esc cancels**,
+  **"More options"** opens the full dialog prefilled. `onSlotClick`/`onDayClick` now carry the clicked rect.
+- **D035 — Double-click an event → edit.** Single-click stays a peek (D032); since the detail backdrop
+  would eat the 2nd click, the single-click popover is **debounced ~200ms** and a dblclick cancels it and
+  opens edit directly. **Keyboard twin: Enter in the detail popover edits.** ⌘-dblclick stays select.
+- **Esc clears multi-selection** (SelectionBar) — the design-debt item.
+- Shortcuts help updated (Esc clear, empty-slot create, event peek/edit).
+
+**Verified:** `tsc` clean; fresh-server console clean. Live (preview): month empty cell → QuickCreate
+("Sunday, April 26 · All day"), typed title + Enter → event appears; day hour slot → "Friday, May 29 ·
+00:00 – 01:00"; Esc closes. Event single-click → "Event: Therapy" peek only; double-click "Sprint planning"
+→ edit form prefilled (no peek flash); Enter from the peek → edit; day-view timed block dbl-click → edit.
+
+**Next:** push (auto-deploy). Then Viet's 4th ask — **drag to create multi-day all-day events** — still
+deferred; needs multi-day span rendering (DBT-03). Will present the true-spans vs per-day-instances fork
+before building.
+
+---
+
 ## 2026-05-29 — Friday — Event click = detail; ⌘-click multi-select + bulk delete (D032)
 
 **Did:** Reframed the event interaction per Viet's insight + Strategist/Design:

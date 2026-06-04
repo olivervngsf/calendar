@@ -14,12 +14,13 @@ interface Props {
   anchor: Date;
   visible: Set<CalendarId>;
   onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
-  onDayClick?: (iso: string) => void;
+  onEventEdit?: (event: CalendarEvent) => void;
+  onDayClick?: (iso: string, anchor: DOMRect) => void;
 }
 
 const WEEK_GUTTER = "2.25rem";
 
-export function MonthView({ anchor, visible, onEventClick, onDayClick }: Props) {
+export function MonthView({ anchor, visible, onEventClick, onEventEdit, onDayClick }: Props) {
   const { events } = useData();
   const { showWeekNumbers } = useSettings();
   const selectedIso = isoDate(anchor);
@@ -78,6 +79,7 @@ export function MonthView({ anchor, visible, onEventClick, onDayClick }: Props) 
                 events={byDay.get(day.iso) ?? []}
                 selected={!day.isToday && day.iso === selectedIso}
                 onEventClick={onEventClick}
+                onEventEdit={onEventEdit}
                 onDayClick={onDayClick}
               />
             ))}

@@ -10,26 +10,31 @@ interface Props {
   /** The focused day (highlighted distinctly from today). */
   selected?: boolean;
   onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
-  onDayClick?: (iso: string) => void;
+  onEventEdit?: (event: CalendarEvent) => void;
+  onDayClick?: (iso: string, anchor: DOMRect) => void;
 }
 
 const MAX_VISIBLE = 3;
 
-export function MonthCell({ day, events, selected, onEventClick, onDayClick }: Props) {
+export function MonthCell({ day, events, selected, onEventClick, onEventEdit, onDayClick }: Props) {
   const shown = events.slice(0, MAX_VISIBLE);
   const overflow = events.length - shown.length;
 
   return (
     <div
+      onClick={(e) => onDayClick?.(day.iso, e.currentTarget.getBoundingClientRect())}
       className={
-        "relative flex min-h-0 flex-col gap-1.5 border-b border-r border-border-faint px-2.5 pb-2 pt-2.5 " +
+        "relative flex min-h-0 cursor-pointer flex-col gap-1.5 border-b border-r border-border-faint px-2.5 pb-2 pt-2.5 " +
         (day.faded ? "bg-bg" : "bg-surface")
       }
     >
       <button
         type="button"
-        onClick={() => onDayClick?.(day.iso)}
-        aria-label={day.iso}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDayClick?.(day.iso, e.currentTarget.getBoundingClientRect());
+        }}
+        aria-label={`Create event on ${day.iso}`}
         className={
           "inline-flex h-[22px] w-[22px] items-center justify-center self-start rounded-full font-mono text-xs tracking-[0.01em] transition-colors " +
           (day.isToday
@@ -47,13 +52,16 @@ export function MonthCell({ day, events, selected, onEventClick, onDayClick }: P
       {shown.length > 0 && (
         <div className="flex flex-col gap-0.5">
           {shown.map((e) => (
-            <EventChip key={e.id} event={e} onClick={onEventClick} />
+            <EventChip key={e.id} event={e} onClick={onEventClick} onDoubleClick={onEventEdit} />
           ))}
         </div>
       )}
 
       {overflow > 0 && (
-        <span className="ml-2 mt-0.5 font-mono text-[10px] tracking-[0.04em] text-text-3">
+        <span
+          onClick={(e) => e.stopPropagation()}
+          className="ml-2 mt-0.5 font-mono text-[10px] tracking-[0.04em] text-text-3"
+        >
           +{overflow} more
         </span>
       )}

@@ -11,10 +11,11 @@ interface Props {
   anchor: Date;
   visible: Set<CalendarId>;
   onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
-  onSlotClick?: (iso: string, hour: number) => void;
+  onEventEdit?: (event: CalendarEvent) => void;
+  onSlotClick?: (iso: string, hour: number, anchor: DOMRect) => void;
 }
 
-export function DayView({ anchor, visible, onEventClick, onSlotClick }: Props) {
+export function DayView({ anchor, visible, onEventClick, onEventEdit, onSlotClick }: Props) {
   const days = useMemo<GridDay[]>(
     () => [
       {
@@ -32,6 +33,7 @@ export function DayView({ anchor, visible, onEventClick, onSlotClick }: Props) {
       days={days}
       visible={visible}
       onEventClick={onEventClick}
+      onEventEdit={onEventEdit}
       onSlotClick={onSlotClick}
     />
   );

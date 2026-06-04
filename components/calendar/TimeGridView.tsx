@@ -17,7 +17,8 @@ interface Props {
   /** The focused day's ISO date (highlighted distinctly from today). */
   selectedIso?: string;
   onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
-  onSlotClick?: (iso: string, hour: number) => void;
+  onEventEdit?: (event: CalendarEvent) => void;
+  onSlotClick?: (iso: string, hour: number, anchor: DOMRect) => void;
   onSelectDay?: (iso: string) => void;
 }
 
@@ -29,6 +30,7 @@ export function TimeGridView({
   visible,
   selectedIso,
   onEventClick,
+  onEventEdit,
   onSlotClick,
   onSelectDay,
 }: Props) {
@@ -117,7 +119,12 @@ export function TimeGridView({
             return (
               <div key={d.iso} className="flex flex-col gap-1 px-1">
                 {allDay.map((e) => (
-                  <EventChip key={e.id} event={e} onClick={onEventClick} />
+                  <EventChip
+                    key={e.id}
+                    event={e}
+                    onClick={onEventClick}
+                    onDoubleClick={onEventEdit}
+                  />
                 ))}
               </div>
             );
@@ -148,6 +155,7 @@ export function TimeGridView({
               iso={d.iso}
               events={byDay.get(d.iso) ?? []}
               onEventClick={onEventClick}
+              onEventEdit={onEventEdit}
               onSlotClick={onSlotClick}
               last={i === days.length - 1}
             />

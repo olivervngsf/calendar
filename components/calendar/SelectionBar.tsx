@@ -15,8 +15,21 @@ export function SelectionBar({ count, onDelete, onClear }: Props) {
 
   useEffect(() => {
     const raf = requestAnimationFrame(() => setShow(true));
-    return () => cancelAnimationFrame(raf);
-  }, []);
+    // Esc backs out of the confirm, or clears the selection — stay on keyboard.
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "Escape") return;
+      setConfirming((c) => {
+        if (c) return false;
+        onClear();
+        return c;
+      });
+    }
+    window.addEventListener("keydown", onKey);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [onClear]);
 
   return (
     <div

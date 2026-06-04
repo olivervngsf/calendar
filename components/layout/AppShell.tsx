@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Calendar, CalendarEvent, CalendarSet, Note } from "@/lib/types";
 import { useCalendarState } from "@/hooks/useCalendarState";
 import { useData } from "@/components/providers/DataProvider";
@@ -19,6 +19,7 @@ import { DayView } from "@/components/calendar/DayView";
 import { YearView } from "@/components/calendar/YearView";
 import { EventDialog } from "@/components/calendar/EventDialog";
 import { EventDetail } from "@/components/calendar/EventDetail";
+import { QuickCreate } from "@/components/calendar/QuickCreate";
 import { SelectionBar } from "@/components/calendar/SelectionBar";
 import { CalendarDialog } from "@/components/calendar/CalendarDialog";
 import { CalendarSetDialog } from "@/components/calendar/CalendarSetDialog";
@@ -50,6 +51,11 @@ export function AppShell() {
     event: CalendarEvent;
     anchor: DOMRect;
   } | null>(null);
+  const [quickCreate, setQuickCreate] = useState<{
+    date: string;
+    hour?: number;
+    anchor: DOMRect;
+  } | null>(null);
   const [noteDialog, setNoteDialog] = useState<NoteDialogState | null>(null);
 
   // Default date for a brand-new event: today if it's in the visible month, else the 1st.
@@ -66,23 +72,49 @@ export function AppShell() {
     setEventDialog({ date: defaultEventDate() });
   }, [defaultEventDate]);
 
-  // Single click → read-first detail popover (edit is a deliberate action inside it).
-  // ⌘/Ctrl-click is handled in the event components (toggles multi-selection).
+  // Single click → read-first detail popover; double-click → jump straight to edit.
+  // We defer the single-click popover briefly so a double-click can cancel it —
+  // otherwise the detail backdrop would swallow the second click and dblclick
+  // would never fire. ⌘/Ctrl-click (select) is handled in the event components.
+  const clickTimer = useRef<number | null>(null);
+  useEffect(() => () => {
+    if (clickTimer.current) clearTimeout(clickTimer.current);
+  }, []);
+
   const handleEventClick = useCallback(
     (event: CalendarEvent, anchor: DOMRect) => {
-      setEventDetail({ event, anchor });
+      if (clickTimer.current) clearTimeout(clickTimer.current);
+      clickTimer.current = window.setTimeout(() => {
+        setEventDetail({ event, anchor });
+        clickTimer.current = null;
+      }, 200);
     },
     [],
   );
 
-  const handleDayClick = useCallback((iso: string) => {
-    setEventDialog({ date: iso });
+  // Double-click → edit directly. Cancels the pending detail popover. Keyboard
+  // equivalent (D033): Enter inside the detail popover opens the same edit form.
+  const handleEventEdit = useCallback((event: CalendarEvent) => {
+    if (clickTimer.current) {
+      clearTimeout(clickTimer.current);
+      clickTimer.current = null;
+    }
+    setEventDetail(null);
+    setEventDialog({ event });
   }, []);
 
-  // Click an empty time slot (week/day) → new event at that day + hour.
-  const handleSlotClick = useCallback((iso: string, hour: number) => {
-    setEventDialog({ date: iso, startHour: hour });
+  // Click an empty month day cell → quick-create an all-day event there.
+  const handleDayClick = useCallback((iso: string, anchor: DOMRect) => {
+    setQuickCreate({ date: iso, anchor });
   }, []);
+
+  // Click an empty time slot (week/day) → quick-create at that day + hour.
+  const handleSlotClick = useCallback(
+    (iso: string, hour: number, anchor: DOMRect) => {
+      setQuickCreate({ date: iso, hour, anchor });
+    },
+    [],
+  );
 
   // Click a day (week header / year grid) → open that day.
   const handleSelectDay = useCallback(
@@ -172,6 +204,7 @@ export function AppShell() {
               anchor={cal.anchor}
               visible={data.visible}
               onEventClick={handleEventClick}
+              onEventEdit={handleEventEdit}
               onDayClick={handleDayClick}
             />
           )}
@@ -180,6 +213,7 @@ export function AppShell() {
               anchor={cal.anchor}
               visible={data.visible}
               onEventClick={handleEventClick}
+              onEventEdit={handleEventEdit}
               onSlotClick={handleSlotClick}
               onSelectDay={handleSelectDay}
             />
@@ -189,6 +223,7 @@ export function AppShell() {
               anchor={cal.anchor}
               visible={data.visible}
               onEventClick={handleEventClick}
+              onEventEdit={handleEventEdit}
               onSlotClick={handleSlotClick}
             />
           )}
@@ -233,6 +268,22 @@ export function AppShell() {
             setEventDetail(null);
           }}
           onClose={() => setEventDetail(null)}
+        />
+      )}
+
+      {quickCreate && (
+        <QuickCreate
+          date={quickCreate.date}
+          hour={quickCreate.hour}
+          anchor={quickCreate.anchor}
+          onClose={() => setQuickCreate(null)}
+          onMore={() => {
+            setEventDialog({
+              date: quickCreate.date,
+              startHour: quickCreate.hour,
+            });
+            setQuickCreate(null);
+          }}
         />
       )}
 

@@ -47,6 +47,7 @@ Re-audit at end of Phase 2. Do not drift toward L4 (hooks, orchestrator, audit s
 3. One clear primary action per screen.
 4. Notes are first-class — accessible from every view, scoped to the view.
 5. Onboarding is invisible. No tour, no modal — discoverable affordances.
+6. **Keyboard-first (D033).** Every interaction must have a keyboard path. Users should be able to stay on the keyboard — create, edit, navigate, dismiss — without reaching for the mouse. Mouse-only flows are the exception (e.g. drag), and even those keep a keyboard equivalent. Design agent checks the keyboard path on every review.
 
 ## Roles (locked 2026-05-29 — see D007)
 - **Viet — CEO / Founder.** Owns vision, rules, scope. Edits the law (this file, `strategy.md`, `decision-log.md`, agent files). Makes every final call. Agents recommend; Viet decides. Founder's prerogative overrides any agent verdict — but only on the record.

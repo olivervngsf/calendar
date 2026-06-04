@@ -29,15 +29,16 @@ matching feature status. Agents update this page as part of their critical path 
 |---|---|---|---|---|---|---|
 | DBT-01 | Design | Delete is one-click, no confirm or undo | Calm ≠ silent — accidental loss (Research pain #10) | **P1** | Design · 05-30 | 🟡 Partial 05-30 — calendar delete confirms w/ event count (D031); event/note/set deletes still one-click |
 | DBT-02 | Eng | In-memory store resets on reload | A demo viewer who adds an event and refreshes loses it | **P1** | Eng · 05-30 | Open |
-| DBT-03 | Design | Multi-day events render as per-day badges, not spans | Reads as redundant; every calendar must solve true spans | P2 | Design · 05-29 | Open |
+| DBT-03 | Design | Multi-day events render as per-day badges, not spans | Reads as redundant; every calendar must solve true spans. **Blocks** Viet's drag-to-create multi-day all-day ask (06-03) | P2 | Design · 05-29 | Open |
 | DBT-04 | Design / a11y | Month grid lacks `role="grid"` / `gridcell` | Screen readers can't navigate the calendar | P2 | Design · 05-29 | Open |
 | DBT-05 | Design / a11y | Icon buttons 28px (< 44px target) | Fails WCAG 2.5.5 on touch | P2 | Design · 05-29 | Open |
 | DBT-06 | Design | Dialogs have no entry/exit motion | Motion principles still owed (Phase 1) | P3 | Design · 05-30 | ✅ Addressed 05-30 — entry fade+lift on all dialogs (D025); exit instant by choice (consistent across close paths) |
 | DBT-07 | Eng | `EventDialog` doesn't validate end-after-start | Low stakes now; matters once the time grid lands | P3 | Eng · 05-30 | Open |
 | DBT-08 | Design | "+ New event" button wrapped to two lines | App bar's fixed 240px right column squeezed the cluster after the panel toggle was added | P2 | Viet · 05-30 | ✅ Addressed 05-30 — app bar columns → `auto/1fr/auto` + `whitespace-nowrap` |
 | DBT-09 | Design | D/W/M/Y view switch clipped (only D W showed) | Same fixed-column squeeze clipped the switch | P2 | Viet · 05-30 | ✅ Addressed 05-30 — content-sized columns + `shrink-0` on switch |
+| DBT-10 | Strategy / Eng | **Integration (Google)** — real calendar data, not mock | Proves the experience on live events; the v0.2 unlock. **Scoped slice (06-03 discussion):** read-only import only · OAuth in **testing mode** (≤100 users, no Google app-verification) · `singleEvents=true` so Google expands recurrence (no RRULE engine) · adapter maps Google event → `CalendarEvent` (D012). **Skip** write-back + webhooks (weeks of cost, ~0 portfolio signal). Crosses the v0.1 mock-only line (D001) → needs a scope decision + decision-log entry first. Est: read-only on screen ~1–2 days; polished ~1 wk. | **v0.2** (post-v0.1 ship) | Viet · 06-03 | Open — Viet will return |
 
-*No open strategy debts.*
+*No open strategy debts beyond DBT-10 (scope, parked for v0.2).*
 
 ---
 
@@ -62,7 +63,7 @@ matching feature status. Agents update this page as part of their critical path 
 | Sidebar — account, calendars, mini-months | ✅ | |
 | Responsive collapse (< 900px) | ✅ | Side panels hide |
 | View routing (URL state `?v=&d=`) | ✅ | D011 |
-| Keyboard layer (D/W/M/Y · T · ←/→ · N · ⇧N · ⇧Q · , · [ · ] · ?) | ✅ | ⌘-combos avoided (browser-reserved, D023) |
+| Keyboard layer (D/W/M/Y · T · ←/→ · N · ⇧N · ⇧Q · , · [ · ] · ? · Esc) | ✅ | ⌘-combos avoided (browser-reserved, D023); keyboard-first is principle #6 (D033) |
 | Collapsible side panels (sidebar + notes) | ✅ | App-bar toggles + `[` `]` (D018) |
 | Panel slide animation (sidebar←, notes→) | ✅ | 200ms width+translate; reflows the canvas |
 | Command palette (⌘K) | ⬜ | |
@@ -94,14 +95,16 @@ matching feature status. Agents update this page as part of their critical path 
 | Calendar Sets (saved combinations) | ✅ | D029 — create/edit/delete; seeded Personal/Work |
 | Color system per calendar | ✅ | Curated 6-color palette, light+dark (D030) |
 | Multi-calendar overlay (Month) | ✅ | Conflict-overlap polish pending |
-| Event — create | ✅ | Button · `N` · click day · click hour slot; opens on title, ⌘↵ saves (D027) |
+| Event — create (full dialog) | ✅ | Button · `N`; opens on title, ⌘↵ saves (D027) |
+| Event — quick-create on empty slot/cell | ✅ | D034 — click empty month cell (all-day) / week-day hour slot (timed) → popover, type title + Enter; "More options" → full dialog |
 | Quick add — natural language (`⇧Q`) | ✅ | Parses title + date + yearly; jumps to date (D020, rebound D023) |
 | Note — create via `⇧N` | ✅ | Opens NoteDialog at the active scope (D020, rebound D023) |
 | Event — click shows detail (not edit) | ✅ | D032 — read-first popover, Edit/Delete inside |
-| Event — edit | ✅ | From the detail popover |
+| Event — edit | ✅ | From the detail popover · **double-click** event · **Enter** in popover (D035) |
 | Event — delete | ✅ | From detail · or bulk via multi-select |
-| Event multi-select (⌘-click) + bulk delete | ✅ | D032 — selection bar, delete-with-count |
+| Event multi-select (⌘-click) + bulk delete | ✅ | D032 — selection bar, delete-with-count; **Esc clears** (D033) |
 | Drag to create (week/day) | ⬜ | Stretch |
+| Drag to create multi-day all-day (Mon–Wed) | ⏸️ | Viet ask 06-03 — deferred; needs multi-day spans (DBT-03) |
 
 ## Notes (the wedge)
 | Feature | Status | Notes |

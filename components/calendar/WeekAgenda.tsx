@@ -13,6 +13,7 @@ interface Props {
   anchor: Date;
   visible: Set<CalendarId>;
   onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
+  onEventEdit?: (event: CalendarEvent) => void;
   onSelectDay?: (iso: string) => void;
 }
 
@@ -22,7 +23,7 @@ function timeLabel(e: CalendarEvent): string {
 }
 
 /** Agenda (list) week style: one row per day, events listed with calendar-color bars. */
-export function WeekAgenda({ anchor, visible, onEventClick, onSelectDay }: Props) {
+export function WeekAgenda({ anchor, visible, onEventClick, onEventEdit, onSelectDay }: Props) {
   const { events, colorOf } = useData();
   const { isSelected, toggle } = useSelection();
   const days = useMemo(() => getWeekDays(anchor, TODAY), [anchor]);
@@ -97,6 +98,11 @@ export function WeekAgenda({ anchor, visible, onEventClick, onSelectDay }: Props
                           return;
                         }
                         onEventClick?.(e, ev.currentTarget.getBoundingClientRect());
+                      }}
+                      onDoubleClick={(ev: MouseEvent<HTMLButtonElement>) => {
+                        if (ev.metaKey || ev.ctrlKey) return;
+                        ev.stopPropagation();
+                        onEventEdit?.(e);
                       }}
                       className={
                         "group flex items-stretch gap-3 rounded text-left " +

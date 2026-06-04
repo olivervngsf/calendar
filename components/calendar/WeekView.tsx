@@ -12,7 +12,8 @@ interface Props {
   anchor: Date;
   visible: Set<CalendarId>;
   onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
-  onSlotClick?: (iso: string, hour: number) => void;
+  onEventEdit?: (event: CalendarEvent) => void;
+  onSlotClick?: (iso: string, hour: number, anchor: DOMRect) => void;
   onSelectDay?: (iso: string) => void;
 }
 
@@ -20,6 +21,7 @@ export function WeekView({
   anchor,
   visible,
   onEventClick,
+  onEventEdit,
   onSlotClick,
   onSelectDay,
 }: Props) {
@@ -32,6 +34,7 @@ export function WeekView({
         anchor={anchor}
         visible={visible}
         onEventClick={onEventClick}
+        onEventEdit={onEventEdit}
         onSelectDay={onSelectDay}
       />
     );
@@ -43,6 +46,7 @@ export function WeekView({
       visible={visible}
       selectedIso={isoDate(anchor)}
       onEventClick={onEventClick}
+      onEventEdit={onEventEdit}
       onSlotClick={onSlotClick}
       onSelectDay={onSelectDay}
     />

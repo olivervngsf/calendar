@@ -9,9 +9,10 @@ import { useSelection } from "@/components/providers/SelectionProvider";
 interface Props {
   event: CalendarEvent;
   onClick?: (event: CalendarEvent, anchor: DOMRect) => void;
+  onDoubleClick?: (event: CalendarEvent) => void;
 }
 
-export function EventChip({ event, onClick }: Props) {
+export function EventChip({ event, onClick, onDoubleClick }: Props) {
   const { colorOf } = useData();
   const { isSelected, toggle } = useSelection();
   const color = colorOf(event.calendarId);
@@ -19,6 +20,8 @@ export function EventChip({ event, onClick }: Props) {
   const time = eventTimeLabel(event);
 
   function handleClick(e: MouseEvent<HTMLButtonElement>) {
+    // Never let an event click bubble to the cell's quick-create handler.
+    e.stopPropagation();
     if (e.metaKey || e.ctrlKey) {
       e.preventDefault();
       toggle(event.id);
@@ -27,11 +30,18 @@ export function EventChip({ event, onClick }: Props) {
     onClick?.(event, e.currentTarget.getBoundingClientRect());
   }
 
+  function handleDoubleClick(e: MouseEvent<HTMLButtonElement>) {
+    if (e.metaKey || e.ctrlKey) return; // ⌘-double-click stays selection, not edit
+    e.stopPropagation();
+    onDoubleClick?.(event);
+  }
+
   if (event.allDay) {
     return (
       <button
         type="button"
         onClick={handleClick}
+        onDoubleClick={handleDoubleClick}
         aria-pressed={selected}
         style={{ backgroundColor: `var(--cal-${color}-soft)` }}
         className={
@@ -48,6 +58,7 @@ export function EventChip({ event, onClick }: Props) {
     <button
       type="button"
       onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
       aria-pressed={selected}
       style={{ borderLeftColor: `var(--cal-${color})` }}
       className={

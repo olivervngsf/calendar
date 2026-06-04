@@ -11,9 +11,10 @@ import { useSelection } from "@/components/providers/SelectionProvider";
 interface Props {
   placed: PlacedEvent;
   onClick?: (event: CalendarEvent, anchor: DOMRect) => void;
+  onDoubleClick?: (event: CalendarEvent) => void;
 }
 
-export function TimeEventBlock({ placed, onClick }: Props) {
+export function TimeEventBlock({ placed, onClick, onDoubleClick }: Props) {
   const { colorOf } = useData();
   const { isSelected, toggle } = useSelection();
   const { event, startMin, endMin, lane, lanes } = placed;
@@ -37,6 +38,11 @@ export function TimeEventBlock({ placed, onClick }: Props) {
           return;
         }
         onClick?.(event, e.currentTarget.getBoundingClientRect());
+      }}
+      onDoubleClick={(e: MouseEvent<HTMLButtonElement>) => {
+        if (e.metaKey || e.ctrlKey) return;
+        e.stopPropagation();
+        onDoubleClick?.(event);
       }}
       style={{
         top,

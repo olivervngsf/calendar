@@ -50,13 +50,19 @@ export function EventDetail({ event, anchor, onEdit, onDelete, onClose }: Props)
     return () => cancelAnimationFrame(raf);
   }, [anchor]);
 
+  // Keyboard path (D033): Esc closes; Enter opens edit — the keyboard
+  // equivalent of double-clicking the event.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
+      else if (e.key === "Enter") {
+        e.preventDefault();
+        onEdit();
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [onClose, onEdit]);
 
   return (
     <>

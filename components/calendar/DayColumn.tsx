@@ -9,14 +9,15 @@ interface Props {
   iso: string;
   events: CalendarEvent[];
   onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
-  onSlotClick?: (iso: string, hour: number) => void;
+  onEventEdit?: (event: CalendarEvent) => void;
+  onSlotClick?: (iso: string, hour: number, anchor: DOMRect) => void;
   /** Hide the right border on the last column. */
   last?: boolean;
 }
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
-export function DayColumn({ iso, events, onEventClick, onSlotClick, last }: Props) {
+export function DayColumn({ iso, events, onEventClick, onEventEdit, onSlotClick, last }: Props) {
   const placed = useMemo(() => layoutTimedEvents(events), [events]);
 
   return (
@@ -30,7 +31,7 @@ export function DayColumn({ iso, events, onEventClick, onSlotClick, last }: Prop
           key={h}
           type="button"
           aria-label={`${iso} ${String(h).padStart(2, "0")}:00`}
-          onClick={() => onSlotClick?.(iso, h)}
+          onClick={(e) => onSlotClick?.(iso, h, e.currentTarget.getBoundingClientRect())}
           style={{ height: HOUR_PX }}
           className="block w-full border-b border-border-faint transition-colors hover:bg-surface-soft/60"
         />
@@ -38,7 +39,12 @@ export function DayColumn({ iso, events, onEventClick, onSlotClick, last }: Prop
 
       {/* Positioned events */}
       {placed.map((p) => (
-        <TimeEventBlock key={p.event.id} placed={p} onClick={onEventClick} />
+        <TimeEventBlock
+          key={p.event.id}
+          placed={p}
+          onClick={onEventClick}
+          onDoubleClick={onEventEdit}
+        />
       ))}
     </div>
   );
