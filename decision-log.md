@@ -4,6 +4,28 @@ Every meaningful decision in this project. Newest at top.
 
 ---
 
+## 2026-05-29 — D031: Confirm calendar delete when it has events (partial DBT-01)
+
+**Context:** Since deleting a calendar now cascades its events (D030), a one-click delete could silently
+wipe a lot of data. Viet: prompt with the number of events before deleting.
+
+**Choice:** An **inline confirmation** in the calendar dialog. Clicking Delete:
+- **has events** → swaps the footer for a confirm panel: "Delete *Plan*? Its **14 events** will be removed
+  too — this can't be undone." with Cancel / "Delete calendar".
+- **no events** → deletes immediately (an empty calendar is safe; no nag).
+
+**Why:** "Calm ≠ silent" (Research pain #10) — the calm app *quietly protects* you on the destructive,
+high-stakes action without adding friction to the safe one. Inline (not a stacked modal) keeps it simple
+and on-voice. The destructive button uses `bg-text/text-bg` (monochrome weight, no red token needed).
+
+**Scope:** calendar delete only — the highest-stakes delete. Event / note / set deletes stay one-click for
+now (lighter loss). Undo across the board remains the open part of DBT-01.
+
+**How to apply:** `confirming` state + `requestDelete`/`doDelete` in `components/calendar/CalendarDialog.tsx`;
+event count = events on the calendar.
+
+---
+
 ## 2026-05-29 — D030: Calendars are user-managed — create/edit/delete + curated color palette
 
 **Context:** Viet wanted full calendar CRUD (not just the fixed Personal/Plan/Shared·Erich). This makes

@@ -27,7 +27,7 @@ matching feature status. Agents update this page as part of their critical path 
 
 | ID | Type | Item | Why it matters | Priority | Raised | Status |
 |---|---|---|---|---|---|---|
-| DBT-01 | Design | Delete is one-click, no confirm or undo | Calm ≠ silent — accidental loss (Research pain #10) | **P1** | Design · 05-30 | Open |
+| DBT-01 | Design | Delete is one-click, no confirm or undo | Calm ≠ silent — accidental loss (Research pain #10) | **P1** | Design · 05-30 | 🟡 Partial 05-30 — calendar delete confirms w/ event count (D031); event/note/set deletes still one-click |
 | DBT-02 | Eng | In-memory store resets on reload | A demo viewer who adds an event and refreshes loses it | **P1** | Eng · 05-30 | Open |
 | DBT-03 | Design | Multi-day events render as per-day badges, not spans | Reads as redundant; every calendar must solve true spans | P2 | Design · 05-29 | Open |
 | DBT-04 | Design / a11y | Month grid lacks `role="grid"` / `gridcell` | Screen readers can't navigate the calendar | P2 | Design · 05-29 | Open |
@@ -90,6 +90,7 @@ matching feature status. Agents update this page as part of their critical path 
 |---|---|---|
 | Calendar list + visibility toggles | ✅ | |
 | Calendar CRUD (create/edit/delete) | ✅ | D030 — palette color; delete cascades events |
+| Calendar delete confirm (with event count) | ✅ | D031 — prompts only when it has events |
 | Calendar Sets (saved combinations) | ✅ | D029 — create/edit/delete; seeded Personal/Work |
 | Color system per calendar | ✅ | Curated 6-color palette, light+dark (D030) |
 | Multi-calendar overlay (Month) | ✅ | Conflict-overlap polish pending |

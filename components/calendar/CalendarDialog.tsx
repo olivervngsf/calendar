@@ -13,13 +13,17 @@ interface Props {
 }
 
 export function CalendarDialog({ calendar, onClose }: Props) {
-  const { addCalendar, updateCalendar, deleteCalendar } = useData();
+  const { events, addCalendar, updateCalendar, deleteCalendar } = useData();
   const isEdit = Boolean(calendar);
 
   const [name, setName] = useState(calendar?.name ?? "");
   const [color, setColor] = useState<CalendarColor>(calendar?.color ?? "teal");
+  const [confirming, setConfirming] = useState(false);
 
   const canSave = name.trim().length > 0;
+  const eventCount = calendar
+    ? events.filter((e) => e.calendarId === calendar.id).length
+    : 0;
 
   function handleSave() {
     if (!canSave) return;
@@ -29,7 +33,13 @@ export function CalendarDialog({ calendar, onClose }: Props) {
     onClose();
   }
 
-  function handleDelete() {
+  // Confirm before deleting a calendar that still has events (they'd be removed too).
+  function requestDelete() {
+    if (eventCount > 0) setConfirming(true);
+    else doDelete();
+  }
+
+  function doDelete() {
     if (calendar) deleteCalendar(calendar.id);
     onClose();
   }
@@ -84,37 +94,64 @@ export function CalendarDialog({ calendar, onClose }: Props) {
           </div>
         </div>
 
-        <div className="mt-1 flex items-center justify-between">
-          {isEdit ? (
-            <button
-              type="button"
-              onClick={handleDelete}
-              title="Deletes this calendar and its events"
-              className="rounded border border-transparent px-3 py-1.5 text-[13px] text-text-3 transition-colors hover:border-border-strong hover:text-text"
-            >
-              Delete
-            </button>
-          ) : (
-            <span />
-          )}
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded border border-border-strong bg-surface px-3.5 py-1.5 text-[13px] text-text-2 transition-colors hover:border-text-2"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={!canSave}
-              className="rounded bg-accent px-3.5 py-1.5 text-[13px] font-medium text-accent-on transition-opacity disabled:opacity-40"
-            >
-              {isEdit ? "Save" : "Create calendar"}
-            </button>
+        {confirming ? (
+          <div className="mt-1 rounded-md border border-border-strong bg-surface-soft px-3.5 py-3">
+            <p className="text-[13px] leading-relaxed text-text">
+              Delete <span className="font-semibold">{calendar?.name}</span>? Its{" "}
+              <span className="font-semibold">
+                {eventCount} {eventCount === 1 ? "event" : "events"}
+              </span>{" "}
+              will be removed too — this can&apos;t be undone.
+            </p>
+            <div className="mt-3 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirming(false)}
+                className="rounded border border-border-strong bg-surface px-3.5 py-1.5 text-[13px] text-text-2 transition-colors hover:border-text-2"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={doDelete}
+                className="rounded bg-text px-3.5 py-1.5 text-[13px] font-medium text-bg transition-opacity hover:opacity-90"
+              >
+                Delete calendar
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="mt-1 flex items-center justify-between">
+            {isEdit ? (
+              <button
+                type="button"
+                onClick={requestDelete}
+                className="rounded border border-transparent px-3 py-1.5 text-[13px] text-text-3 transition-colors hover:border-border-strong hover:text-text"
+              >
+                Delete
+              </button>
+            ) : (
+              <span />
+            )}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded border border-border-strong bg-surface px-3.5 py-1.5 text-[13px] text-text-2 transition-colors hover:border-text-2"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={!canSave}
+                className="rounded bg-accent px-3.5 py-1.5 text-[13px] font-medium text-accent-on transition-opacity disabled:opacity-40"
+              >
+                {isEdit ? "Save" : "Create calendar"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </Dialog>
   );

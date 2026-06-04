@@ -4,6 +4,19 @@ Daily working notes. Newest at top. What we did, what worked, what's next.
 
 ---
 
+## 2026-05-29 — Friday — Confirm calendar delete (D031, partial DBT-01)
+
+**Did:** Deleting a calendar that has events now prompts first — an inline confirm in the dialog with the
+**event count** ("Delete Plan? Its 14 events will be removed too — this can't be undone."). Empty calendars
+delete immediately (no nag). Closes the highest-stakes slice of DBT-01.
+
+**Verified:** build clean + static; fresh-server console clean. Live: Delete on Plan (14 events) → confirm
+with count; "Delete calendar" → Plan + Sprint events gone; empty "Temp" → deletes with no prompt.
+
+**Next:** push (auto-deploy); remaining DBT-01 = undo + confirm on event/note/set deletes; DBT-02 persistence.
+
+---
+
 ## 2026-05-29 — Friday — Calendar CRUD + palette (D030)
 
 **Did:** Made calendars **user-managed** (create/edit/delete), with a **curated 6-color palette** (locked

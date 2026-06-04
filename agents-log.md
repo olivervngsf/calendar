@@ -16,6 +16,18 @@ Every agent review, decision challenge, or critique gets one entry here. Newest 
 
 ---
 
+## 2026-05-30 15:00 — Design
+**Target:** Calendar delete confirmation with event count (D031, partial DBT-01).
+**Verdict:** Ship
+
+**Findings:**
+- This is exactly the "calm ≠ silent" fix I'd flagged: the destructive, cascading delete now states the cost ("Its 14 events will be removed too") and asks once — but only when there's something to lose. Empty calendars still delete in one click, so no friction where it isn't earned. Right balance.
+- Inline confirm (footer swap) over a stacked modal keeps it calm and avoids modal-on-modal. Copy is plain and specific; the `bg-text/text-bg` button reads as destructive without inventing a red token — stays in the monochrome palette.
+
+**Accessibility:** Pass — confirm is keyboard-reachable; focus stays in the dialog.
+**Notes:** Good first slice of DBT-01. The honest next steps: a brief **undo** (toast) after destructive actions, and the same confirm pattern for set delete (also cascades nothing, lower stakes) — undo is the higher-value of the two.
+**Next:** Undo affordance for deletes (toast), then revisit.
+
 ## 2026-05-30 14:30 — Engineer
 **Target:** Calendar CRUD refactor (D030) — dynamic calendars, palette colors, store re-home.
 **Verdict:** Ship with notes
