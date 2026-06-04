@@ -4,6 +4,55 @@ Every meaningful decision in this project. Newest at top.
 
 ---
 
+## 2026-06-04 — D033: Hired UX Writer + Marketing agents; shared GTM note; the $100k value mandate
+
+**Context:** Viet wants the product *sold*, not just built — a way to make its value legible at **over
+$100k** — and a writer to own the words that carry it. No existing agent owned market positioning, pricing,
+or product copy as a first-class job (Design enforces microcopy craft but doesn't *write* it; Strategist
+gates truth but doesn't pitch). `Agents/README.md` says "don't add agents unless a real gap shows up" — this
+is that gap, and this is the founder call on the record (founder's prerogative, per CLAUDE.md Roles).
+
+**Choices:**
+- **Two new agents (bench: 4 → 6).**
+  - **UX Writer** (`Agents/ux-writer.md`) — owns in-product copy, naming, empty states, voice consistency,
+    and the *words* of the pitch. Drafts 2–3 options with a recommendation; **Design** sets their craft,
+    **Strategist** checks the claim is true. Does not edit product code.
+  - **Marketing** (`Agents/marketing.md`) — owns positioning, the value case, pricing logic, GTM narrative.
+    Carries **the $100k mandate**: always able to answer "where's the $100k," with the math shown. Sells
+    *within* the anti-goals (`strategy §5`); **Strategist** gates truth; **UX Writer** sets the words.
+- **A shared note, `go-to-market.md`,** where the two draft *together*. **Every idea is attributed** to the
+  agent who proposed it (`— Marketing` / `— UX Writer`) so Viet sees whose call each line is, and
+  disagreements keep both takes.
+- **The $100k framing (Marketing's recommendation for v0.1): career value.** v0.1 is a portfolio piece
+  (`strategy §1`); its job is to return six figures in Viet's career. ARR (~1,000 × $9/mo ≈ $100k) and
+  acquisition/IP value are held in reserve. All three framings show their arithmetic.
+
+**Why:**
+- The wedge is only worth what we can make a buyer *understand* it's worth. Building without a sale story
+  leaves the value implicit — a showcase that doesn't pitch itself undersells the craft.
+- Splitting "the argument" (Marketing) from "the words" (UX Writer) mirrors how the existing bench already
+  separates concerns (Strategist gates, Design sets, Engineer wires). Clean lanes, no overlap.
+- The $100k mandate forces a *number with math*, not a vibe — and the anti-goal guardrail keeps us from
+  inflating that number by becoming the team-scheduler / growth-app we said we'd never be.
+
+**Guardrails (binding):**
+- Marketing sells within `strategy §5`. Inflating the value case by drifting toward an anti-goal = auto-kill
+  the claim, not the anti-goal.
+- Voice (`§6`) holds in market copy too — calm, editorial, never hype.
+- Every claim must be true. Unbackable claims are debts, not headlines; Strategist verifies.
+- Tripwire (matching D008's discipline): if UX Writer **or** Marketing logs 0 invocations in the next 4
+  working sessions, kill it. Don't keep scaffolding that doesn't fire.
+
+**How to apply:** invoke by name ("UX Writer, write X" / "Marketing, position Y"). GTM/value work lands in
+`go-to-market.md` (attributed) **and** `agents-log.md`. Registered in `CLAUDE.md`, `context-primer.md`,
+`Agents/README.md`.
+
+**Tradeoff:** more bench = more surface to keep aligned, and a step toward L2/L4 we said we'd defer. Mitigated
+by the tripwire and by keeping both agents recommend-only (no code edits, no shipping). If they don't earn
+their keep, they're cut.
+
+---
+
 ## 2026-05-29 — D032: Event click = detail (not edit); ⌘-click multi-select + bulk delete
 
 **Context:** Viet's insight: clicking an event should let you *read* it, not jump straight into editing.

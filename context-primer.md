@@ -39,6 +39,8 @@ World-class craft. Calm pace. Every minute earned through clarity, not engagemen
 - **D010** — Moved project to `/05 PRACTICE/Calendar app` (canonical root).
 - **D011–D014** — First real build: URL view-state, mock data model, dark palette, in-memory CRUD store.
 - **D015** — `build-tracker.md` is the live status board. Engineer owns Status; Design/Strategist file debts; Viet prioritizes.
+- **D016–D032** — Build decisions (calendars CRUD, palette, delete-confirm, event detail-on-click + multi-select). See `decision-log.md`.
+- **D033** — Hired UX Writer + Marketing (bench → 6). They pair on `go-to-market.md`; built to make the value legible at >$100k without drifting into anti-goals. Founder call on the record.
 
 ## Anti-goals (binding — `strategy.md` §5)
 Not a project manager. Not a team scheduler. Not a productivity-bro app. Not an AI summarizer. Not a notification engine. Not engagement-optimized.
@@ -50,18 +52,20 @@ If a proposed feature drifts toward these → CEO auto-Kill.
 
 If copy drifts from this → Design Ship-with-notes minimum.
 
-## The four agents
+## The six agents
 - **Engineer** (`Agents/engineer.md`) — before any code change. Each follows a Critical path.
 - **Strategist** (`Agents/strategist.md`) — before any scope change.
 - **Design** (`Agents/design.md`) — after any UI work.
 - **Research** (`Agents/research.md`) — when external material needs scouting. Informs, does not judge. *(Tripwire: kill if 0 invocations in 3 sessions.)*
+- **UX Writer** (`Agents/ux-writer.md`) — when product words need writing (microcopy, naming, taglines). Drafts the words; Design sets them. *(Hired D033.)*
+- **Marketing** (`Agents/marketing.md`) — when the product needs selling (positioning, the $100k value case, pricing, GTM). Sells within the anti-goals; Strategist gates truth. *(Hired D033.)*
 
-All four append to `agents-log.md`. Dashboard: cowork artifact `agents-dashboard`. They serve Viet (CEO); recommendations only.
+UX Writer + Marketing pair on `go-to-market.md` — ideas there are attributed to whichever proposed them. All six append to `agents-log.md`. Dashboard: cowork artifact `agents-dashboard`. They serve Viet (CEO); recommendations only.
 
 ## Agentic OS audit (per D006)
 - **L1 Identity** — strong. CLAUDE.md, strategy, decision-log, context-primer.
 - **L2 Knowledge** — thin (notes only, no skills/MCPs in project). Acceptable for v0.1.
-- **L3 Workers** — in place. 3 agents.
+- **L3 Workers** — in place. 6 agents (added UX Writer + Marketing, D033).
 - **L4 Automation** — empty. Stay empty until v0.2.
 
 Re-audit at end of Phase 2.

@@ -21,7 +21,7 @@ Build a modern calendar app to rival Apple Calendar + Google Calendar. Showcase 
 Where we sit on the 4-layer agentic stack:
 - **L1 Identity** — strong (this file, `strategy.md`, `decision-log.md`, `context-primer.md`).
 - **L2 Knowledge** — thin (project notes only; no project skills/MCPs). Acceptable for v0.1.
-- **L3 Workers** — in place (3 agents in `Agents/`).
+- **L3 Workers** — in place (6 agents in `Agents/` as of D033).
 - **L4 Automation** — empty. Stay empty until v0.2.
 
 Re-audit at end of Phase 2. Do not drift toward L4 (hooks, orchestrator, audit skills) prematurely.
@@ -50,17 +50,21 @@ Re-audit at end of Phase 2. Do not drift toward L4 (hooks, orchestrator, audit s
 
 ## Roles (locked 2026-05-29 — see D007)
 - **Viet — CEO / Founder.** Owns vision, rules, scope. Edits the law (this file, `strategy.md`, `decision-log.md`, agent files). Makes every final call. Agents recommend; Viet decides. Founder's prerogative overrides any agent verdict — but only on the record.
-- **Agents — the bench.** Three opinionated reviewers (below) plus Research (under consideration). They surface signal, name tradeoffs, block bad calls. They do not ship and they do not outrank Viet.
+- **Agents — the bench.** Three opinionated reviewers, a scout (Research), and a writer + marketer (UX Writer, Marketing — below). They surface signal, name tradeoffs, block bad calls. They do not ship and they do not outrank Viet.
 
-## Agents (locked 2026-05-29 — see D004, D007, D008)
-Four agents: three opinionated reviewers + one scout. Definitions in `Agents/`. Each appends to `agents-log.md`. Dashboard: cowork artifact `agents-dashboard`.
+## Agents (locked 2026-05-29 — see D004, D007, D008; extended 2026-06-04 — D033)
+Six agents: three opinionated reviewers, one scout, plus a writer and a marketer. Definitions in `Agents/`. Each appends to `agents-log.md`. Dashboard: cowork artifact `agents-dashboard`.
 
 - **Engineer** (`Agents/engineer.md`) — invoke before any code change. Owns code review, stack consistency, perf, type safety, a11y wiring.
 - **Strategist** (`Agents/strategist.md`) — invoke before scope changes or when defending a concept. Owns concept challenge, scope discipline, strategic tradeoffs. *(Renamed from "CEO" in D007.)*
 - **Design** (`Agents/design.md`) — invoke after any UI work. Owns visual craft, IxD, accessibility (WCAG AA), microcopy, motion.
 - **Research** (`Agents/research.md`) — invoke when external material needs scouting/synthesizing. Owns external research, pattern recognition, structured readouts. Does NOT judge — informs. *(Hired in D008. Tripwire: kill if 0 invocations in next 3 sessions.)*
+- **UX Writer** (`Agents/ux-writer.md`) — invoke when product words need writing (microcopy, naming, empty states, taglines). Owns in-product copy and voice consistency; drafts the words, Design sets them. *(Hired in D033.)*
+- **Marketing** (`Agents/marketing.md`) — invoke when the product needs selling. Owns positioning, the value case (the $100k mandate), pricing logic, GTM narrative; sells within the anti-goals, Strategist gates truth. *(Hired in D033.)*
 
-Invocation: explicit by name ("Engineer, review X" / "Strategist, challenge Y" / "Design, review Z" / "Research, scan W"). Claude may auto-suggest the relevant agent when a request matches a trigger.
+UX Writer + Marketing pair on the shared note `go-to-market.md` — every idea there is attributed to the agent who proposed it (`— UX Writer` / `— Marketing`).
+
+Invocation: explicit by name ("Engineer, review X" / "Strategist, challenge Y" / "Design, review Z" / "Research, scan W" / "UX Writer, write V" / "Marketing, position U"). Claude may auto-suggest the relevant agent when a request matches a trigger.
 
 ## Behavior rules for Claude in this project
 - **Start every new session by reading `context-primer.md`.** Then drill into deeper files only on demand.

@@ -4,6 +4,34 @@ Daily working notes. Newest at top. What we did, what worked, what's next.
 
 ---
 
+## 2026-06-04 — Thursday — Hired UX Writer + Marketing; shared GTM note; the $100k value case (D033)
+
+**Did:** Took the bench from 4 → 6 (founder call, on the record — D033):
+- **UX Writer** (`Agents/ux-writer.md`) — owns product words (microcopy, naming, empty states, taglines) +
+  voice consistency. Drafts 2–3 options w/ a pick; Design sets craft, Strategist checks truth. No code edits.
+- **Marketing** (`Agents/marketing.md`) — owns positioning, pricing, GTM, and **the $100k mandate** (always
+  answer "where's the $100k," math shown). Sells *within* the anti-goals; Strategist gates truth.
+- **`go-to-market.md`** — the shared note where the two draft together. **Every idea is attributed** to the
+  agent who proposed it (`— Marketing` / `— UX Writer`); disagreements keep both takes for Viet to pick.
+
+**The value case (draft v0.1):** load-bearing claim = "The only calendar where your notes live where your
+time does." Three $100k framings with arithmetic — **career value** (recommended for v0.1), prosumer ARR
+(~1,000 × $9/mo ≈ $100k), acquisition/IP. Hero line recommended: **"Time, with a place to think."** Plus a
+60-second pitch, a 6-section landing skeleton, and proof points tied to real build decisions.
+
+**Registered the law:** `CLAUDE.md` (Agents + L3 audit), `context-primer.md` (six agents + D033 + audit),
+`Agents/README.md` (table, boundaries, "adding an agent" rationale). Logged D033; two first-pass entries in
+`agents-log.md`.
+
+**Guardrails:** value case never drifts into team-scheduler/AI/growth (`strategy §5`); voice holds in market
+copy; every claim must be true (Strategist verifies). **Tripwire:** kill either agent if 0 invocations in 4
+sessions (matches D008 discipline).
+
+**Next:** Strategist to verify the §6 proof points; Design to set the chosen lines; Viet to settle the four
+open decisions in `go-to-market.md §7` (which framing leads, hero line, pricing stance, primary CTA).
+
+---
+
 ## 2026-05-29 — Friday — Event click = detail; ⌘-click multi-select + bulk delete (D032)
 
 **Did:** Reframed the event interaction per Viet's insight + Strategist/Design:

@@ -13,6 +13,27 @@ Every agent review, decision challenge, or critique gets one entry here. Newest 
 ```
 
 *Note: "Strategist" was named "CEO" in entries before D007 (2026-05-29). Historical labels preserved as-is.*
+*Note: UX Writer + Marketing joined the bench 2026-06-04 (D033). Their formats are in their agent files.*
+
+---
+
+## 2026-06-04 10:42 — Marketing
+**Target:** First pass on `go-to-market.md` — the $100k value case + positioning.
+**Claim:** "The only calendar where your notes live where your time does." The wedge is the pitch.
+**Where's the $100k:** Career value (recommended for v0.1) — one role-band move or a 3-mo retainer clears six
+figures; ARR (~1,000 × $9/mo ≈ $100k) and acquisition/IP held in reserve. Math shown in §3.
+**Anti-goal check:** Clear — value case stays inside `strategy §5` (no seats, no AI, no growth loops).
+**Next:** UX Writer to set the hero + pitch lines; Strategist to verify the §6 proof points are all true.
+
+---
+
+## 2026-06-04 10:40 — UX Writer
+**Target:** First pass on `go-to-market.md` — hero line, 60-second pitch, landing skeleton copy.
+**Recommended:** Hero — **"Time, with a place to think."**
+**Alternates:** "Your calendar, finally with a memory." / "Plan in prose. Remember in narrative." (use the
+latter as a mid-page header — earns its edge once the reader's in).
+**Voice check:** On-voice — calm, editorial; cut "Try/Get started" CTAs for the more confident "See the calendar →".
+**Next:** Design to set the words once Viet picks; Marketing's claims pending Strategist truth-check.
 
 ---
 
