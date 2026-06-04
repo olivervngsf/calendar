@@ -16,6 +16,13 @@ Every agent review, decision challenge, or critique gets one entry here. Newest 
 
 ---
 
+## 2026-06-04 — Research
+**Target:** Keyboard shortcuts — Apple vs Google vs Notion; best-fit set + design-debt proposal
+**Output:** Research/2026-06-04-keyboard-shortcuts.md
+**Implications named for:** Engineer (WCAG 2.1.4 off/remap in `useKeyboardShortcuts.ts`; `⌘K` is additive) | Strategist (cap shortcut count — Notion's 69 = anti-goal maximalism) | Design (keyboard-operate-on-event + calm selected state)
+**Proposed debts:** DBT-10 (2.1.4 off/remap, **P1**) · DBT-11 (`⌘K` palette, **P1**) · DBT-12/13 (operate-on-event + selected state, P2) · DBT-14–17 (searchable help, numeric/vim aliases, go-to-date, in-context hints, P3)
+**Next:** Viet to review the debt table and decide which rows to file into build-tracker (Research does not edit the tracker).
+
 ## 2026-05-30 13:30 — Engineer
 **Target:** Calendar Sets build (D029) — `CalendarSet` type, `calendarSets` CRUD, `applyCalendars`, `Sidebar` SETS section, `CalendarSetDialog`.
 **Verdict:** Ship
