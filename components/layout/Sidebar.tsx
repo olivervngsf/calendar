@@ -21,6 +21,8 @@ interface Props {
   onPickDate: (iso: string) => void;
   /** The focused day's ISO date (highlighted distinctly from today). */
   selectedIso: string;
+  /** Open the keyboard-shortcuts help (same as pressing `?`). */
+  onOpenShortcuts: () => void;
 }
 
 export function Sidebar({
@@ -34,6 +36,7 @@ export function Sidebar({
   onEditCalendar,
   onPickDate,
   selectedIso,
+  onOpenShortcuts,
 }: Props) {
   const { events, calendars } = useData();
   const { calendarSets } = useSettings();
@@ -192,13 +195,18 @@ export function Sidebar({
         <MiniMonth month={nextMonth} onPickDate={onPickDate} selectedIso={selectedIso} />
       </div>
 
-      {/* Command hint */}
-      <div className="mt-auto flex items-center gap-2 rounded-md border border-dashed border-border-base px-3 py-2.5 font-mono text-[11px] text-text-3">
+      {/* Command hint — opens the shortcuts help (also `?`) */}
+      <button
+        type="button"
+        onClick={onOpenShortcuts}
+        aria-label="Show keyboard shortcuts"
+        className="mt-auto flex items-center gap-2 rounded-md border border-dashed border-border-base px-3 py-2.5 font-mono text-[11px] text-text-3 transition-colors hover:border-border-strong hover:text-text-2"
+      >
         <kbd className="rounded-[3px] border border-border-strong bg-surface px-1.5 py-px text-[10px] text-text-2">
           ?
         </kbd>
         <span>shortcuts</span>
-      </div>
+      </button>
     </aside>
   );
 }

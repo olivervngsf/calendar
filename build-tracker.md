@@ -38,6 +38,12 @@ matching feature status. Agents update this page as part of their critical path 
 | DBT-09 | Design | D/W/M/Y view switch clipped (only D W showed) | Same fixed-column squeeze clipped the switch | P2 | Viet · 05-30 | ✅ Addressed 05-30 — content-sized columns + `shrink-0` on switch |
 | DBT-10 | Strategy / Eng | **Integration (Google)** — real calendar data, not mock | Proves the experience on live events; the v0.2 unlock. **Scoped slice (06-03 discussion):** read-only import only · OAuth in **testing mode** (≤100 users, no Google app-verification) · `singleEvents=true` so Google expands recurrence (no RRULE engine) · adapter maps Google event → `CalendarEvent` (D012). **Skip** write-back + webhooks (weeks of cost, ~0 portfolio signal). Crosses the v0.1 mock-only line (D001) → needs a scope decision + decision-log entry first. Est: read-only on screen ~1–2 days; polished ~1 wk. | **v0.2** (post-v0.1 ship) | Viet · 06-03 | Open — Viet will return |
 
+| DBT-11 | Design | "? shortcuts" hint isn't clickable — click should open the help | Mouse users can't discover shortcuts; the affordance looked tappable but was dead. Adds the mouse path to an action that already has the `?` keyboard path (parity, D033) | P3 | Viet · 06-03 | ✅ Addressed 06-04 — hint is now a `<button>` → opens help (D036) |
+| DBT-12 | Design | Notes panel header should stick on scroll — title + scope on **1 line** | The whole panel scrolled, so the header drifted away and you lost which scope (Day/Week/Month) the notes belong to | P3 | Viet · 06-03 | ✅ Addressed 06-04 — sticky single-line header "Notes · {scope}" (D036) |
+| DBT-13 | Design | "+ New note" pinned to panel bottom (sticky footer) | The create affordance scrolled with the list; want it always reachable for fast capture | P3 | Viet · 06-03 | ✅ Addressed 06-04 — sticky footer, always reachable (D036) |
+
+**DBT-12 + DBT-13 done as one layout pass (D036):** Notes `<aside>` is now 3 rows — sticky header (shrink-0) · scrollable list (flex-1 overflow-y-auto) · sticky footer (shrink-0).
+
 *No open strategy debts beyond DBT-10 (scope, parked for v0.2).*
 
 ---

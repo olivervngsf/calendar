@@ -194,6 +194,7 @@ export function AppShell() {
               onEditCalendar={(calendar) => setCalendarDialog({ calendar })}
               onPickDate={handleFocusDate}
               selectedIso={isoDate(cal.anchor)}
+              onOpenShortcuts={() => setHelpOpen(true)}
             />
           </div>
         </div>

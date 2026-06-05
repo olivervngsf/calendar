@@ -4,6 +4,32 @@ Every meaningful decision in this project. Newest at top.
 
 ---
 
+## 2026-06-04 — D036: Notes panel is a fixed-chrome surface; shortcuts hint is clickable
+
+**Context:** Three debts from 06-03 (DBT-11/12/13). The Notes panel scrolled as one block — header drifted
+off (you lost the scope) and the "+ New note" button scrolled away. And the "? shortcuts" hint *looked*
+tappable but was a dead `<div>`.
+
+**Choice:**
+- **Notes panel → fixed chrome, scrolling content.** The `<aside>` becomes 3 rows: **sticky header**
+  (shrink-0) · **scrollable list** (flex-1, `overflow-y-auto`, `min-h-0`) · **sticky footer** (shrink-0).
+  Header collapses to **one line** — "Notes" + the scope (`May 2026 · this month`) side by side, divider
+  under it. Footer holds "+ New note for {scope}", always reachable for fast capture.
+  - **Scroll-edge fade (Viet, 06-04):** the list softly fades where it meets the header/footer — but
+    *scroll-aware*: a `mask-image` linear-gradient fades only the edge that has content scrolled past it
+    (no fade at the true top/bottom). Content dissolves into the chrome instead of cutting at a hard line.
+- **"? shortcuts" hint → `<button>`** that opens the help dialog (`onOpenShortcuts` → `setHelpOpen`). Same
+  action as pressing `?` — now with a mouse path too (keyboard-first parity, D033).
+
+**Why:** the panel header is *context* (which scope am I noting?) and the create button is the panel's one
+job — neither should scroll out of reach. Fixed chrome keeps both anchored. The clickable hint closes a
+discoverability gap for mouse users at zero cost.
+
+**How to apply:** `NotesPanel.tsx` 3-row flex layout; `onOpenShortcuts` prop on `Sidebar`, wired in
+`AppShell`.
+
+---
+
 ## 2026-06-03 — D035: Double-click an event → edit (Enter is the keyboard twin)
 
 **Context:** Viet's idea, mid-session: "Double click to edit the event." D032 made single-click a

@@ -4,6 +4,28 @@ Daily working notes. Newest at top. What we did, what worked, what's next.
 
 ---
 
+## 2026-06-04 — Thursday — Notes panel fixed chrome + clickable shortcuts hint (D036)
+
+**Did:** Cleared the top 3 debts from yesterday (DBT-11/12/13).
+- **DBT-11 — "? shortcuts" hint is now a button** → opens the help dialog (same as `?`). Mouse parity for
+  a keyboard action (D033).
+- **DBT-12 — Notes panel header sticks, on one line.** "Notes · {scope}" stays pinned while the list
+  scrolls — you never lose which Day/Week/Month the notes belong to.
+- **DBT-13 — "+ New note" pinned to the panel bottom** (sticky footer), always reachable for fast capture.
+- DBT-12+13 done as one layout pass: the Notes `<aside>` is now sticky header · scrolling list · sticky
+  footer (D036).
+- **Scroll-edge fade** (Viet liked the fade in/out): the list dissolves into the header/footer via a
+  scroll-aware `mask-image` — fades only the edge with content scrolled past it, never at the true ends.
+
+**Verified:** `tsc` clean; console clean. Live (preview, 1440×900): clicking "? shortcuts" opens the help;
+Notes header = 57px single line, stays put on scroll (scrollHeight 968 > client 697); footer pinned, holds
+the New note button. Screenshot confirms editorial-calm dividers top + bottom.
+
+**Next:** push (auto-deploy) when Viet says ship. Remaining queue trends toward multi-day spans (DBT-03,
+blocks drag-to-create) and the v0.2 line (DBT-10 Google integration).
+
+---
+
 ## 2026-06-03 — Wednesday — Keyboard-first cluster: quick-create, dbl-click edit, Esc-clear (D033–D035)
 
 **Did:** Shipped Viet's keyboard-first batch.

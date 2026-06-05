@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CalendarView, Note } from "@/lib/types";
 import { noteScopeFor } from "@/lib/date";
 import { notesForScope, notesOfType } from "@/lib/notes";
@@ -54,58 +54,93 @@ export function NotesPanel({ view, anchor, onNewNote, onNoteClick }: Props) {
   const decisions = notesOfType(scoped, "decision");
   const daily = notesOfType(scoped, "daily");
 
+  // Soft fade where the list meets the sticky header/footer — but only on the
+  // edge that actually has content scrolled past it (no fade at the true ends).
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ top: false, bottom: false });
+  const updateEdges = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const top = el.scrollTop > 4;
+    const bottom = el.scrollTop + el.clientHeight < el.scrollHeight - 4;
+    setEdges((p) => (p.top === top && p.bottom === bottom ? p : { top, bottom }));
+  }, []);
+  // Re-check when the scoped notes change (list height shifts).
+  useEffect(() => {
+    updateEdges();
+  }, [scoped, updateEdges]);
+
+  const FADE = 28; // px
+  const mask = `linear-gradient(to bottom, ${
+    edges.top ? "transparent 0px" : "black 0px"
+  }, black ${FADE}px, black calc(100% - ${FADE}px), ${
+    edges.bottom ? "transparent 100%" : "black 100%"
+  })`;
+
   return (
     <aside
       aria-label={`Notes — ${scope.label}`}
-      className="flex h-full flex-col gap-6 overflow-y-auto border-l border-border-base bg-bg px-6 pb-5 pt-6"
+      className="flex h-full flex-col border-l border-border-base bg-bg"
     >
-      <header>
-        <h2 className="mb-1 text-base font-semibold tracking-[-0.01em] text-text">
+      {/* Sticky header — title + scope on one line, stays put while the list scrolls */}
+      <header className="flex shrink-0 items-baseline justify-between gap-3 border-b border-border-faint px-6 py-4">
+        <h2 className="shrink-0 text-base font-semibold tracking-[-0.01em] text-text">
           Notes
         </h2>
-        <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-text-3">
+        <div className="truncate font-mono text-[10px] uppercase tracking-[0.1em] text-text-3">
           {scope.label} · {scope.tag}
         </div>
       </header>
 
-      {scoped.length === 0 ? (
-        <p className="text-[13px] leading-relaxed text-text-3">
-          Nothing for {scope.tag} yet — what was it about?
-        </p>
-      ) : (
-        <>
-          {decisions.length > 0 && (
-            <section>
-              <h3 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-3">
-                Decision log
-              </h3>
-              {decisions.map((n) => (
-                <NoteCard key={n.id} note={n} onClick={onNoteClick} />
-              ))}
-            </section>
-          )}
-
-          {daily.length > 0 && (
-            <section>
-              <h3 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-3">
-                Daily log
-              </h3>
-              {daily.map((n) => (
-                <NoteCard key={n.id} note={n} onClick={onNoteClick} />
-              ))}
-            </section>
-          )}
-        </>
-      )}
-
-      <button
-        type="button"
-        onClick={onNewNote}
-        className="mt-auto rounded-[5px] border border-dashed border-border-strong px-3.5 py-3 text-left text-[13px] text-text-3 transition-colors duration-100 hover:border-text-2 hover:text-text-2"
+      {/* Scrollable list — soft fade at the edges as content scrolls under the chrome */}
+      <div
+        ref={scrollRef}
+        onScroll={updateEdges}
+        style={{ maskImage: mask, WebkitMaskImage: mask }}
+        className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-6 py-5"
       >
-        <span className="mr-2 font-mono text-sm text-text-3">+</span>
-        New note for {scope.tag}
-      </button>
+        {scoped.length === 0 ? (
+          <p className="text-[13px] leading-relaxed text-text-3">
+            Nothing for {scope.tag} yet — what was it about?
+          </p>
+        ) : (
+          <>
+            {decisions.length > 0 && (
+              <section>
+                <h3 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-3">
+                  Decision log
+                </h3>
+                {decisions.map((n) => (
+                  <NoteCard key={n.id} note={n} onClick={onNoteClick} />
+                ))}
+              </section>
+            )}
+
+            {daily.length > 0 && (
+              <section>
+                <h3 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-3">
+                  Daily log
+                </h3>
+                {daily.map((n) => (
+                  <NoteCard key={n.id} note={n} onClick={onNoteClick} />
+                ))}
+              </section>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Sticky footer — always reachable for fast capture */}
+      <div className="shrink-0 border-t border-border-faint px-6 py-4">
+        <button
+          type="button"
+          onClick={onNewNote}
+          className="block w-full rounded-[5px] border border-dashed border-border-strong px-3.5 py-3 text-left text-[13px] text-text-3 transition-colors duration-100 hover:border-text-2 hover:text-text-2"
+        >
+          <span className="mr-2 font-mono text-sm text-text-3">+</span>
+          New note for {scope.tag}
+        </button>
+      </div>
     </aside>
   );
 }
