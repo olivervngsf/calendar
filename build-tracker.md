@@ -70,6 +70,7 @@ matching feature status. Agents update this page as part of their critical path 
 | Responsive collapse (< 900px) | ✅ | Side panels hide |
 | View routing (URL state `?v=&d=`) | ✅ | D011 |
 | Keyboard layer (D/W/M/Y · T · ←/→ · N · ⇧N · ⇧Q · , · [ · ] · ? · Esc) | ✅ | ⌘-combos avoided (browser-reserved, D023); keyboard-first is principle #6 (D033) |
+| `W` cycles Week sub-mode (W1 timeline ⇄ W2 agenda) | ✅ | D037 — entry → W1; persisted + in sync; W1/W2 label on switch; mouse parity |
 | Collapsible side panels (sidebar + notes) | ✅ | App-bar toggles + `[` `]` (D018) |
 | Panel slide animation (sidebar←, notes→) | ✅ | 200ms width+translate; reflows the canvas |
 | Command palette (⌘K) | ⬜ | |

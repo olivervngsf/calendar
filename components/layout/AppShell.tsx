@@ -1,10 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Calendar, CalendarEvent, CalendarSet, Note } from "@/lib/types";
+import type {
+  Calendar,
+  CalendarEvent,
+  CalendarSet,
+  CalendarView,
+  Note,
+} from "@/lib/types";
 import { useCalendarState } from "@/hooks/useCalendarState";
 import { useData } from "@/components/providers/DataProvider";
 import { useSelection } from "@/components/providers/SelectionProvider";
+import { useSettings } from "@/components/providers/SettingsProvider";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { isoDate, noteScopeFor } from "@/lib/date";
 import { TODAY } from "@/lib/mock-data";
@@ -37,6 +44,7 @@ export function AppShell() {
   const cal = useCalendarState();
   const data = useData();
   const selection = useSelection();
+  const settings = useSettings();
   const [helpOpen, setHelpOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -71,6 +79,25 @@ export function AppShell() {
   const openNewEvent = useCallback(() => {
     setEventDialog({ date: defaultEventDate() });
   }, [defaultEventDate]);
+
+  // View switch. W is special (D037): entering Week lands on timeline (W1);
+  // pressing W again while in Week cycles W1 timeline ⇄ W2 agenda. The style is
+  // the persisted Settings value, so keyboard + Settings stay in sync.
+  const handleView = useCallback(
+    (v: CalendarView) => {
+      if (v === "w") {
+        if (cal.view === "w") {
+          settings.setWeekStyle(
+            settings.weekStyle === "timeline" ? "agenda" : "timeline",
+          );
+          return;
+        }
+        settings.setWeekStyle("timeline"); // enter → W1
+      }
+      cal.setView(v);
+    },
+    [cal, settings],
+  );
 
   // Single click → read-first detail popover; double-click → jump straight to edit.
   // We defer the single-click popover briefly so a double-click can cancel it —
@@ -144,7 +171,7 @@ export function AppShell() {
   const handleNoteClick = useCallback((note: Note) => setNoteDialog({ note }), []);
 
   useKeyboardShortcuts({
-    onView: cal.setView,
+    onView: handleView,
     onToday: cal.goToday,
     onPrev: cal.goPrev,
     onNext: cal.goNext,
@@ -162,7 +189,8 @@ export function AppShell() {
       <AppBar
         anchor={cal.anchor}
         view={cal.view}
-        onView={cal.setView}
+        onView={handleView}
+        weekStyle={settings.weekStyle}
         onToday={cal.goToday}
         onPrev={cal.goPrev}
         onNext={cal.goNext}

@@ -4,6 +4,32 @@ Every meaningful decision in this project. Newest at top.
 
 ---
 
+## 2026-06-04 — D037: `W` cycles the Week sub-mode (W1 timeline ⇄ W2 agenda)
+
+**Context:** Viet wants `W` to do double duty — open Week view, and on repeat press flip between the two
+Week styles (timeline / agenda, D028). Today that style is a buried Settings toggle. Conflict surfaced
+before building (asked Viet): the style is a *persisted* preference, so "W always opens timeline first"
+collides with a user who saved agenda.
+
+**Choice (Viet's calls):**
+- **W cycles, fixed start.** Pressing `W` from another view enters Week on **timeline (W1)**; pressing `W`
+  again in Week flips **W1 timeline ⇄ W2 agenda**. Entry always resets to W1 — even if agenda was saved.
+- **Persisted / in sync.** The toggle writes the same `weekStyle` Settings value, so keyboard, the AppBar
+  switch, and the Settings dropdown never disagree, and the choice survives reload.
+- **Visible W1 / W2 label** on the Week segment of the view switch (only while Week is active; plain "W"
+  otherwise). `min-w` keeps the segment from shifting as the label changes.
+- **Mouse parity:** one shared `handleView` powers both the `W` key and the AppBar W button, so clicking
+  the active W segment also cycles the sub-mode (keyboard-first parity, D033 — here the mouse mirrors the key).
+
+**Tradeoff (on the record):** because entry forces timeline, agenda can't be a sticky default via the
+keyboard — every Week re-entry resets to W1. Accepted per Viet's explicit "W1 first" choice. The Settings
+dropdown still sets it directly if someone wants agenda without pressing W twice.
+
+**How to apply:** `handleView` in `AppShell` (intercepts `v === "w"`); `weekStyle` threaded to `AppBar` →
+`ViewSwitch` for the W1/W2 label; `useKeyboardShortcuts` + AppBar both call `handleView`.
+
+---
+
 ## 2026-06-04 — D036: Notes panel is a fixed-chrome surface; shortcuts hint is clickable
 
 **Context:** Three debts from 06-03 (DBT-11/12/13). The Notes panel scrolled as one block — header drifted

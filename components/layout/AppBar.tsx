@@ -1,6 +1,7 @@
 "use client";
 
 import type { CalendarView } from "@/lib/types";
+import type { WeekStyle } from "@/components/providers/SettingsProvider";
 import { viewTitle } from "@/lib/date";
 import { IconButton } from "@/components/ui/IconButton";
 import { Button } from "@/components/ui/Button";
@@ -12,6 +13,7 @@ interface Props {
   anchor: Date;
   view: CalendarView;
   onView: (view: CalendarView) => void;
+  weekStyle: WeekStyle;
   onToday: () => void;
   onPrev: () => void;
   onNext: () => void;
@@ -27,6 +29,7 @@ export function AppBar({
   anchor,
   view,
   onView,
+  weekStyle,
   onToday,
   onPrev,
   onNext,
@@ -80,7 +83,7 @@ export function AppBar({
           + New event
         </button>
         <div className="shrink-0">
-          <ViewSwitch value={view} onChange={onView} />
+          <ViewSwitch value={view} onChange={onView} weekStyle={weekStyle} />
         </div>
         <ThemeToggle />
         <button

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 const SHORTCUTS: { keys: string[]; label: string }[] = [
   { keys: ["D"], label: "Day view" },
-  { keys: ["W"], label: "Week view" },
+  { keys: ["W"], label: "Week view · again: W1 timeline ⇄ W2 agenda" },
   { keys: ["M"], label: "Month view" },
   { keys: ["Y"], label: "Year view" },
   { keys: ["T"], label: "Jump to today" },

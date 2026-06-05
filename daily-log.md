@@ -4,6 +4,24 @@ Daily working notes. Newest at top. What we did, what worked, what's next.
 
 ---
 
+## 2026-06-04 — Thursday — `W` cycles Week sub-mode W1 ⇄ W2 (D037)
+
+**Did:** `W` now does double duty. From another view → Week timeline (**W1**); press `W` again → agenda
+(**W2**); again → back to W1. Entry always starts at W1 (Viet's call), the choice **persists** (same
+`weekStyle` Setting — keyboard + AppBar + Settings stay in sync), and the view switch shows a live **W1/W2**
+label. One shared `handleView` drives both the key and the AppBar W button (mouse parity, D033).
+
+**Conflict resolved up front:** asked Viet before building — the Week style is a saved preference, so
+"W always opens timeline" overrides a saved agenda. He chose fixed-start W1 + persist + visible W1/W2 label.
+
+**Verified:** `tsc` clean; console clean. Live (preview): M→W = W1 timeline; W→W2 agenda (localStorage
+`weekStyle` flips to agenda); from agenda, M→W forces W1 timeline (override confirmed); clicking the active
+W segment also cycles. Screenshot shows D · W1 · M · Y, no clipping.
+
+**Next:** push when Viet says ship.
+
+---
+
 ## 2026-06-04 — Thursday — Notes panel fixed chrome + clickable shortcuts hint (D036)
 
 **Did:** Cleared the top 3 debts from yesterday (DBT-11/12/13).
