@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-04T00:00:00Z",
+  "title": "Design System: Calendar",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Deep Teal",
+        "canonical": "#2e4756",
+        "tonalRamp": ["#16222a", "#1f3340", "#2e4756", "#3e5d70", "#577a8e", "#82a0b0", "#b3c6d0", "#e5eaee"]
+      },
+      "today-ring": {
+        "role": "accent",
+        "displayName": "Amber",
+        "canonical": "#b68843",
+        "tonalRamp": ["#4a3417", "#6b4d22", "#8c6730", "#b68843", "#c89f63", "#d8b98c", "#e8d4b6", "#f4e9d8"]
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "#fafaf8",
+        "tonalRamp": ["#16150f", "#26241b", "#45412f", "#76736c", "#c4c0b5", "#ece9e2", "#f4f1ea", "#fafaf8"]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#1a1a1a",
+        "tonalRamp": ["#1a1a1a", "#4a4a4a", "#76736c", "#c4c0b5", "#d6d2c7", "#ece9e2", "#f4f1ea", "#ffffff"]
+      },
+      "cal-clay":   { "role": "tertiary", "displayName": "Clay",   "canonical": "#a87854" },
+      "cal-slate":  { "role": "tertiary", "displayName": "Slate",  "canonical": "#6b7c8f" },
+      "cal-sage":   { "role": "tertiary", "displayName": "Sage",   "canonical": "#5f7d63" },
+      "cal-plum":   { "role": "tertiary", "displayName": "Plum",   "canonical": "#855772" },
+      "cal-indigo": { "role": "tertiary", "displayName": "Indigo", "canonical": "#5b6b96" }
+    },
+    "typographyMeta": {
+      "heading": { "displayName": "Heading", "purpose": "App-bar view title and panel headers. Largest type in the system (18px ceiling)." },
+      "body":    { "displayName": "Body", "purpose": "All prose — note bodies, descriptions. Inter, 14px, measure 65-75ch." },
+      "label":   { "displayName": "Label", "purpose": "Uppercase mono metadata — weekday headers, scope lines, in-panel section eyebrows." },
+      "mono":    { "displayName": "Mono / Numeric", "purpose": "Every number: day numbers, times, week numbers, dates, counts." }
+    },
+    "shadows": [
+      { "name": "none", "value": "none", "purpose": "Fully-flat doctrine: depth is borders + tonal surfaces, never box-shadow. Existing shadow-xl overlays are a debt to reconcile." }
+    ],
+    "motion": [
+      { "name": "ease-out-standard", "value": "cubic-bezier(0, 0, 0.2, 1)", "purpose": "Default easing for state transitions and panel slides." },
+      { "name": "duration-fast", "value": "100ms", "purpose": "Hover / color state changes." },
+      { "name": "duration-base", "value": "150ms", "purpose": "Overlay fade+scale entry (popovers, dialogs)." },
+      { "name": "duration-slow", "value": "200ms", "purpose": "Panel slide (width+translate), theme crossfade." }
+    ],
+    "breakpoints": [
+      { "name": "panels-collapse", "value": "900px" },
+      { "name": "year-grid-3col", "value": "1200px" },
+      { "name": "year-grid-2col", "value": "820px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one primary action per screen — New event, quick-create Add.",
+      "html": "<button class=\"ds-btn-primary\">+ New event</button>",
+      "css": ".ds-btn-primary { background: #2e4756; color: #fff; font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; transition: opacity 0.15s cubic-bezier(0,0,0.2,1); } .ds-btn-primary:hover { opacity: 0.9; } .ds-btn-primary:focus-visible { outline: 2px solid #2e4756; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Quiet secondary action — Today, dialog cancel.",
+      "html": "<button class=\"ds-btn-secondary\">Today</button>",
+      "css": ".ds-btn-secondary { background: #fff; color: #4a4a4a; font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; padding: 6px 12px; border: 1px solid #d6d2c7; border-radius: 4px; cursor: pointer; transition: background 0.1s ease; } .ds-btn-secondary:hover { background: #f4f1ea; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Title/text field. Focus shifts the border to Deep Teal — no glow.",
+      "html": "<input class=\"ds-input\" placeholder=\"Add title\" />",
+      "css": ".ds-input { background: #fafaf8; color: #1a1a1a; font-family: Inter, sans-serif; font-size: 14px; padding: 8px 12px; border: 1px solid #d6d2c7; border-radius: 4px; outline: none; transition: border-color 0.1s ease; } .ds-input::placeholder { color: #76736c; } .ds-input:focus { border-color: #2e4756; }"
+    },
+    {
+      "name": "Note Card",
+      "kind": "card",
+      "refersTo": "note-card",
+      "description": "Authored note in the notes panel — flat, border-defined, 5px corners.",
+      "html": "<button class=\"ds-note-card\"><span class=\"ds-note-date\">2026-05-29</span><span class=\"ds-note-title\">v0.1 kickoff</span><span class=\"ds-note-body\">Scaffolded the workspace and locked the stack.</span></button>",
+      "css": ".ds-note-card { display: block; width: 100%; text-align: left; background: #fff; border: 1px solid #ece9e2; border-radius: 5px; padding: 14px 16px; cursor: pointer; transition: border-color 0.1s ease; } .ds-note-card:hover { border-color: #d6d2c7; } .ds-note-date { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.04em; color: #76736c; margin-bottom: 4px; } .ds-note-title { display: block; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: -0.005em; color: #1a1a1a; margin-bottom: 4px; } .ds-note-body { display: block; font-family: Inter, sans-serif; font-size: 12px; line-height: 1.6; color: #4a4a4a; }"
+    },
+    {
+      "name": "View Switch",
+      "kind": "nav",
+      "refersTo": "view-switch-active",
+      "description": "Segmented D/W/M/Y control; active segment is the one teal fill.",
+      "html": "<div class=\"ds-switch\"><button>D</button><button class=\"ds-active\">W1</button><button>M</button><button>Y</button></div>",
+      "css": ".ds-switch { display: inline-flex; border: 1px solid #d6d2c7; border-radius: 4px; overflow: hidden; } .ds-switch button { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; padding: 6px 12px; min-width: 34px; text-align: center; background: #fff; color: #4a4a4a; border: none; border-right: 1px solid #ece9e2; cursor: pointer; transition: background 0.1s ease; } .ds-switch button:last-child { border-right: none; } .ds-switch button:hover { background: #f4f1ea; } .ds-switch .ds-active { background: #2e4756; color: #fff; }"
+    },
+    {
+      "name": "Event Chip (timed)",
+      "kind": "custom",
+      "refersTo": "event-chip",
+      "description": "Timed event in week/day grid. 2px left border = calendar identity (the one sanctioned side-stripe).",
+      "html": "<button class=\"ds-chip\"><span class=\"ds-chip-time\">10:00</span><span class=\"ds-chip-title\">Sprint planning</span></button>",
+      "css": ".ds-chip { display: flex; align-items: baseline; gap: 6px; width: 100%; text-align: left; background: transparent; border: none; border-left: 2px solid #2e4756; padding: 2px 6px 2px 7px; cursor: pointer; transition: background 0.1s ease; } .ds-chip:hover { background: #f4f1ea; } .ds-chip-time { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #76736c; flex-shrink: 0; } .ds-chip-title { font-family: Inter, sans-serif; font-size: 11px; line-height: 1.3; color: #1a1a1a; }"
+    },
+    {
+      "name": "Today Marker",
+      "kind": "custom",
+      "refersTo": "today-ring",
+      "description": "The day number for today: an amber ring, never a fill. The one warm accent.",
+      "html": "<span class=\"ds-today\">29</span>",
+      "css": ".ds-today { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 2px solid #b68843; border-radius: 9999px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: #1a1a1a; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Editorial Desk",
+    "overview": "The calm workspace of a senior editor, rendered as software. The page recedes; content — hours, events, written notes — is the only thing asked to speak. Type carries the personality and chrome stays quiet: humanist sans for prose, monospace for every number and metadatum. The system answers to one thesis: time and thinking belong on one surface, so a notes panel must feel as native as the grid beside it. It beats Apple on calm and Google on warmth with less, not more: muted calendar hues, one deep-teal accent used sparingly, warm-neutral surfaces that read as paper-adjacent without being cream.",
+    "keyCharacteristics": [
+      "Negative space first; compact density without crowding.",
+      "Monospace for all numbers and metadata; humanist sans for body.",
+      "One deep-teal accent, used rarely. Calendar colors muted, never saturated.",
+      "Fully flat — depth comes from borders and tonal surfaces, never drop shadows.",
+      "Keyboard-first: every interaction has a visible, calm focus path.",
+      "Motion is intentional and quiet, or absent."
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Deep Teal appears on ≤10% of any screen. Its rarity makes the active view or primary action legible at a glance. Never tint chrome teal to look designed.", "section": "colors" },
+      { "name": "The No-Saturation Rule", "body": "Calendar colors are muted by construction. If a hue looks vivid next to the surface, desaturate it toward the palette.", "section": "colors" },
+      { "name": "The Mono-Metadata Rule", "body": "Every number and metadatum is monospace; prose is sans. This single split carries most of the system's personality.", "section": "typography" },
+      { "name": "The Calm Ceiling Rule", "body": "The largest type is 18px. No display scale, no hero clamp. A heading that wants to be bigger gets more space, not more size.", "section": "typography" },
+      { "name": "The No-Shadow Rule", "body": "Shadows are forbidden as a depth device. Separate planes with a border and a surface step, not box-shadow. Overlays included.", "section": "elevation" },
+      { "name": "The Border-Defines-Structure Rule", "body": "Hairline borders (≤1px, from the border ramp) do the structural work shadows would. Never thicken a border into a card stripe.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do set every number and metadatum in JetBrains Mono; prose in Inter.",
+      "Do keep Deep Teal to ≤10% of any screen; let negative space and type do the work.",
+      "Do convey depth with borders + tonal surfaces (Warm Paper -> Surface -> Soft Surface).",
+      "Do keep radii small: 3-8px for cards/inputs/buttons; rounded-full only for pills, the today ring, and the avatar.",
+      "Do give every interaction a keyboard path with a visible 2px Deep Teal focus ring.",
+      "Do write empty states, never stock them.",
+      "Do keep the largest type at 18px; add space, not size."
+    ],
+    "donts": [
+      "Don't use drop shadows as a depth device — the system is fully flat.",
+      "Don't saturate calendar colors; muted by construction.",
+      "Don't lighten text-3 (#76736c) for elegance — it's tuned to clear AA on Warm Paper.",
+      "Don't translate warm/editorial into a cream/parchment/sand body background.",
+      "Don't use a side-stripe border >1px as decoration; the 2px timed-event-chip border is the single functional exception.",
+      "Don't import the anti-references: Google's cold density, productivity-bro streaks/XP/nudges, AI-summarizer dashboards, or the SaaS-AI-landing kit.",
+      "Don't animate for applause; quiet and intentional with a reduced-motion fallback, or absent.",
+      "Don't add gradient text, glassmorphism, or numbered/eyebrow section scaffolding."
+    ]
+  }
+}
