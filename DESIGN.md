@@ -202,10 +202,10 @@ and tonal surface layering: Warm Paper (bg) recedes, Pure Surface (white) raises
 (`#f4f1ea`) marks hover and recessed states. A bordered white panel on warm paper reads as "above"
 without a single pixel of blur. This is the editorial-desk discipline: paper has edges, not shadows.
 
-> **Reconciliation note (2026-06-04):** current overlays (dialogs, the event/quick-create popovers,
-> the year hover popup, the selection bar) still use `shadow-xl`. Under the Fully-Flat doctrine these
-> should move to a hairline border + a slightly stronger surface contrast (or a 1px ring) instead.
-> Track as a polish pass; the spec below is the target.
+**Overlays carry their own weight with a `border-strong` edge; modals add a dimming scrim
+(`bg-black/30`).** No `box-shadow` anywhere in the codebase (verified 2026-06-04, D039) — dialogs,
+the event/quick-create/year popovers, the selection bar, and the toggle thumb all separate by border
+and surface contrast alone.
 
 ### Named Rules
 **The No-Shadow Rule.** Shadows are forbidden as a depth device. To separate a plane, use a border
@@ -282,8 +282,8 @@ lift or a bounce. Radii are small (3–8px); only true pills and circular marker
 - **Do** keep the largest type at 18px; add space, not size.
 
 ### Don't:
-- **Don't** use drop shadows as a depth device — the system is fully flat. Reconcile existing
-  `shadow-xl` overlays to border + surface contrast.
+- **Don't** use drop shadows as a depth device — the system is fully flat. Overlays separate with a
+  `border-strong` edge (and a dimming scrim for modals), never `box-shadow`.
 - **Don't** saturate calendar colors. Muted by construction; if a hue looks vivid, it's wrong.
 - **Don't** lighten `text-3` (`#76736c`) "for elegance" — it's tuned to clear AA on Warm Paper.
 - **Don't** translate "warm/editorial" into a cream/parchment/sand body background. Warm Paper is a

@@ -203,3 +203,40 @@ export function noteScopeFor(
 
 export const WEEKDAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export const WEEKDAY_INITIAL = ["S", "M", "T", "W", "T", "F", "S"];
+
+/**
+ * Inclusive ISO date range for a view + anchor (D041). The scoped digest filters
+ * tasks / events / notes to this window. Week starts Sunday (matches the grid).
+ */
+export function rangeFor(
+  view: CalendarView,
+  anchor: Date,
+): { startIso: string; endIso: string } {
+  const y = anchor.getFullYear();
+  const m = anchor.getMonth();
+  if (view === "d") {
+    const iso = isoDate(anchor);
+    return { startIso: iso, endIso: iso };
+  }
+  if (view === "w") {
+    const start = new Date(anchor);
+    start.setDate(anchor.getDate() - anchor.getDay());
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    return { startIso: isoDate(start), endIso: isoDate(end) };
+  }
+  if (view === "m") {
+    return {
+      startIso: isoDate(new Date(y, m, 1)),
+      endIso: isoDate(new Date(y, m + 1, 0)),
+    };
+  }
+  return { startIso: `${y}-01-01`, endIso: `${y}-12-31` };
+}
+
+/** Representative ISO date of a note's scope, for range matching (D041). */
+export function noteScopeDate(unit: NoteUnit, key: string): string {
+  if (unit === "month") return `${key}-01`;
+  if (unit === "year") return `${key}-01-01`;
+  return key; // day + week keys are already YYYY-MM-DD
+}

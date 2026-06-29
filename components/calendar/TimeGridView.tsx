@@ -10,6 +10,7 @@ import { useData } from "@/components/providers/DataProvider";
 import { useSettings } from "@/components/providers/SettingsProvider";
 import { DayColumn } from "./DayColumn";
 import { EventChip } from "./EventChip";
+import { TaskChip } from "./TaskChip";
 
 interface Props {
   days: GridDay[];
@@ -34,9 +35,19 @@ export function TimeGridView({
   onSlotClick,
   onSelectDay,
 }: Props) {
-  const { events } = useData();
+  const { events, tasks } = useData();
   const { showWeekNumbers } = useSettings();
   const byDay = useMemo(() => eventsByDay(events, visible), [events, visible]);
+  const tasksByDay = useMemo(() => {
+    const m = new Map<string, typeof tasks>();
+    for (const t of tasks) {
+      if (t.scope) continue; // unscheduled (D044) — digest only
+      const arr = m.get(t.date);
+      if (arr) arr.push(t);
+      else m.set(t.date, [t]);
+    }
+    return m;
+  }, [tasks]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // ISO week for the shown period — keyed off the Thursday (week) or the day itself.
@@ -48,8 +59,10 @@ export function TimeGridView({
   }, []);
 
   const cols = `${AXIS_PX}px repeat(${days.length}, minmax(0, 1fr))`;
-  const hasAllDay = days.some((d) =>
-    (byDay.get(d.iso) ?? []).some((e) => e.allDay),
+  const hasAllDay = days.some(
+    (d) =>
+      (byDay.get(d.iso) ?? []).some((e) => e.allDay) ||
+      (tasksByDay.get(d.iso)?.length ?? 0) > 0,
   );
 
   return (
@@ -116,8 +129,12 @@ export function TimeGridView({
           </div>
           {days.map((d) => {
             const allDay = (byDay.get(d.iso) ?? []).filter((e) => e.allDay);
+            const dayTasks = tasksByDay.get(d.iso) ?? [];
             return (
               <div key={d.iso} className="flex flex-col gap-1 px-1">
+                {dayTasks.map((t) => (
+                  <TaskChip key={t.id} task={t} />
+                ))}
                 {allDay.map((e) => (
                   <EventChip
                     key={e.id}

@@ -41,7 +41,7 @@
       "mono":    { "displayName": "Mono / Numeric", "purpose": "Every number: day numbers, times, week numbers, dates, counts." }
     },
     "shadows": [
-      { "name": "none", "value": "none", "purpose": "Fully-flat doctrine: depth is borders + tonal surfaces, never box-shadow. Existing shadow-xl overlays are a debt to reconcile." }
+      { "name": "none", "value": "none", "purpose": "Fully-flat doctrine: depth is borders + tonal surfaces, never box-shadow. No box-shadow anywhere in the codebase (D039); overlays use a border-strong edge, modals add a dimming scrim." }
     ],
     "motion": [
       { "name": "ease-out-standard", "value": "cubic-bezier(0, 0, 0.2, 1)", "purpose": "Default easing for state transitions and panel slides." },

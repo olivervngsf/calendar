@@ -21,11 +21,21 @@ interface Props {
 const WEEK_GUTTER = "2.25rem";
 
 export function MonthView({ anchor, visible, onEventClick, onEventEdit, onDayClick }: Props) {
-  const { events } = useData();
+  const { events, tasks } = useData();
   const { showWeekNumbers } = useSettings();
   const selectedIso = isoDate(anchor);
   const grid = useMemo(() => getMonthGrid(anchor, TODAY), [anchor]);
   const byDay = useMemo(() => eventsByDay(events, visible), [events, visible]);
+  const tasksByDay = useMemo(() => {
+    const m = new Map<string, typeof tasks>();
+    for (const t of tasks) {
+      if (t.scope) continue; // unscheduled (D044) — digest only
+      const arr = m.get(t.date);
+      if (arr) arr.push(t);
+      else m.set(t.date, [t]);
+    }
+    return m;
+  }, [tasks]);
 
   // Chunk the flat 42-day grid into 6 rows of 7.
   const rows = useMemo(() => {
@@ -77,6 +87,7 @@ export function MonthView({ anchor, visible, onEventClick, onEventEdit, onDayCli
                 key={day.iso}
                 day={day}
                 events={byDay.get(day.iso) ?? []}
+                tasks={tasksByDay.get(day.iso) ?? []}
                 selected={!day.isToday && day.iso === selectedIso}
                 onEventClick={onEventClick}
                 onEventEdit={onEventEdit}

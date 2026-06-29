@@ -1,4 +1,4 @@
-import type { Calendar, CalendarEvent, Note } from "./types";
+import type { Calendar, CalendarEvent, Note, Task } from "./types";
 
 // v0.1 is mock-only (D001). For a coherent showcase, anchor "today" to a fixed date
 // so the hand-crafted month of Viet's life always lines up — rather than real `new Date()`,
@@ -176,4 +176,12 @@ export const NOTES: Note[] = [
     body: "Set out to prove a calendar can hold prose. 2026 is about making that obvious in 60 seconds.",
     date: "2026-05-29",
   },
+];
+
+// Seed tasks (D040) — day-scoped checkable items, all-day. A couple done, a couple open
+// so the check/uncheck state is alive in the demo.
+export const TASKS: Task[] = [
+  { id: "t-seed-1", title: "Send Q3 plan to Erich", done: false, date: "2026-05-29", createdAt: "2026-05-29" },
+  { id: "t-seed-2", title: "Book dentist", done: false, date: "2026-05-27", createdAt: "2026-05-26" },
+  { id: "t-seed-3", title: "Renew domain", done: true, date: "2026-05-22", createdAt: "2026-05-20" },
 ];

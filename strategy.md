@@ -46,7 +46,10 @@ What unites them: they treat the calendar as a memory artifact, not just a sched
 **Wedge sentence:** the only calendar where the notes panel is a first-class citizen, scoped to the time unit you're looking at.
 
 ## 5. Anti-goals (what we will not be)
-- Not a project manager. No tasks, no kanban.
+- **Tasks are in scope (amended 2026-06-04, D040 — founder override).** Lightweight, day-scoped,
+  check/uncheck items captured in prose. Still **not a project manager**: no kanban, no assignees, no
+  sub-tasks, no priorities/due-times, no project/board views, no dependencies. A task is a checkable
+  line on a day, not a workflow.
 - Not a team scheduler. No find-a-time, no polls.
 - Not a productivity-bro app. No streaks, no XP, no nudges.
 - Not an AI summarizer. No "your week in review by AI." Notes are written, not generated.

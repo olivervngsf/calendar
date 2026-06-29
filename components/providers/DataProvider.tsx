@@ -13,8 +13,9 @@ import type {
   CalendarEvent,
   CalendarId,
   Note,
+  Task,
 } from "@/lib/types";
-import { CALENDARS, EVENTS, NOTES } from "@/lib/mock-data";
+import { CALENDARS, EVENTS, NOTES, TASKS } from "@/lib/mock-data";
 
 // In-memory store (v0.1 = no DB writes, D001). Seeded from mock data; mutations
 // persist for the session only. Owns calendars + their visibility + events + notes,
@@ -23,6 +24,7 @@ import { CALENDARS, EVENTS, NOTES } from "@/lib/mock-data";
 export type EventInput = Omit<CalendarEvent, "id">;
 export type NoteInput = Omit<Note, "id">;
 export type CalendarInput = Omit<Calendar, "id">;
+export type TaskInput = Omit<Task, "id" | "done" | "createdAt">;
 
 interface DataStore {
   calendars: Calendar[];
@@ -30,6 +32,7 @@ interface DataStore {
   visible: Set<CalendarId>;
   events: CalendarEvent[];
   notes: Note[];
+  tasks: Task[];
   colorOf: (id: CalendarId) => CalendarColor;
   toggleCalendar: (id: CalendarId) => void;
   applyCalendars: (ids: CalendarId[]) => void;
@@ -43,6 +46,9 @@ interface DataStore {
   addNote: (input: NoteInput) => void;
   updateNote: (id: string, input: NoteInput) => void;
   deleteNote: (id: string) => void;
+  addTask: (input: TaskInput) => void;
+  toggleTask: (id: string) => void;
+  deleteTask: (id: string) => void;
 }
 
 const DataContext = createContext<DataStore | null>(null);
@@ -61,6 +67,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   );
   const [events, setEvents] = useState<CalendarEvent[]>(EVENTS);
   const [notes, setNotes] = useState<Note[]>(NOTES);
+  const [tasks, setTasks] = useState<Task[]>(TASKS);
 
   const colorOf = useCallback(
     (id: CalendarId): CalendarColor =>
@@ -130,12 +137,31 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setNotes((prev) => prev.filter((n) => n.id !== id));
   }, []);
 
+  const addTask = useCallback((input: TaskInput) => {
+    const createdAt = input.date;
+    setTasks((prev) => [
+      ...prev,
+      { ...input, id: newId("t"), done: false, createdAt },
+    ]);
+  }, []);
+
+  const toggleTask = useCallback((id: string) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
+    );
+  }, []);
+
+  const deleteTask = useCallback((id: string) => {
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   const value = useMemo<DataStore>(
     () => ({
       calendars,
       visible,
       events,
       notes,
+      tasks,
       colorOf,
       toggleCalendar,
       applyCalendars,
@@ -149,12 +175,16 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       addNote,
       updateNote,
       deleteNote,
+      addTask,
+      toggleTask,
+      deleteTask,
     }),
     [
       calendars,
       visible,
       events,
       notes,
+      tasks,
       colorOf,
       toggleCalendar,
       applyCalendars,
@@ -168,6 +198,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       addNote,
       updateNote,
       deleteNote,
+      addTask,
+      toggleTask,
+      deleteTask,
     ],
   );
 

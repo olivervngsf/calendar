@@ -6,6 +6,7 @@ import {
   useSettings,
   type YearStyle,
   type WeekStyle,
+  type NoteScopeMode,
 } from "@/components/providers/SettingsProvider";
 
 interface Props {
@@ -88,6 +89,10 @@ const YEAR_STYLES: { value: YearStyle; label: string }[] = [
   { value: "grid", label: "Calendar" },
   { value: "columns", label: "Columns" },
 ];
+const NOTE_SCOPES: { value: NoteScopeMode; label: string }[] = [
+  { value: "range", label: "In range" },
+  { value: "exact", label: "This unit" },
+];
 
 export function SettingsDialog({ onClose }: Props) {
   const {
@@ -97,6 +102,8 @@ export function SettingsDialog({ onClose }: Props) {
     setYearStyle,
     weekStyle,
     setWeekStyle,
+    noteScope,
+    setNoteScope,
   } = useSettings();
 
   return (
@@ -127,6 +134,21 @@ export function SettingsDialog({ onClose }: Props) {
             value={yearStyle}
             options={YEAR_STYLES}
             onChange={setYearStyle}
+          />
+        </div>
+      </section>
+
+      <section className="mt-5">
+        <h3 className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-text-3">
+          Notes
+        </h3>
+        <div className="divide-y divide-border-faint">
+          <SegmentRow
+            label="Notes in digest"
+            description="Show every note in the view's range (day + week + month notes roll up), or only the note for this exact unit."
+            value={noteScope}
+            options={NOTE_SCOPES}
+            onChange={setNoteScope}
           />
         </div>
       </section>

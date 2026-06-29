@@ -20,7 +20,7 @@ export function Toggle({ checked, onChange, label }: Props) {
     >
       <span
         className={
-          "inline-block h-[18px] w-[18px] rounded-full bg-surface shadow-sm transition-transform duration-150 " +
+          "inline-block h-[18px] w-[18px] rounded-full bg-surface transition-transform duration-150 " +
           (checked ? "translate-x-[18px]" : "translate-x-0.5")
         }
       />

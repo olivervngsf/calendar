@@ -4,6 +4,172 @@ Every meaningful decision in this project. Newest at top.
 
 ---
 
+## 2026-06-04 — D044: Unscheduled items — tasks & events can be scoped to a week/month/year (no day)
+
+**Context:** Viet wants to capture loosely — "create at current week → it's for that week," with no specific
+day, shown pinned on top. I recommended tasks+notes only (an event without a date isn't really an event);
+Viet overrode and chose **all three** (founder's call). DnD to assign a real date is deferred to its own
+pass with a keyboard path (his pick).
+
+**Choice:**
+- **Optional `scope: NoteScope` on `Task` and `Event`** (notes already have scope). Its presence means
+  **unscheduled** — the item belongs to a week/month/year but has no committed day. `date`/`start` hold the
+  scope's *representative* date (week-start / month-1st / year-1st) so existing date-range filters work.
+- **Capture rules (D040 N):** on **Day** view, ambiguous → that day (scheduled). On **Week/Month/Year**,
+  ambiguous → **unscheduled, scoped to the view**. A parsed specific date always wins (scheduled). Live
+  preview says e.g. "New event · May 24 – 30 · unscheduled".
+- **Unscheduled items live in the digest only**, pinned to the **top** of their section; excluded from the
+  grid (`eventsByDay` / `tasksByDay` skip `scope`). Event rows show **"Unscheduled"** instead of a date and
+  aren't click-to-navigate (no day to go to).
+
+**Why:** matches Viet's "capture now, place later" flow; the representative-date trick keeps the change
+small (no optional dates rippling through the time grid). Scheduling an unscheduled item = the **drag-and-
+drop** pass (next), which will also carry the keyboard equivalent (D033).
+
+**Tradeoffs (on the record):** (1) representative-date quirk — a month-scoped item's rep is the 1st, so it
+can surface in the week that contains the 1st. (2) Tasks in the digest still don't show their day (pre-
+existing), so unscheduled vs dated tasks look alike beyond the pin order. (3) Events-without-a-date stretches
+the "event" primitive — accepted per founder override.
+
+**How to apply:** `scope?` on Task/Event (`lib/types.ts`); grid exclusion in `lib/events.eventsByDay` +
+MonthView/TimeGridView `tasksByDay`; capture scoping in `QuickCapture`; pin + "Unscheduled" label in `NotesPanel`.
+
+---
+
+## 2026-06-04 — D043: Digest sections collapse + per-section quick-create
+
+**Context:** Part of Viet's "make the panel a workspace" batch. Two clean, model-free pieces built now;
+the heavier pieces (unscheduled/loosely-scoped items + drag-and-drop) are deferred pending decisions.
+
+**Choice:**
+- **Collapsible sections.** Each digest section (Tasks · Events · Notes) has a chevron + count and
+  collapses independently (session state). Lets you focus one type at a time; counts stay visible when collapsed.
+- **Per-section quick-create.** Each section header has a "+" that opens the N capture **preset to that
+  kind** (`task:: / event:: / note::`), so creating the right type is one click + type. The footer
+  "+ Add to {scope}" opens the capture with no preset. QuickCapture gained an `initialText` prop.
+
+**Why:** low-risk, high-utility — the panel becomes a place you act, not just read, without touching the
+data model. Reuses the D040 capture entirely.
+
+**Deferred (need decisions, see below / next entry):** items scoped to a week/month with **no specific
+day** ("unscheduled", shown on top), and **drag-and-drop** to assign a date/time (big interaction + a
+keyboard-first conflict, D033).
+
+**How to apply:** `Section` component in `NotesPanel` (collapse + "+"); `onCreate(kind?)` prop wired to
+`setQuickCapture({kind})` in AppShell; `initialText` in `QuickCapture`.
+
+---
+
+## 2026-06-04 — D042: Notes digest scope is a user setting (range vs exact) + pin the unit's own note
+
+**Context:** After D041 made the digest range-based, Viet noted two real temperaments: some want *everything
+relating to* the period (rollup), some want *this unit only* (the month note as a distinct artifact). He
+weighed a quick switch vs a global setting and asked for a recommendation.
+
+**Choice (my rec, Viet approved "build it"):**
+- **Global setting, not a quick switch.** It's a stable preference (you're a rollup or an exact person —
+  you don't flip it hourly), and it matches every other view pref already in Settings (week style, year
+  style, week numbers). A quick switch would add panel chrome for a rare action. New setting
+  **"Notes in digest: In range (default) · This unit"** (`noteScope: "range" | "exact"`), persisted.
+- **Scoped to notes only.** Tasks and events are date-stamped — there's no "exact" version — so the toggle
+  only changes the Notes section, and really only bites at Month/Year.
+- **Pinned-note IA (built regardless of mode).** In range mode the Notes section shows **this unit's own
+  note(s) first**, then a hairline "Across {scope}" divider, then the rolled-up day/week/year notes. So the
+  exact-minded still get their artifact at the top even in rollup mode; the divider keeps rollup calm.
+
+**Why:** resolves the rollup-vs-exact tension without a knob in the panel, stays consistent with the
+existing settings model, and the pinned-note IA softens the difference so most users never need the toggle.
+
+**How to apply:** `noteScope` + `setNoteScope` in SettingsProvider; "Notes" section in SettingsDialog;
+`NotesPanel` splits `ownNotes` / `otherNotes` and honors the mode. Default `range` (keeps D041 behavior).
+
+---
+
+## 2026-06-04 — D041: The right panel becomes a scoped digest (Tasks · Events · Notes) — supersedes D022
+
+**Context:** Viet wants one place to see *everything* for the period he's on — "if I'm on today, all the
+tasks/notes/events for today; on week, the week; etc." — and for the three primitives to "talk together"
+across D/W/M/Y. Now that tasks exist (D040), the calendar has three content types that were scattered
+(events on the grid, notes in the panel, tasks as chips).
+
+**Choice:**
+- **The right Notes panel evolves into a scoped digest** (Viet's pick over a new view). For the active
+  view it shows three sections — **Tasks · Events · Notes** — each filtered to that view's time range
+  (`rangeFor(view, anchor)`: the day / the Sun–Sat week / the month / the year). Header = the scope label
+  ("Fri, May 29" / "May 24 – 30" / "May 2026" / "2026"); footer "+ Add to {scope}" opens the N capture.
+- **Range-based for all three — this OVERTURNS D022.** D022 chose "exact scope only" for notes (Month →
+  the month note). Viet reversed it: the digest now shows every note whose representative date falls in
+  range (`noteScopeDate`), consistent with how tasks & events scope. D022's exact-scope rule is retired.
+- Tasks reuse `TaskChip` (toggle in place); events are compact rows (color dot · title · date·time) that
+  click through to the day; notes keep `NoteCard`. Sticky header/footer + scroll-edge fade (D036) carry over.
+
+**Why:** one surface that always mirrors the view is how the primitives cohere — the calendar answers "what
+is this day/week/month/year about?" in tasks, time, and prose at once. Reinforces the wedge (the panel is
+still the thinking surface) instead of adding a competing panel (the year-critique lesson).
+
+**Tradeoffs:** at month/year scope the Events list is long (27–28 rows) — scrollable for now; grouping /
+"+N more" is a follow-on. Task rows don't yet show their date in the digest (TaskChip is title-only).
+
+**How to apply:** `rangeFor` + `noteScopeDate` in `lib/date.ts`; `NotesPanel` rewritten as the digest
+(reads tasks/events/notes from `useData`, filters by range); `onCapture` + `onSelectDay` props wired in AppShell.
+
+---
+
+## 2026-06-04 — D040: Tasks enter scope (founder override) + `N` = natural-language capture
+
+**Context:** Viet wants to type and have the app auto-create the right thing — `task:: …` → a checkable
+task, `event:: …` → an event, `note:: …` → a note. The Strategist flagged the hard conflict: **"Not a
+project manager. No tasks, no kanban." was the #1 anti-goal (`strategy.md §5`).** Viet, as CEO, exercised
+**founder's prerogative** to expand scope — on the record, per the project's own override rule.
+
+**Choice:**
+- **Tasks are now a first-class, but deliberately minimal, primitive.** A `Task` is `{ title, done, date }`
+  — a day-scoped checkable line. **Explicitly NOT** kanban, assignees, sub-tasks, priorities, due-times,
+  board/project views, or dependencies (that boundary stays locked in the amended §5). "A checkable line
+  on a day, not a workflow."
+- **`N` becomes natural-language capture** (Viet's pick), replacing N-opens-the-event-form. A leading
+  `task:: / event:: / note::` marker auto-routes (case-insensitive); no marker → event (preserves the old
+  quick-add). A live badge shows the detected kind; Enter saves; "More options" → the full event form.
+  `Shift+Q` aliases the same capture. The structured form still lives on the "+ New event" button.
+- **Where tasks render:** as a checkbox chip on their day — month cells + the week/day all-day row.
+  Toggling the box flips `done` (strikethrough). Day-scoped to the focused day at capture time.
+
+**Why:** the capture-anything-fast flow is a real productivity win and the markers keep it unambiguous.
+Tasks stay on-thesis *only* because they're constrained to a checkable line in prose — the moment they
+grow priorities/boards, they've become the anti-goal again. The §5 amendment draws that line.
+
+**Tradeoffs / on the record:** this is the first time an anti-goal was overridden. Risk: scope creep
+toward a to-do app — mitigated by the hard "no PM features" boundary. Cost deferred: task deletion, date
+parsing inside `task::`, recurring tasks, and year-view rendering are follow-ons (not built in v1).
+
+**How to apply:** `Task` in `lib/types.ts`; `tasks` + `addTask`/`toggleTask`/`deleteTask` in DataProvider;
+`parseCaptureKind` (`lib/quickCapture.ts`); `QuickCapture` component (N); `TaskChip`; rendering in
+`MonthCell` + `TimeGridView` all-day row. Seed tasks in `mock-data.ts`. PRD + PRODUCT.md + strategy §5 updated.
+
+---
+
+## 2026-06-04 — D039: Fully-flat overlays — remove every drop shadow (impeccable polish)
+
+**Context:** Authoring DESIGN.md (impeccable `document`) surfaced a gap: Viet chose a **Fully-Flat**
+elevation doctrine, but the shipped overlays all used `shadow-xl`. The spec and the code disagreed.
+`$impeccable polish` reconciled the code to the doctrine.
+
+**Choice:** Remove `box-shadow` everywhere. Overlays now separate by **a `border-strong` hairline edge**
++ surface contrast; modals additionally sit on a **dimming scrim** (`bg-black/30`) that does the float
+work. Seven sites changed: `Dialog`, `ShortcutsHelp` (modals → border-strong, scrim already present);
+`EventDetail`, `QuickCreate`, `YearDayPopup` (anchored popovers → border-strong, `border-base`→`border-strong`
+for a crisper edge over content); `SelectionBar` (floating pill → border-strong only); `Toggle` (thumb
+`shadow-sm` dropped — the white thumb reads on its track by lightness contrast alone).
+
+**Why:** depth-by-shadow is the one thing an editorial-flat system forbids. Borders are the structural
+device; a 1px `border-strong` edge over the grid, plus the scrim for modals, reads as "above" without a
+blur. Verified in **both themes** (light: white surface + gray edge; dark: lighter surface + warm edge).
+
+**How to apply:** grep `shadow` returns nothing under `components/`/`app/`. To raise a surface, use a
+border + a surface step (and a scrim if modal), never `box-shadow`. Matches DESIGN.md's **No-Shadow Rule**.
+
+---
+
 ## 2026-06-04 — D038: Year view — hover a day to preview its events (delayed)
 
 **Context:** Viet: in Year view, hovering a day that has events should show those events in a popup,

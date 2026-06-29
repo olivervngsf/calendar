@@ -9,9 +9,9 @@ const SHORTCUTS: { keys: string[]; label: string }[] = [
   { keys: ["Y"], label: "Year view" },
   { keys: ["T"], label: "Jump to today" },
   { keys: ["←", "→"], label: "Previous / next month" },
-  { keys: ["N"], label: "New event" },
+  { keys: ["N"], label: "Quick capture · task:: / event:: / note::" },
   { keys: ["⇧", "N"], label: "New note" },
-  { keys: ["⇧", "Q"], label: "Quick add (natural language)" },
+  { keys: ["⇧", "Q"], label: "Quick capture (alias of N)" },
   { keys: ["⌘", "click"], label: "Select events (multi-select)" },
   { keys: ["Esc"], label: "Clear selection / dismiss" },
   { keys: ["click"], label: "Empty slot → quick create" },
@@ -51,7 +51,7 @@ export function ShortcutsHelp({ onClose }: { onClose: () => void }) {
     >
       <div
         className={
-          "w-full max-w-sm rounded-lg border border-border-base bg-surface p-6 shadow-xl transition duration-200 ease-out " +
+          "w-full max-w-sm rounded-lg border border-border-strong bg-surface p-6 transition duration-200 ease-out " +
           (show
             ? "opacity-100 translate-y-0 scale-100"
             : "opacity-0 translate-y-1 scale-[0.98]")

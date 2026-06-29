@@ -38,7 +38,7 @@ export function SelectionBar({ count, onDelete, onClear }: Props) {
         (show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2")
       }
     >
-      <div className="flex items-center gap-3 rounded-full border border-border-strong bg-surface px-2 py-2 pl-4 shadow-xl">
+      <div className="flex items-center gap-3 rounded-full border border-border-strong bg-surface px-2 py-2 pl-4">
         {confirming ? (
           <>
             <span className="text-[13px] text-text">

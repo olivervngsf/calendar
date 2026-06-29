@@ -4,6 +4,143 @@ Daily working notes. Newest at top. What we did, what worked, what's next.
 
 ---
 
+## 2026-06-04 — Thursday — Unscheduled items: tasks & events scoped to week/month/year (D044)
+
+**Did:** Capture-loosely, place-later. Added optional `scope` to Task & Event (notes already had it) =
+**unscheduled**. On Week/Month/Year, an ambiguous capture → scoped to the view with no specific day; on Day
+→ that day; a parsed date always schedules. Unscheduled items live **only in the digest**, pinned on top of
+their section; events show **"Unscheduled"** and don't navigate. Excluded from the grid. Viet overrode my
+"events should keep a real date" rec and chose all-three (founder's call, logged).
+
+**Verified:** `tsc` clean; console clean. Live (week): `event:: Plan offsite` (no date) → preview "May 24 –
+30 · unscheduled" → saved → pinned first in Events as "Plan offsite · Unscheduled", absent from the grid.
+Screenshot confirms.
+
+**Next:** the **drag-and-drop** pass (assign date/time, with a keyboard equivalent per D033) — Viet's chosen
+follow-on. Also still open: task delete (D040); task day shown in digest rows.
+
+---
+
+## 2026-06-04 — Thursday — Digest sections collapse + per-section quick-create (D043)
+
+**Did:** First two pieces of Viet's "panel as workspace" batch. Each digest section (Tasks · Events ·
+Notes) now **collapses** (chevron + count) and has a **"+"** that opens the N capture preset to that kind
+(`task:: / event:: / note::`). Footer "+ Add to {scope}" = capture with no preset. `QuickCapture` gained
+`initialText`; `NotesPanel` got a `Section` wrapper + `onCreate(kind?)`.
+
+**Verified:** `tsc` clean; fresh-server console clean (mid-edit parse errors were stale buffer — restart
+confirmed). Live (week): 3 collapsible sections, counts persist when collapsed; "New event" + opens capture
+at "event:: ". Screenshot confirms chevron/count/+ chrome.
+
+**Deferred — need Viet's decision (next):** (1) **unscheduled items** scoped to a week/month with no
+specific day, shown pinned on top — a data-model change, and conceptually fuzzy for *events* (an event
+without a date isn't a calendar event). (2) **Drag-and-drop** to assign date/time — big interaction,
+mouse-only → needs a keyboard equivalent (D033).
+
+**Next:** decide the two deferred parts, then build. Also still open: task delete (D040).
+
+---
+
+## 2026-06-04 — Thursday — Notes digest scope setting + pinned-note IA (D042)
+
+**Did:** Made the digest's notes-scoping a user choice. Recommended (and Viet approved) a **global setting**
+over a quick switch — it's a stable preference and matches the existing view prefs. Added
+**Settings → Notes → "Notes in digest: In range (default) · This unit"** (`noteScope`, persisted).
+Plus the **pinned-note IA**: in range mode the unit's own note(s) sit first, then an "Across {scope}"
+hairline, then the rolled-up day/week/year notes — so exact-minded users get their artifact up top even in
+rollup mode. Setting only affects notes (tasks/events stay range-based).
+
+**Verified:** `tsc` clean; console clean. Live (month): range = 9 notes with "Across this month" divider
+(month note pinned); exact = 5 (month-key notes only, no divider). Real click on the Settings segment flips
+`noteScope` (synthetic .click() was flaky in the harness; preview_click confirmed the real path). Screenshot
+shows the new Notes control alongside week/year style.
+
+**Next:** push when Viet says ship. Still open: task delete (D040), task date in digest rows, event
+grouping at month/year (D041).
+
+---
+
+## 2026-06-04 — Thursday — Scoped digest: Tasks · Events · Notes per view (D041)
+
+**Did:** Made the three primitives "talk together." The right panel is now a **scoped digest** — for the
+active view it lists **Tasks · Events · Notes** filtered to that time range (day / week / month / year),
+header = scope label, footer "+ Add to {scope}" → N capture. Tasks reuse TaskChip (toggle in place),
+events are compact click-through rows, notes keep NoteCard. Sticky chrome + scroll-fade carried over.
+- **Range-based for all three — overturns D022** (Viet's call): notes now show everything in range, not
+  exact-unit. `rangeFor` + `noteScopeDate` added to lib/date.
+
+**Verified:** `tsc` clean; console clean (only the benign HMR warning). Live counts cohere as scope widens:
+Day Fri-May-29 = T1·E2·N2; Week May 24–30 = T2·E8·N4; Month May 2026 = T3·E27·N9; Year 2026 = T3·E28·N11.
+Screenshot of the week digest confirms the editorial layout (color dots, mono date·time, flat).
+
+**Next:** push when Viet says ship. Follow-ons: task date in digest rows; event grouping / "+N more" at
+month/year scope; task delete (still open from D040).
+
+---
+
+## 2026-06-04 — Thursday — Tasks enter scope + `N` = natural-language capture (D040)
+
+**Did:** Viet exercised **founder's prerogative** to override the #1 anti-goal ("no tasks") — on the record.
+Strategist flagged the conflict first; CEO expanded scope. Built it:
+- **`Task` primitive** (minimal: title · done · date) + store CRUD; seed tasks in mock-data.
+- **`N` → natural-language capture.** One field, auto-detects `task:: / event:: / note::` (no marker →
+  event), live type badge, Enter saves, "More options" → full event form. `Shift+Q` aliases it.
+- **Tasks render as checkbox chips** on their day — month cells + week/day all-day row; click toggles
+  done (strikethrough).
+- Boundary held: amended `strategy.md §5` — tasks are a checkable line on a day, **not** kanban/PM
+  (no assignees, sub-tasks, priorities, boards). Updated PRD, PRODUCT.md, decision-log (D040).
+
+**Verified:** `tsc` clean; console clean (only the benign HMR script-tag warning). Live (preview): `N` opens
+capture; `task:: Buy milk` → "Add task" badge → renders as a checkbox on the focused day; toggling →
+done/strikethrough; seed "Renew domain" shows checked; `event:: Team offsite Oct 3` → "Add event" with the
+date parsed. Month + all-day rendering confirmed.
+
+**Next:** push when Viet says ship. Follow-ons (logged, not built): task deletion, date-parsing inside
+`task::`, recurring tasks, year-view task rendering. Also still open: the year-columns keyboard/a11y pass.
+
+---
+
+## 2026-06-04 — Thursday — Year columns: hover-to-preview (DBT-14, from impeccable critique)
+
+**Did:** Ran `$impeccable critique` on the Year **columns** view (dual-agent: design review + detector).
+Detector clean (0 findings); review scored 29/40 — strong craft, weak *information scent* (the event dot
+says "something" not "what"). Acted on the cheap, high-leverage fix Viet picked: **wired the existing
+`YearDayPopup` hover into columns** (it only existed in the grid year style). Hover *or* focus an event-day
+→ same ~400ms delayed, flat preview. Closes **DBT-14**.
+
+**Rejected (on the record):** Viet's first instinct was a right-side slide-in detail panel on day-select.
+Critique flagged the fatal collision — the right edge is already the **Notes panel**, the product wedge.
+Verdict: keep click → Day view (app-wide consistency); satisfy "see before I commit" with the hover peek;
+if a persistent day surface is ever wanted, make the *Notes panel* follow the selected day (a Strategist
+scope call), not a competing panel. Parked, not built.
+
+**Verified:** `tsc` clean; console clean. Live (preview, columns style): hover May 4 → "Monday, May 4 ·
+Sprint planning 10:00 · Therapy 11:30", anchored + flat (D039). Screenshot confirmed.
+
+**Next:** push when Viet says ship. Open from the critique: the bigger keyboard/a11y pass on columns
+(roving tabindex + role=grid + human-readable aria-labels + event-dot text alt) — P1, not yet done.
+
+---
+
+## 2026-06-04 — Thursday — Design system captured + fully-flat overlays (impeccable: document, D039)
+
+**Did:** Ran `$impeccable` to set up the design system, then polished the code to match it.
+- **PRODUCT.md + DESIGN.md + `.impeccable/design.json`** — register (product), North Star "The Editorial
+  Desk", hex tokens from globals.css, the mono-metadata / one-accent / fully-flat doctrines, drop-in
+  component snippets. Synthesized from strategy.md + CLAUDE.md.
+- **D039 — removed every drop shadow.** Authoring DESIGN.md exposed that the shipped overlays used
+  `shadow-xl` while the chosen doctrine is Fully-Flat. Reconciled all 7 sites (Dialog, ShortcutsHelp,
+  EventDetail, QuickCreate, YearDayPopup, SelectionBar, Toggle) to border-strong + surface contrast;
+  modals lean on the existing `bg-black/30` scrim. `grep shadow` now returns nothing.
+
+**Verified:** `tsc` clean; console clean. Screenshots in **both themes**: event-detail popover floats
+over the month grid on its border edge alone; settings modal reads on the scrim; flat toggle thumb stays
+legible by lightness contrast. The flat look is crisper and more editorial than the old soft shadow.
+
+**Next:** push when Viet says ship.
+
+---
+
 ## 2026-06-04 — Thursday — Year view: hover a day → event preview, delayed (D038)
 
 **Did:** In Year (grid), hovering a day that has events now shows a small popup of that day's events after

@@ -30,7 +30,7 @@ import { QuickCreate } from "@/components/calendar/QuickCreate";
 import { SelectionBar } from "@/components/calendar/SelectionBar";
 import { CalendarDialog } from "@/components/calendar/CalendarDialog";
 import { CalendarSetDialog } from "@/components/calendar/CalendarSetDialog";
-import { QuickAddDialog } from "@/components/calendar/QuickAddDialog";
+import { QuickCapture } from "@/components/calendar/QuickCapture";
 import { NoteDialog } from "@/components/notes/NoteDialog";
 
 type EventDialogState =
@@ -49,7 +49,9 @@ export function AppShell() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [notesOpen, setNotesOpen] = useState(true);
-  const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [quickCapture, setQuickCapture] = useState<{
+    kind?: "task" | "event" | "note";
+  } | null>(null);
   const [setDialog, setSetDialog] = useState<{ set?: CalendarSet } | null>(null);
   const [calendarDialog, setCalendarDialog] = useState<{
     calendar?: Calendar;
@@ -175,13 +177,13 @@ export function AppShell() {
     onToday: cal.goToday,
     onPrev: cal.goPrev,
     onNext: cal.goNext,
-    onNew: openNewEvent,
+    onNew: () => setQuickCapture({}),
     onHelp: () => setHelpOpen((v) => !v),
     onSettings: () => setSettingsOpen((v) => !v),
     onToggleSidebar: () => setSidebarOpen((v) => !v),
     onToggleNotes: () => setNotesOpen((v) => !v),
     onNewNote: openNewNote,
-    onQuickAdd: () => setQuickAddOpen(true),
+    onQuickAdd: () => setQuickCapture({}),
   });
 
   return (
@@ -277,8 +279,9 @@ export function AppShell() {
             <NotesPanel
               view={cal.view}
               anchor={cal.anchor}
-              onNewNote={openNewNote}
+              onCreate={(kind) => setQuickCapture({ kind })}
               onNoteClick={handleNoteClick}
+              onSelectDay={handleSelectDay}
             />
           </div>
         </div>
@@ -353,10 +356,16 @@ export function AppShell() {
           );
         })()}
 
-      {quickAddOpen && (
-        <QuickAddDialog
-          onClose={() => setQuickAddOpen(false)}
-          onCreated={(iso) => cal.goToDate(iso)}
+      {quickCapture && (
+        <QuickCapture
+          view={cal.view}
+          anchor={cal.anchor}
+          initialText={quickCapture.kind ? `${quickCapture.kind}:: ` : undefined}
+          onClose={() => setQuickCapture(null)}
+          onMore={(_title, iso) => {
+            setEventDialog({ date: iso });
+            setQuickCapture(null);
+          }}
         />
       )}
 

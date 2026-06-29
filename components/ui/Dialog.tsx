@@ -51,7 +51,7 @@ export function Dialog({ title, onClose, children }: Props) {
       <div
         ref={panelRef}
         className={
-          "w-full max-w-md rounded-lg border border-border-base bg-surface p-6 shadow-xl transition duration-200 ease-out " +
+          "w-full max-w-md rounded-lg border border-border-strong bg-surface p-6 transition duration-200 ease-out " +
           (show
             ? "opacity-100 translate-y-0 scale-100"
             : "opacity-0 translate-y-1 scale-[0.98]")

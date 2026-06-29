@@ -1,12 +1,14 @@
 "use client";
 
 import type { GridDay } from "@/lib/date";
-import type { CalendarEvent } from "@/lib/types";
+import type { CalendarEvent, Task } from "@/lib/types";
 import { EventChip } from "./EventChip";
+import { TaskChip } from "./TaskChip";
 
 interface Props {
   day: GridDay;
   events: CalendarEvent[];
+  tasks?: Task[];
   /** The focused day (highlighted distinctly from today). */
   selected?: boolean;
   onEventClick?: (event: CalendarEvent, anchor: DOMRect) => void;
@@ -16,7 +18,7 @@ interface Props {
 
 const MAX_VISIBLE = 3;
 
-export function MonthCell({ day, events, selected, onEventClick, onEventEdit, onDayClick }: Props) {
+export function MonthCell({ day, events, tasks = [], selected, onEventClick, onEventEdit, onDayClick }: Props) {
   const shown = events.slice(0, MAX_VISIBLE);
   const overflow = events.length - shown.length;
 
@@ -49,8 +51,11 @@ export function MonthCell({ day, events, selected, onEventClick, onEventEdit, on
         {day.day}
       </button>
 
-      {shown.length > 0 && (
+      {(tasks.length > 0 || shown.length > 0) && (
         <div className="flex flex-col gap-0.5">
+          {tasks.map((t) => (
+            <TaskChip key={t.id} task={t} />
+          ))}
           {shown.map((e) => (
             <EventChip key={e.id} event={e} onClick={onEventClick} onDoubleClick={onEventEdit} />
           ))}

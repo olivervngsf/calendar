@@ -93,7 +93,7 @@ export function QuickCreate({ date, hour, anchor, onClose, onMore }: Props) {
         aria-label="Quick create event"
         style={{ top: pos?.top ?? -9999, left: pos?.left ?? -9999, width: WIDTH }}
         className={
-          "fixed z-50 rounded-lg border border-border-base bg-surface p-3.5 shadow-xl transition duration-150 ease-out " +
+          "fixed z-50 rounded-lg border border-border-strong bg-surface p-3.5 transition duration-150 ease-out " +
           (show ? "opacity-100 scale-100" : "opacity-0 scale-[0.98]")
         }
       >

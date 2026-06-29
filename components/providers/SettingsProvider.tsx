@@ -15,11 +15,14 @@ import type { CalendarSet } from "@/lib/types";
 
 export type YearStyle = "grid" | "columns";
 export type WeekStyle = "timeline" | "agenda";
+/** How the digest panel scopes NOTES: everything in the view's range, or this unit only. */
+export type NoteScopeMode = "range" | "exact";
 
 interface Settings {
   showWeekNumbers: boolean;
   yearStyle: YearStyle;
   weekStyle: WeekStyle;
+  noteScope: NoteScopeMode;
   calendarSets: CalendarSet[];
 }
 
@@ -27,6 +30,7 @@ const DEFAULTS: Settings = {
   showWeekNumbers: false,
   yearStyle: "grid",
   weekStyle: "timeline",
+  noteScope: "range",
   // Seeded examples so the feature is alive in the demo.
   calendarSets: [
     { id: "set-personal", name: "Personal", calendarIds: ["personal", "erich"] },
@@ -40,6 +44,7 @@ interface SettingsStore extends Settings {
   setShowWeekNumbers: (value: boolean) => void;
   setYearStyle: (value: YearStyle) => void;
   setWeekStyle: (value: WeekStyle) => void;
+  setNoteScope: (value: NoteScopeMode) => void;
   addCalendarSet: (input: Omit<CalendarSet, "id">) => void;
   updateCalendarSet: (id: string, input: Omit<CalendarSet, "id">) => void;
   deleteCalendarSet: (id: string) => void;
@@ -84,6 +89,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     [settings, persist],
   );
 
+  const setNoteScope = useCallback(
+    (value: NoteScopeMode) => persist({ ...settings, noteScope: value }),
+    [settings, persist],
+  );
+
   const newSetId = () =>
     typeof crypto !== "undefined" && "randomUUID" in crypto
       ? `set-${crypto.randomUUID()}`
@@ -124,6 +134,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       setShowWeekNumbers,
       setYearStyle,
       setWeekStyle,
+      setNoteScope,
       addCalendarSet,
       updateCalendarSet,
       deleteCalendarSet,
@@ -133,6 +144,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       setShowWeekNumbers,
       setYearStyle,
       setWeekStyle,
+      setNoteScope,
       addCalendarSet,
       updateCalendarSet,
       deleteCalendarSet,

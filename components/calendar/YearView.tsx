@@ -58,13 +58,24 @@ export function YearView({ anchor, visible, onSelectDay, onSelectMonth }: Props)
 
   if (yearStyle === "columns") {
     return (
-      <YearColumns
-        anchor={anchor}
-        eventDays={eventDays}
-        selectedIso={selectedIso}
-        onSelectDay={onSelectDay}
-        onSelectMonth={onSelectMonth}
-      />
+      <>
+        <YearColumns
+          anchor={anchor}
+          eventDays={eventDays}
+          selectedIso={selectedIso}
+          onSelectDay={onSelectDay}
+          onSelectMonth={onSelectMonth}
+          onDayHover={handleDayHover}
+          onDayHoverEnd={handleDayHoverEnd}
+        />
+        {hover && (
+          <YearDayPopup
+            iso={hover.iso}
+            events={byDay.get(hover.iso) ?? []}
+            anchor={hover.anchor}
+          />
+        )}
+      </>
     );
   }
 

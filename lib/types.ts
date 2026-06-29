@@ -49,6 +49,29 @@ export interface CalendarEvent {
   allDay: boolean;
   /** "default" = topic visible; "busy" = show-busy-hide-topic. Shape only in v0.1. */
   visibility: "default" | "busy";
+  /**
+   * Loosely scoped / "unscheduled" (D044): when set, the item belongs to a
+   * week/month/year but has no committed day — it lives in the digest (pinned
+   * on top), not on the grid. `start`/`end` hold the scope's representative date.
+   */
+  scope?: NoteScope;
+}
+
+/**
+ * A lightweight, day-scoped to-do (D040). Deliberately minimal — a checkable line,
+ * not a project-manager primitive: no priority, no sub-tasks, no due-time, no kanban.
+ * Scope expansion logged in D040 (amends the former "no tasks" anti-goal).
+ */
+export interface Task {
+  id: string;
+  title: string;
+  done: boolean;
+  /** ISO date ("YYYY-MM-DD"). For unscheduled tasks this is the scope's representative date. */
+  date: string;
+  /** ISO date the task was created. */
+  createdAt: string;
+  /** Loosely scoped / "unscheduled" (D044) — week/month/year, no committed day. */
+  scope?: NoteScope;
 }
 
 export type NoteUnit = "day" | "week" | "month" | "year";

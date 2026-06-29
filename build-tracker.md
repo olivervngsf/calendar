@@ -44,7 +44,7 @@ matching feature status. Agents update this page as part of their critical path 
 
 **DBT-12 + DBT-13 done as one layout pass (D036):** Notes `<aside>` is now 3 rows — sticky header (shrink-0) · scrollable list (flex-1 overflow-y-auto) · sticky footer (shrink-0).
 
-| DBT-14 | Design | Year **columns** style has no hover event-preview | Year grid got the hover popup (D038); the columns/planner style didn't — inconsistent across the two year layouts | P3 | Viet · 06-04 | Open — follow-on to D038 |
+| DBT-14 | Design | Year **columns** style has no hover event-preview | Year grid got the hover popup (D038); the columns/planner style didn't — inconsistent across the two year layouts | P3 | Viet · 06-04 | ✅ Addressed 06-04 — same YearDayPopup wired into columns (hover + focus); extends D038 |
 
 *No open strategy debts beyond DBT-10 (scope, parked for v0.2).*
 
@@ -90,7 +90,7 @@ matching feature status. Agents update this page as part of their critical path 
 | View-aware nav + title (←/→ by month/week/day) | ✅ | D017 |
 | Overlapping events lane-packed | ✅ | `lib/timegrid.ts` |
 | Year view — calendar grid (12 mini-months) | ✅ | D019 — today ring, event dots, click-through |
-| Year grid — hover a day → event preview popup | ✅ | D038 — ~400ms delay; color·time·title, capped 6; focus parity; grid style only |
+| Year — hover a day → event preview popup (grid + columns) | ✅ | D038 — ~400ms delay; color·time·title, capped 6; focus parity. Columns parity via DBT-14 (06-04) |
 | Year view — linear columns (planner) | ✅ | D021 — months×days; switch in Settings |
 | Multi-day event spans | ⬜ | DBT-03 — currently per-day badges |
 | Current-time line | ⬜ | Deferred to real data (v0.2) |
@@ -105,9 +105,10 @@ matching feature status. Agents update this page as part of their critical path 
 | Calendar Sets (saved combinations) | ✅ | D029 — create/edit/delete; seeded Personal/Work |
 | Color system per calendar | ✅ | Curated 6-color palette, light+dark (D030) |
 | Multi-calendar overlay (Month) | ✅ | Conflict-overlap polish pending |
-| Event — create (full dialog) | ✅ | Button · `N`; opens on title, ⌘↵ saves (D027) |
+| Event — create (full dialog) | ✅ | "+ New event" button; opens on title, ⌘↵ saves (D027) |
 | Event — quick-create on empty slot/cell | ✅ | D034 — click empty month cell (all-day) / week-day hour slot (timed) → popover, type title + Enter; "More options" → full dialog |
-| Quick add — natural language (`⇧Q`) | ✅ | Parses title + date + yearly; jumps to date (D020, rebound D023) |
+| Natural-language capture (`N` · `⇧Q`) | ✅ | D040 — one field; auto-detects `task:: / event:: / note::` (no marker → event), live type badge; reuses parseQuickAdd for event dates |
+| **Tasks** — day-scoped check/uncheck | ✅ | D040 — first-class minimal primitive (founder override of §5); chips in month cells + week/day all-day row; toggle = done/strikethrough. Delete + date-parse + year-view = follow-ons |
 | Note — create via `⇧N` | ✅ | Opens NoteDialog at the active scope (D020, rebound D023) |
 | Event — click shows detail (not edit) | ✅ | D032 — read-first popover, Edit/Delete inside |
 | Event — edit | ✅ | From the detail popover · **double-click** event · **Enter** in popover (D035) |
@@ -123,7 +124,11 @@ matching feature status. Agents update this page as part of their critical path 
 | Two types — decision · daily | ✅ | |
 | Note — create / edit / delete | ✅ | D014 |
 | Auto date-stamped | ✅ | |
-| Notes scoped to active view (D/W/M/Y) | ✅ | D022 — the wedge, fully live |
+| Notes scoped to active view (D/W/M/Y) | ✅ | D022 — now range-based, superseded by D041 |
+| **Scoped digest panel — Tasks · Events · Notes** | ✅ | D041 — right panel lists all three for the active scope (day/week/month/year), range-based; "+ Add to {scope}" → N capture |
+| Digest — collapsible sections + per-section "+" create | ✅ | D043 — each section collapses (chevron + count); "+" opens N capture preset to that kind |
+| Digest — drag-and-drop to assign date/time | ⬜ | Deferred (Viet ask 06-04) — needs unscheduled-item model + keyboard equivalent (D033) |
+| Unscheduled items (week/month scope, no specific day) | ✅ | D044 — tasks + events (+ notes already) can be scoped to the view with no day; pinned on top of the digest, excluded from the grid; capture auto-scopes on W/M/Y |
 | Markdown rendering | ⬜ | |
 | Dedicated note shortcut | ⬜ | |
 
@@ -136,6 +141,7 @@ matching feature status. Agents update this page as part of their critical path 
 | Toggle — show week numbers | ✅ | Across M (row gutter) · D/W (header) · Y grid (D026) |
 | Choice — week view style (timeline / agenda) | ✅ | D028 |
 | Choice — year view style (grid / columns) | ✅ | D021 |
+| Choice — notes in digest (in range / this unit) | ✅ | D042 — global toggle; range mode pins the unit's own note above an "Across {scope}" divider |
 | (room for more settings) | ⬜ | Group into sections as they grow |
 
 ## Theming & polish
@@ -148,6 +154,8 @@ matching feature status. Agents update this page as part of their critical path 
 | Empty states (written, not generic) | 🟡 | Notes empty-state done; others pending |
 | Loading / skeleton states | ⬜ | |
 | Dialog entry motion (fade + lift) | ✅ | D025 — all dialogs + shortcuts overlay |
+| Fully-flat overlays (no drop shadows) | ✅ | D039 — overlays separate by border-strong + scrim; `grep shadow` = none. Matches DESIGN.md No-Shadow Rule |
+| Design system docs (PRODUCT.md · DESIGN.md) | ✅ | impeccable `document` — "The Editorial Desk"; tokens from globals.css + sidecar |
 
 ## Accessibility
 | Feature | Status | Notes |

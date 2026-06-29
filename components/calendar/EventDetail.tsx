@@ -73,7 +73,7 @@ export function EventDetail({ event, anchor, onEdit, onDelete, onClose }: Props)
         aria-label={`Event: ${event.title}`}
         style={{ top: pos?.top ?? -9999, left: pos?.left ?? -9999, width: WIDTH }}
         className={
-          "fixed z-50 rounded-lg border border-border-base bg-surface p-4 shadow-xl transition duration-150 ease-out " +
+          "fixed z-50 rounded-lg border border-border-strong bg-surface p-4 transition duration-150 ease-out " +
           (show ? "opacity-100 scale-100" : "opacity-0 scale-[0.98]")
         }
       >

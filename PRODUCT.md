@@ -39,7 +39,9 @@ polished UI prototype on mock data; real OAuth + persistence are v0.2+.
 - **Productivity-bro tools** (Cron/Fantastical register, plus streaks / XP / nudges / badges) — feature
   clutter and engagement tricks. Time-in-app is explicitly *not* a success metric.
 - **AI-summarizer dashboards** ("your week in review, by AI") — notes here are written, never generated.
-- **Project managers / team schedulers** — no tasks, kanban, find-a-time, polls, or notification engine.
+- **Project managers / team schedulers** — no kanban, assignees, sub-tasks, priorities, board/project
+  views, find-a-time, polls, or notification engine. (Lightweight day-scoped *tasks* are in scope as of
+  D040 — a checkable line on a day, not a workflow — but the PM machinery above stays out.)
 - **The 2026 AI-landing aesthetic** — SaaS-cream backgrounds, per-section uppercase eyebrows, hero-metric
   templates, identical card grids. This is a tool, not a pitch page.
 

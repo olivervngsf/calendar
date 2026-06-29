@@ -35,11 +35,13 @@ Existing calendars optimize for density (Google) or aesthetics (Apple) but neith
 - Multi-calendar mock data: `Viet`, `Plan`, `Shared with Erich`. Toggle visibility.
 - Group calendar view: select multiple calendars, overlay color-coded events.
 - Events: mock CRUD with modal. Persists in-session only.
+- **Tasks (added 2026-06-04, D040):** lightweight, day-scoped check/uncheck items rendered on the calendar (month cells + week/day all-day row). NOT a project manager — no kanban, assignees, sub-tasks, priorities, or board views.
+- **Natural-language capture (`N`):** one field that auto-detects `task:: / event:: / note::` (no marker → event). Live type indicator; Enter saves.
 - Notes panel: scoped to current view (week note when on W, month note when on M, year note when on Y).
 - Two note types: **Decision log** (challenges, tradeoffs, outcomes) and **Daily log** (highlights).
 - Light + dark mode. Respects system preference.
 - Responsive: desktop, tablet, mobile.
-- Keyboard shortcuts: D/W/M/Y to switch view, `T` for today, `N` for new event, `/` for search.
+- Keyboard shortcuts: D/W/M/Y to switch view, `T` for today, `N` for natural-language capture (task/event/note), `/` for search.
 
 ### Out of scope (v0.1)
 - Real Google / Apple OAuth.

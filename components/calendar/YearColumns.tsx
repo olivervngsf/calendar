@@ -12,6 +12,9 @@ interface Props {
   selectedIso: string;
   onSelectDay: (iso: string) => void;
   onSelectMonth: (month: Date) => void;
+  /** Hover/focus a day that has events → preview its events (delayed in parent). */
+  onDayHover?: (iso: string, anchor: DOMRect) => void;
+  onDayHoverEnd?: () => void;
 }
 
 const ROWS = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -23,6 +26,8 @@ export function YearColumns({
   selectedIso,
   onSelectDay,
   onSelectMonth,
+  onDayHover,
+  onDayHoverEnd,
 }: Props) {
   const year = anchor.getFullYear();
   const months = useMemo(
@@ -74,6 +79,20 @@ export function YearColumns({
                 key={`${mi}-${day}`}
                 type="button"
                 onClick={() => onSelectDay(iso)}
+                onMouseEnter={
+                  hasEvent
+                    ? (e) =>
+                        onDayHover?.(iso, e.currentTarget.getBoundingClientRect())
+                    : undefined
+                }
+                onMouseLeave={hasEvent ? onDayHoverEnd : undefined}
+                onFocus={
+                  hasEvent
+                    ? (e) =>
+                        onDayHover?.(iso, e.currentTarget.getBoundingClientRect())
+                    : undefined
+                }
+                onBlur={hasEvent ? onDayHoverEnd : undefined}
                 aria-label={iso}
                 aria-current={selected ? "date" : undefined}
                 className={

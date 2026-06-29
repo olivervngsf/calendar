@@ -20,6 +20,7 @@ export function eventsByDay(
   const map = new Map<string, CalendarEvent[]>();
   for (const e of events) {
     if (!visible.has(e.calendarId)) continue;
+    if (e.scope) continue; // unscheduled (D044) — digest only, never on the grid
     const key = eventDateKey(e);
     const list = map.get(key);
     if (list) list.push(e);
