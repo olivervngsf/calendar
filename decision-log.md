@@ -4,6 +4,30 @@ Every meaningful decision in this project. Newest at top.
 
 ---
 
+## 2026-06-04 — D038: Year view — hover a day to preview its events (delayed)
+
+**Context:** Viet: in Year view, hovering a day that has events should show those events in a popup,
+with a small delay. Today the year grid only shows a dot on event-days — no way to see *what* without
+clicking through.
+
+**Choice:**
+- **Hover-intent delay (~400ms)** before the popup opens — a quick pass across the grid doesn't flash
+  popups; pausing on a day reveals it. Leaving (or a fast in/out) cancels.
+- **One shared popup** rendered at `YearView` level (not 365 instances). It lists the day's events —
+  calendar-color dot · time · title — pre-sorted (all-day first, then by start), capped at 6 with "+N more".
+- **Read-only / non-interactive** (`pointer-events-none`) so the popup never steals the hover and flickers.
+  Anchored under the day, centered, viewport-clamped; reuses the popover fade.
+- **Only event-days respond** — days without a dot have no hover handlers (no empty popups).
+- **Keyboard parity (D033):** `onFocus` triggers the same preview, so tabbing the grid reveals events too.
+
+**Scope:** the **grid** year style (the default). The **columns** style doesn't have it yet — logged as a
+follow-on, not built (DBT-14).
+
+**How to apply:** `YearDayPopup` component; hover state + `HOVER_DELAY` timer + `eventsByDay` map in
+`YearView`; `onDayHover`/`onDayHoverEnd` attached to event-day buttons in `YearMonth` (mouse + focus).
+
+---
+
 ## 2026-06-04 — D037: `W` cycles the Week sub-mode (W1 timeline ⇄ W2 agenda)
 
 **Context:** Viet wants `W` to do double duty — open Week view, and on repeat press flip between the two

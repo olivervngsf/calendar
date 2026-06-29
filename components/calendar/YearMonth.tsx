@@ -15,6 +15,9 @@ interface Props {
   selectedIso: string;
   onSelectDay: (iso: string) => void;
   onSelectMonth: (month: Date) => void;
+  /** Hover/focus a day that has events → preview its events (delayed in parent). */
+  onDayHover?: (iso: string, anchor: DOMRect) => void;
+  onDayHoverEnd?: () => void;
 }
 
 export function YearMonth({
@@ -23,6 +26,8 @@ export function YearMonth({
   selectedIso,
   onSelectDay,
   onSelectMonth,
+  onDayHover,
+  onDayHoverEnd,
 }: Props) {
   const { showWeekNumbers } = useSettings();
   const grid = useMemo(() => getMonthGrid(month, TODAY), [month]);
@@ -41,6 +46,18 @@ export function YearMonth({
         type="button"
         disabled={d.faded}
         onClick={() => onSelectDay(d.iso)}
+        onMouseEnter={
+          hasEvent
+            ? (e) => onDayHover?.(d.iso, e.currentTarget.getBoundingClientRect())
+            : undefined
+        }
+        onMouseLeave={hasEvent ? onDayHoverEnd : undefined}
+        onFocus={
+          hasEvent
+            ? (e) => onDayHover?.(d.iso, e.currentTarget.getBoundingClientRect())
+            : undefined
+        }
+        onBlur={hasEvent ? onDayHoverEnd : undefined}
         aria-label={d.iso}
         className={
           "relative mx-auto flex h-[19px] w-[19px] items-center justify-center rounded-full font-mono text-[10px] transition-colors " +

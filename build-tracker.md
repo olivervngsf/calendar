@@ -44,6 +44,8 @@ matching feature status. Agents update this page as part of their critical path 
 
 **DBT-12 + DBT-13 done as one layout pass (D036):** Notes `<aside>` is now 3 rows — sticky header (shrink-0) · scrollable list (flex-1 overflow-y-auto) · sticky footer (shrink-0).
 
+| DBT-14 | Design | Year **columns** style has no hover event-preview | Year grid got the hover popup (D038); the columns/planner style didn't — inconsistent across the two year layouts | P3 | Viet · 06-04 | Open — follow-on to D038 |
+
 *No open strategy debts beyond DBT-10 (scope, parked for v0.2).*
 
 ---
@@ -88,6 +90,7 @@ matching feature status. Agents update this page as part of their critical path 
 | View-aware nav + title (←/→ by month/week/day) | ✅ | D017 |
 | Overlapping events lane-packed | ✅ | `lib/timegrid.ts` |
 | Year view — calendar grid (12 mini-months) | ✅ | D019 — today ring, event dots, click-through |
+| Year grid — hover a day → event preview popup | ✅ | D038 — ~400ms delay; color·time·title, capped 6; focus parity; grid style only |
 | Year view — linear columns (planner) | ✅ | D021 — months×days; switch in Settings |
 | Multi-day event spans | ⬜ | DBT-03 — currently per-day badges |
 | Current-time line | ⬜ | Deferred to real data (v0.2) |

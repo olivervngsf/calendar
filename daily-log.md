@@ -4,6 +4,24 @@ Daily working notes. Newest at top. What we did, what worked, what's next.
 
 ---
 
+## 2026-06-04 — Thursday — Year view: hover a day → event preview, delayed (D038)
+
+**Did:** In Year (grid), hovering a day that has events now shows a small popup of that day's events after
+a ~400ms hover-intent delay. Popup lists calendar-color dot · time · title, sorted (all-day first), capped
+6 + "+N more". Non-interactive (`pointer-events-none`) so it never flickers; anchored + viewport-clamped;
+fades in. Only event-days respond; `onFocus` triggers it too (keyboard parity, D033). One shared popup at
+the YearView level, not per-day.
+
+**Verified:** `tsc` clean; console clean. Live (preview): hover Apr 30 → "Thursday, April 30 · 09:30 Coffee
+· Sarah" after the delay; quick in/out shows nothing (delay gates it); mouse-out hides it; May 18 (multi)
+shows Sprint planning 10:00 + Therapy 11:30, time-sorted. Screenshot confirms the editorial-calm card.
+
+**Scope note:** grid year style only (the default). Columns style preview = follow-on (DBT-14), not built.
+
+**Next:** push when Viet says ship.
+
+---
+
 ## 2026-06-04 — Thursday — `W` cycles Week sub-mode W1 ⇄ W2 (D037)
 
 **Did:** `W` now does double duty. From another view → Week timeline (**W1**); press `W` again → agenda
